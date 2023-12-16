@@ -71,8 +71,7 @@ func (s *StreamThread) ProcessSyncMessage(ctx context.Context) error {
 				return nil
 			}
 			s.config.Services.Log.Debugf("failed to read sync message: %s; closing stream", err.Error())
-			s.stream.Close()
-			return nil
+			return s.stream.Close()
 		}
 
 		if len(b) == 0 {
@@ -123,7 +122,6 @@ func (s *StreamThread) ProcessSyncMessage(ctx context.Context) error {
 			s.config.Services.Log.Infof("wrote latest sequence %d to peer %s", s.myLatestSequence, s.peer.String())
 		}
 	}
-	return nil
 }
 
 // ProcessGotLatest will process the got latest message
