@@ -20,7 +20,7 @@ func RegisterRoutes(router *apirouter.Router, conf *config.Config) {
 	action := &Action{app.Action{Config: conf}}
 
 	// Set the main index page (navigating to slash or the root of the major version)
-	router.HTTPRouter.GET("/", action.Request(router, index))
+	router.HTTPRouter.GET("/", action.Request(router, action.index))
 
 	// Options request (for CORs)
 	router.HTTPRouter.OPTIONS("/", router.SetCrossOriginHeaders)
@@ -36,4 +36,10 @@ func RegisterRoutes(router *apirouter.Router, conf *config.Config) {
 
 	// Set the health request
 	router.HTTPRouter.GET("/health", action.Request(router, action.health))
+
+	// Set the get alerts request
+	router.HTTPRouter.GET("/alerts", action.Request(router, action.alerts))
+
+	// Set the get alert request
+	router.HTTPRouter.GET("/alert/:sequence", action.Request(router, action.alert))
 }

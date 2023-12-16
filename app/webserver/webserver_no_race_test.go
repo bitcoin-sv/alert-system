@@ -12,7 +12,6 @@ import (
 
 	"github.com/bitcoin-sv/alert-system/app/config"
 	"github.com/bitcoin-sv/alert-system/app/models"
-	"github.com/bitcoin-sv/alert-system/app/tester"
 	"github.com/stretchr/testify/require"
 )
 
@@ -26,13 +25,13 @@ func TestServer_Shutdown_NoRace(t *testing.T) {
 		// Set the ctx
 		ctx := context.Background()
 
-		tester.SetupEnv(t)
-		defer func() {
-			tester.TeardownEnv(t)
-		}()
+		// Set the env to test
+		err := os.Setenv(config.EnvironmentKey, config.EnvironmentTest)
+		require.NoError(t, err)
 
 		// Load the config from env/json
-		dependencies, err := config.LoadConfig(ctx, models.BaseModels, true)
+		var dependencies *config.Config
+		dependencies, err = config.LoadDependencies(ctx, models.BaseModels, true)
 		require.NoError(t, err)
 		require.NotNil(t, dependencies)
 

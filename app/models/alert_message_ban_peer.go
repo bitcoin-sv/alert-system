@@ -3,6 +3,7 @@ package models
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/libsv/go-p2p/wire"
@@ -61,4 +62,21 @@ func (a *AlertMessageBanPeer) Read(alert []byte) error {
 // Do executes the alert
 func (a *AlertMessageBanPeer) Do(ctx context.Context) error {
 	return a.Config().Services.Node.BanPeer(ctx, string(a.Peer))
+}
+
+// ToJSON is the alert in JSON format
+func (a *AlertMessageBanPeer) ToJSON(_ context.Context) []byte {
+	m := a.ProcessAlertMessage()
+	// TODO: Come back and add a message interface for each alert
+	_ = m.Read(a.GetRawMessage())
+	data, err := json.MarshalIndent(m, "", "    ")
+	if err != nil {
+		return []byte{}
+	}
+	return data
+}
+
+// MessageString executes the alert
+func (a *AlertMessageBanPeer) MessageString() string {
+	return fmt.Sprintf("Banning peer [%s]; reason [%s].", a.Peer, a.Reason)
 }

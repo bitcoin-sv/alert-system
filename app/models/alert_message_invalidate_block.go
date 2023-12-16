@@ -3,6 +3,7 @@ package models
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/libsv/go-bt/v2/chainhash"
@@ -42,10 +43,28 @@ func (a *AlertMessageInvalidateBlock) Read(alert []byte) error {
 	a.ReasonLength = length
 	a.Reason = msg
 	a.BlockHash = blockHash
+	a.Config().Services.Log.Infof("InvalidateBlock alert; hash [%s]; reason [%s]", a.BlockHash, a.Reason)
 	return nil
 }
 
 // Do executes the alert
 func (a *AlertMessageInvalidateBlock) Do(ctx context.Context) error {
 	return a.Config().Services.Node.InvalidateBlock(ctx, a.BlockHash.String())
+}
+
+// ToJSON is the alert in JSON format
+func (a *AlertMessageInvalidateBlock) ToJSON(_ context.Context) []byte {
+	m := a.ProcessAlertMessage()
+	// TODO: Come back and add a message interface for each alert
+	_ = m.Read(a.GetRawMessage())
+	data, err := json.MarshalIndent(m, "", "    ")
+	if err != nil {
+		return []byte{}
+	}
+	return data
+}
+
+// MessageString executes the alert
+func (a *AlertMessageInvalidateBlock) MessageString() string {
+	return fmt.Sprintf("Invalidating block hash [%s]; reason [%s].", a.BlockHash, a.Reason)
 }

@@ -3,6 +3,7 @@ package models
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -47,4 +48,21 @@ func (a *AlertMessageInformational) Read(alert []byte) error {
 func (a *AlertMessageInformational) Do(_ context.Context) error {
 	a.Config().Services.Log.Infof("[informational alert]: %s", a.Message)
 	return nil
+}
+
+// ToJSON is the alert in JSON format
+func (a *AlertMessageInformational) ToJSON(_ context.Context) []byte {
+	m := a.ProcessAlertMessage()
+	// TODO: Come back and add a message interface for each alert
+	_ = m.Read(a.GetRawMessage())
+	data, err := json.MarshalIndent(m, "", "    ")
+	if err != nil {
+		return []byte{}
+	}
+	return data
+}
+
+// MessageString executes the alert
+func (a *AlertMessageInformational) MessageString() string {
+	return fmt.Sprintf("Informational: %s", a.Message)
 }

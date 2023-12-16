@@ -1,0 +1,78 @@
+{
+  "alert_webhook_url": "https://webhook.url",
+  "bitcoin_config_path": "",
+  "genesis_keys": [
+    "027276d234a138415c7d8d61e33ea9c625f0d043fd06f1c863464a58ed7939afe1",
+    "0254b81f2e1bed83e414970ae7f7e3373014706251efb6990b5292a020e3a1585c",
+    "03801e7b4077edad7ebb3fa87ced7b126ae8eb2fbcb75821001f84a0374eea4a21",
+    "03df30507f71d1880888e9e7137280397a4235c2904d4c4e995d4292f00a9257b0",
+    "03ec55b29332500401336f6e1648d367f4619bedb561fd817d2247d80c4bad236c"
+  ],
+  "log_output_file": "",
+  "disable_rpc_verification": false,
+  "request_logging": true,
+  "web_server": {
+    "idle_timeout": "60s",
+    "port": "3000",
+    "read_timeout": "15s",
+    "write_timeout": "15s"
+  },
+  "environment": "test",
+  "datastore": {
+    "auto_migrate": true,
+    "debug": true,
+    "engine": "sqlite",
+    "password": "",
+    "table_prefix": "alert_system",
+    "sqlite": {
+      "database_path": "",
+      "shared": false
+    },
+    "sql_read": {
+      "driver": "postgresql",
+      "host": "localhost",
+      "max_connection_idle_time": "20s",
+      "max_connection_time": "20s",
+      "max_idle_connections": 2,
+      "max_open_connections": 5,
+      "name": "alert_system_db",
+      "password": "postgres",
+      "port": "5432",
+      "replica": true,
+      "skip_initialize_with_version": true,
+      "time_zone": "UTC",
+      "tx_timeout": "20s",
+      "user": "postgres"
+    },
+    "sql_write": {
+      "driver": "postgresql",
+      "host": "localhost",
+      "max_connection_idle_time": "20s",
+      "max_connection_time": "20s",
+      "max_idle_connections": 2,
+      "max_open_connections": 5,
+      "name": "alert_system_db",
+      "password": "postgres",
+      "port": "5432",
+      "replica": false,
+      "skip_initialize_with_version": true,
+      "time_zone": "UTC",
+      "tx_timeout": "20s",
+      "user": "postgres"
+    }
+  },
+  "p2p": {
+    "ip": "192.168.1.1",
+    "port": "8000",
+    "alert_system_protocol_id": "/bitcoin/alert-system/0.0.1",
+    "bootstrap_peer": "",
+    "private_key_path": "/path/to/private/key"
+  },
+  "rpc_connections": [
+    {
+      "user": "galt",
+      "password": "galt",
+      "host": "http://localhost:8333"
+    }
+  ]
+}

@@ -3,6 +3,7 @@ name: release
 
 env:
   GO111MODULE: on
+  GO_VERSION: 1.21
 
 on:
   push:
@@ -13,8 +14,48 @@ permissions:
   contents: write
 
 jobs:
-  goreleaser:
+  build-linux-binary:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: gcc install
+        run: sudo apt-get update; sudo apt install gcc-aarch64-linux-gnu
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Cache code
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod              # Module download cache
+            ~/.cache/go-build         # Build cache (Linux)
+            ~/Library/Caches/go-build # Build cache (Mac)
+            "%LocalAppData%\\go-build" # Build cache (Windows)
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          version: latest
+          args: release --skip=publish --verbose --config .goreleaser-for-linux.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: alert_system_linux
+          path: |
+            dist/alert_system_*.zip
+            dist/checksums.txt
+            dist/CHANGELOG.md
+
+  build-darwin-binary:
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,14 +64,75 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.19
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v5.0.0
+          go-version: ${{ env.GO_VERSION }}
+      - name: Cache code
+        uses: actions/cache@v4
         with:
-          distribution: goreleaser
+          path: |
+            ~/go/pkg/mod              # Module download cache
+            ~/.cache/go-build         # Build cache (Linux)
+            ~/Library/Caches/go-build # Build cache (Mac)
+            "%LocalAppData%\\go-build" # Build cache (Windows)
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
           version: latest
-          args: release --rm-dist --debug
+          args: release --skip=publish --verbose --config .goreleaser-for-darwin.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #- name: Syndicate to GoDocs
-      #  run: make godocs
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: alert_system_darwin
+          path: |
+            dist/alert_system_*.zip
+            dist/checksums.txt
+            dist/CHANGELOG.md
+
+  create-release:
+    needs: [build-linux-binary, build-darwin-binary]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Make directories
+        run: |
+          mkdir -p ./dist/linux
+          mkdir -p ./dist/darwin
+          mkdir -p ./dist/windows
+      - name: Download linux binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: alert_system_linux
+          path: ./tmp-build/linux
+      - name: Download darwin binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: alert_system_darwin
+          path: ./tmp-build/darwin
+      - name: Get tag
+        uses: little-core-labs/get-git-tag@v3.0.2
+        id: tag
+      - name: Prepare ./dist folder
+        run: |
+          mkdir -p ./dist
+          mv ./tmp-build/linux/*.zip ./dist
+          mv ./tmp-build/darwin/*.zip ./dist
+          cat ./tmp-build/linux/checksums.txt >> ./dist/checksums.txt
+          cat ./tmp-build/linux/CHANGELOG.md >> ./dist/CHANGELOG.md
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: dist/CHANGELOG.md
+          prerelease: ${{ contains(github.ref, '-rc.') }}
+          files: |
+            dist/*.zip
+            dist/CHANGELOG.md
+        env:
+          COMMIT_TAG: ${{steps.tag.outputs.tag}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

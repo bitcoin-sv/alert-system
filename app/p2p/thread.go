@@ -3,7 +3,9 @@ package p2p
 import (
 	"context"
 	"encoding/hex"
+	"fmt"
 	"math"
+	"time"
 
 	"github.com/bitcoin-sv/alert-system/app/config"
 	"github.com/bitcoin-sv/alert-system/app/models"
@@ -27,6 +29,12 @@ type StreamThread struct {
 	myLatestSequence uint32
 	peer             peer.ID
 	stream           network.Stream
+	quitChannel      chan bool
+}
+
+// LatestSequence will return the threads latest sequence
+func (s *StreamThread) LatestSequence() uint32 {
+	return s.latestSequence
 }
 
 // Sync will start the thread
@@ -57,73 +65,94 @@ func (s *StreamThread) Sync(ctx context.Context) error {
 		return err
 	}
 
-	s.config.Services.Log.Infof("requested latest sequence in stream %s", s.stream.ID())
+	s.config.Services.Log.Debugf("requested latest sequence in stream %s", s.stream.ID())
 
 	return s.ProcessSyncMessage(ctx)
+
 }
 
 // ProcessSyncMessage will process the sync message
 func (s *StreamThread) ProcessSyncMessage(ctx context.Context) error {
-	for {
-		b, err := wire.ReadVarBytes(s.stream, 0, math.MaxUint64, config.ApplicationName)
-		if err != nil {
-			if s.stream.Conn().IsClosed() || s.stream.Stat().Transient {
-				return nil
+	done := make(chan error)
+	go func() {
+		for {
+			b, err := wire.ReadVarBytes(s.stream, 0, math.MaxUint64, config.ApplicationName)
+			if err != nil {
+				if s.stream.Conn().IsClosed() || s.stream.Stat().Transient {
+					done <- nil
+					return
+				}
+				s.config.Services.Log.Debugf("failed to read sync message: %s; closing stream", err.Error())
+				done <- s.stream.Close()
+				return
 			}
-			s.config.Services.Log.Debugf("failed to read sync message: %s; closing stream", err.Error())
-			s.stream.Close()
-			return nil
-		}
 
-		if len(b) == 0 {
-			_ = s.stream.Close()
-			return nil
-		}
-		var msg *SyncMessage
-		if msg, err = NewSyncMessageFromBytes(b); err != nil {
-			s.config.Services.Log.Errorf("failed to convert to sync message: %s", err.Error())
-			return err
-		}
-		switch msg.Type {
-		case IGotLatest:
-			s.config.Services.Log.Infof("received latest sequence %d from peer %s", msg.SequenceNumber, s.peer.String())
-			if err = s.ProcessGotLatest(ctx, msg); err != nil {
-				return err
-			}
-			if s.myLatestSequence == s.latestSequence {
+			if len(b) == 0 {
 				_ = s.stream.Close()
-				return nil
+				done <- nil
+				return
 			}
-			s.config.Services.Log.Infof("wrote msg requesting next sequence %d from peer %s", s.myLatestSequence+1, s.peer.String())
-		case IGotSequenceNumber:
-			s.config.Services.Log.Infof("received IGotSequenceNumber %d from peer %s", msg.SequenceNumber, s.peer.String())
-			if err = s.ProcessGotSequenceNumber(msg); err != nil {
-				return err
+			var msg *SyncMessage
+			if msg, err = NewSyncMessageFromBytes(b); err != nil {
+				s.config.Services.Log.Errorf("failed to convert to sync message: %s", err.Error())
+				done <- err
+				return
 			}
-			if s.myLatestSequence == s.latestSequence {
-				_ = s.stream.Close()
-				return nil
+			switch msg.Type {
+			case IGotLatest:
+				s.config.Services.Log.Debugf("received latest sequence %d from peer %s", msg.SequenceNumber, s.peer.String())
+				if err = s.ProcessGotLatest(ctx, msg); err != nil {
+					done <- err
+					return
+				}
+				if s.myLatestSequence >= s.latestSequence {
+					_ = s.stream.Close()
+					done <- nil
+					return
+				}
+				s.config.Services.Log.Debugf("wrote msg requesting next sequence %d from peer %s", s.myLatestSequence+1, s.peer.String())
+			case IGotSequenceNumber:
+				s.config.Services.Log.Debugf("received IGotSequenceNumber %d from peer %s", msg.SequenceNumber, s.peer.String())
+				if err = s.ProcessGotSequenceNumber(msg); err != nil {
+					done <- err
+					return
+				}
+				if s.myLatestSequence == s.latestSequence {
+					_ = s.stream.Close()
+					done <- nil
+					return
+				}
+				s.config.Services.Log.Debugf("wrote msg requesting next sequence %d from peer %s", msg.SequenceNumber+1, s.peer.String())
+			case IWantSequenceNumber:
+				s.config.Services.Log.Debugf("received IWantSequenceNumber %d from peer %s", msg.SequenceNumber, s.peer.String())
+				if err = s.ProcessWantSequenceNumber(ctx, msg); err != nil {
+					done <- err
+					return
+				}
+				s.config.Services.Log.Debugf("wrote sequence %d to peer %s", msg.SequenceNumber, s.peer.String())
+				if msg.SequenceNumber == s.myLatestSequence {
+					err = s.stream.Close()
+					done <- err
+					return
+				}
+			case IWantLatest:
+				s.config.Services.Log.Debugf("received IWantLatest from peer %s", s.peer.String())
+				if err = s.ProcessWantLatest(ctx); err != nil {
+					done <- err
+					return
+				}
+				s.config.Services.Log.Debugf("wrote latest sequence %d to peer %s", s.myLatestSequence, s.peer.String())
 			}
-			s.config.Services.Log.Infof("wrote msg requesting next sequence from peer %s", s.peer.String())
-		case IWantSequenceNumber:
-			s.config.Services.Log.Infof("received IWantSequenceNumber %d from peer %s", msg.SequenceNumber, s.peer.String())
-			if err = s.ProcessWantSequenceNumber(ctx, msg); err != nil {
-				return err
-			}
-			s.config.Services.Log.Infof("wrote sequence %d to peer %s", msg.SequenceNumber, s.peer.String())
-			if msg.SequenceNumber == s.myLatestSequence {
-				_ = s.stream.Close()
-				return nil
-			}
-		case IWantLatest:
-			s.config.Services.Log.Infof("received IWantLatest from peer %s", s.peer.String())
-			if err = s.ProcessWantLatest(ctx); err != nil {
-				return err
-			}
-			s.config.Services.Log.Infof("wrote latest sequence %d to peer %s", s.myLatestSequence, s.peer.String())
 		}
+	}()
+	select {
+	case <-s.quitChannel:
+		return nil
+	case err := <-done:
+		return err
+	case <-time.After(time.Minute * 1):
+		return fmt.Errorf("sync from peer %s process timed out after 1 minute", s.peer.String())
 	}
-	return nil
 }
 
 // ProcessGotLatest will process the got latest message
@@ -181,14 +210,16 @@ func (s *StreamThread) ProcessGotSequenceNumber(msg *SyncMessage) error {
 	a.SerializeData()
 
 	// Process the alert (if it's a set keys alert)
-	if a.GetAlertType() == models.AlertTypeSetKeys {
-		ak := a.ProcessAlertMessage()
-		if err = ak.Read(a.GetRawMessage()); err != nil {
-			return err
-		}
-		if err = ak.Do(s.ctx); err != nil {
-			return err
-		}
+	// TODO: For now lets just process all alerts... why not?
+	// if a.GetAlertType() == models.AlertTypeSetKeys || a.GetAlertType() == models.AlertTypeInvalidateBlock {
+	ak := a.ProcessAlertMessage()
+	if err = ak.Read(a.GetRawMessage()); err != nil {
+		return err
+	}
+	a.Processed = true
+	if err = ak.Do(s.ctx); err != nil {
+		s.config.Services.Log.Errorf("failed to process alert %d; err: %v", a.SequenceNumber, err.Error())
+		a.Processed = false
 	}
 
 	// Save the alert

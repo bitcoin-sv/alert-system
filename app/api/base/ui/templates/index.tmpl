@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8'>
+    <title>Alert System Status</title>
+        <style>
+            body {
+                font-family: 'Arial', sans-serif;
+                margin: 0;
+                padding: 0;
+            }
+            .raw-message {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .expand-btn {
+                cursor: pointer;
+                color: blue;
+                text-decoration: underline;
+            }
+            .hidden {
+                display: none;
+            }
+            h2 {
+                text-align: center; /* Center the h2 tag */
+            }
+            header {
+                background-color: #00368c;
+                color: white;
+                padding: 1em;
+                text-align: center;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            main {
+                max-width: 800px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #f9f9f9;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th, td {
+                padding: 12px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+                word-wrap: break-word; /* Allow the text to wrap within cells */
+                overflow-wrap: break-word;
+            }
+            th {
+                background-color: #333;
+                color: white;
+            }
+            footer {
+                text-align: center;
+                padding: 1em;
+                background-color: #333;
+                color: white;
+            }
+        </style>
+        <script>
+            function toggleRow(id) {
+               var row = document.getElementById(id);
+               row.classList.toggle('hidden');
+            }
+        </script>
+</head>
+<body>
+    <header>
+        <h1>Alert System Status</h1>
+    </header>
+    <main>
+        <h2>Alerts</h2>
+        {{ if .Alerts }}
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Sequence</th>
+                        <th>Created At</th>
+                        <th>Processed</th>
+                        <th>Raw Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range .Alerts }}
+                        <tr>
+                            <td>{{ .SequenceNumber }}</td>
+                            <td>{{ .CreatedAt }}</td>
+                            <td>{{ .Processed }}</td>
+                            <td class="raw-message" id="raw-message-{{ .SequenceNumber }}">
+                                <div>
+                                    {{ if gt (len .Raw) 50 }}
+                                    <span id="short-message-{{ .SequenceNumber }}">Raw Hex </span>
+                                                                    <span id="full-message-{{ .SequenceNumber }}" class="hidden">{{ .Raw }}</span>
+                                                                    <span class="expand-btn" onclick="toggleRow('short-message-{{ .SequenceNumber }}'); toggleRow('full-message-{{ .SequenceNumber }}');">Expand</span>
+                                                                {{ else }}
+                                                                    {{ .Raw }}
+                                                                {{ end }}
+                                                            </div>
+                                                        </td>
+                        </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+        {{ else }}
+            <p>There's nothing to see here yet!</p>
+        {{ end }}
+    </main>
+</body>
+</html>

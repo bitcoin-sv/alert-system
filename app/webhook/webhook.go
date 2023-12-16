@@ -24,7 +24,7 @@ type Payload struct {
 
 // PostAlert sends an alert to a webhook URL using the provided http client
 func PostAlert(ctx context.Context, httpClient config.HTTPInterface, url string, alert *models.AlertMessage) error {
-
+	var err error
 	// Validate the URL length
 	if len(url) == 0 {
 		return fmt.Errorf("webhook URL is not configured")
@@ -35,20 +35,21 @@ func PostAlert(ctx context.Context, httpClient config.HTTPInterface, url string,
 		return fmt.Errorf("webhook URL [%s] is does not have a valid prefix", url)
 	}
 
-	// Serialize the alert
-	raw := alert.Serialize()
-
+	am := alert.ProcessAlertMessage()
+	err = am.Read(alert.GetRawMessage())
+	if err != nil {
+		return err
+	}
 	// Create the payload
 	p := Payload{
 		AlertType: alert.GetAlertType(),
 		Sequence:  alert.SequenceNumber,
-		Raw:       hex.EncodeToString(raw),
-		Text:      fmt.Sprintf("received alert type [%d], sequence [%d], with raw data [%x]", alert.GetAlertType(), alert.SequenceNumber, raw),
+		Raw:       hex.EncodeToString(alert.GetRawMessage()),
+		Text:      fmt.Sprintf("Sequence [`%d`], alert type [`%s`], message: [`%s`], processed: [`%v`]", alert.SequenceNumber, alert.GetAlertType().Name(), am.MessageString(), alert.Processed),
 	}
 
 	// Marshal the payload
 	var payload []byte
-	var err error
 	if payload, err = json.Marshal(p); err != nil {
 		return err
 	}

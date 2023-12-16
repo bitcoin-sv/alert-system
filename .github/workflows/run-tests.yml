@@ -51,13 +51,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Cache code
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/go/pkg/mod              # Module download cache
             ~/.cache/go-build         # Build cache (Linux)
             ~/Library/Caches/go-build # Build cache (Mac)
-            '%LocalAppData%\go-build' # Build cache (Windows)
+            "%LocalAppData%\\go-build" # Build cache (Windows)
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-

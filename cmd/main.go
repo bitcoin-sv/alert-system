@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"os"
 	"os/signal"
 
@@ -17,9 +18,9 @@ import (
 func main() {
 
 	// Load the configuration and services
-	_appConfig, err := config.LoadConfig(context.Background(), models.BaseModels, false)
+	_appConfig, err := config.LoadDependencies(context.Background(), models.BaseModels, false)
 	if err != nil {
-		_appConfig.Services.Log.Fatalf("error loading configuration: %s", err.Error())
+		log.Fatalf("error loading configuration: %s", err.Error())
 	}
 	defer func() {
 		_appConfig.CloseAll(context.Background())
@@ -32,10 +33,18 @@ func main() {
 		_appConfig.Services.Log.Fatalf("error creating genesis alert: %s", err.Error())
 	}
 
+	// Ensure that RPC connection is valid
+	if !_appConfig.DisableRPCVerification {
+		if _, err = _appConfig.Services.Node.BestBlockHash(context.Background()); err != nil {
+			_appConfig.Services.Log.Errorf("error talking to Bitcoin node with supplied RPC credentials: %s", err.Error())
+			return
+		}
+	}
+
 	// Create the p2p server
 	var p2pServer *p2p.Server
 	if p2pServer, err = p2p.NewServer(p2p.ServerOptions{
-		TopicNames: []string{config.DatabasePrefix},
+		TopicNames: []string{_appConfig.P2P.TopicName},
 		Config:     _appConfig,
 	}); err != nil {
 		_appConfig.Services.Log.Fatalf("error creating p2p server: %s", err.Error())
@@ -70,6 +79,9 @@ func main() {
 		}
 
 		close(idleConnectionsClosed)
+		if err = appConfig.Services.Log.CloseWriter(); err != nil {
+			log.Printf("error closing logger: %s", err)
+		}
 	}(_appConfig)
 
 	// Start the p2p server

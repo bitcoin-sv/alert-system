@@ -44,3 +44,24 @@ func TestSignWithKeys_Success(t *testing.T) {
 	assert.Equal(t, "1f71934b00f38fc068ce606b9ea6c9a3a73b7f68ed2ec7cfea3ab93cf3b1e117c0605b74b026a9e575e1b63d55b54bd50f493d52cdd37fbaa7e0aba26b96dc0376", hex.EncodeToString(signatures[1]))
 	assert.Equal(t, "1f17850af80b856545e77b060057e4c31a45bdc5fa89a6f91a6bb7c8df683b5875269d18ec3dc61c7198ff07d53df241fa61210f3825a871bd485e32329e6fcff2", hex.EncodeToString(signatures[2]))
 }
+
+// BenchmarkSignWithKeys benchmarks the function SignWithKeys
+func BenchmarkSignWithKeys(b *testing.B) {
+	data := []byte("test data")
+	keys := []string{Key1, Key2, Key3}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = SignWithKeys(data, keys)
+	}
+}
+
+// BenchmarkSignWithGenesis benchmarks the function SignWithGenesis
+func BenchmarkSignWithGenesis(b *testing.B) {
+	data := []byte("test data")
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = SignWithGenesis(data)
+	}
+}
