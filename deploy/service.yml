@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: alert-system
+  name: alert-system
+spec:
+  ports:
+    - name: "9906"
+      port: 9906
+      targetPort: 9906
+  selector:
+    app: alert-system
+status:
+  loadBalancer: {}
