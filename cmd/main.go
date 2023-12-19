@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"os"
 	"os/signal"
 
@@ -19,7 +20,7 @@ func main() {
 	// Load the configuration and services
 	_appConfig, err := config.LoadConfig(context.Background(), models.BaseModels, false)
 	if err != nil {
-		_appConfig.Services.Log.Fatalf("error loading configuration: %s", err.Error())
+		log.Fatalf("error loading configuration: %s", err.Error())
 	}
 	defer func() {
 		_appConfig.CloseAll(context.Background())

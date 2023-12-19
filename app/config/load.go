@@ -15,6 +15,13 @@ import (
 // LoadConfig will load the configuration and services
 // models is a list of models to auto-migrate when the datastore is created
 func LoadConfig(ctx context.Context, models []interface{}, isTesting bool) (_appConfig *Config, err error) {
+	var ok bool
+
+	dbPath := ""
+	// Load the database path
+	if dbPath, ok = gocore.Config().Get("ALERT_SYSTEM_DATABASE_PATH"); !ok {
+		dbPath = DatabasePathDefault
+	}
 
 	// Sync the configuration struct
 	_appConfig = &Config{
@@ -33,7 +40,7 @@ func LoadConfig(ctx context.Context, models []interface{}, isTesting bool) (_app
 					TablePrefix:        DatabasePrefix,
 				},
 				Shared:       false,
-				DatabasePath: DatabasePathDefault,
+				DatabasePath: dbPath,
 			},
 		},
 		WebServer: &WebServerConfig{
@@ -48,8 +55,6 @@ func LoadConfig(ctx context.Context, models []interface{}, isTesting bool) (_app
 	_appConfig.Services.Log = &ExtendedLogger{
 		Logger: gocore.Log(ApplicationName),
 	}
-
-	var ok bool
 
 	// Load the RPC user
 	if _appConfig.RPCUser, ok = gocore.Config().Get("RPC_USER"); !ok {
