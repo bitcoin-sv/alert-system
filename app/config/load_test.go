@@ -29,7 +29,7 @@ func TestLoadConfig_Success(t *testing.T) {
 	assert.Equal(t, "password", config.RPCPassword)
 	assert.Equal(t, "localhost", config.RPCHost)
 	assert.Equal(t, "/path/to/private/key", config.P2PPrivateKeyPath)
-	assert.Equal(t, SeedIpfsNode, config.P2PBootstrapPeer)
+	assert.Equal(t, "", config.P2PBootstrapPeer)
 	assert.Equal(t, DefaultAlertSystemProtocolID, config.P2PAlertSystemProtocolID)
 	assert.Equal(t, "192.168.1.1", config.P2PIP)
 	assert.Equal(t, "8000", config.P2PPort)

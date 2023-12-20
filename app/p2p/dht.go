@@ -5,10 +5,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/multiformats/go-multiaddr"
+
 	"github.com/bitcoin-sv/alert-system/app/config"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
 	"github.com/libp2p/go-libp2p/core/peer"
-	"github.com/multiformats/go-multiaddr"
 )
 
 // initDHT will initialize the DHT
@@ -30,15 +31,16 @@ func (s *Server) initDHT(ctx context.Context) (*dht.IpfsDHT, error) {
 		return nil, err
 	}
 
-	// Connect to the chosen ipfs nodes
-	var pubPeer multiaddr.Multiaddr
-	if pubPeer, err = multiaddr.NewMultiaddr(s.config.P2PBootstrapPeer); err != nil {
-		return nil, err
-	}
-
 	// Append the bootstrap nodes
-	peers := []multiaddr.Multiaddr{pubPeer}
-	peers = append(peers, dht.DefaultBootstrapPeers...)
+	peers := dht.DefaultBootstrapPeers
+	if s.config.P2PBootstrapPeer != "" {
+		// Connect to the chosen ipfs nodes
+		var pubPeer multiaddr.Multiaddr
+		if pubPeer, err = multiaddr.NewMultiaddr(s.config.P2PBootstrapPeer); err != nil {
+			return nil, err
+		}
+		peers = append(peers, pubPeer)
+	}
 
 	// Connect to the chosen ipfs nodes
 	var connected = false

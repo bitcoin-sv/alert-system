@@ -8,6 +8,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/libp2p/go-libp2p/core/discovery"
+
 	dht "github.com/libp2p/go-libp2p-kad-dht"
 
 	"github.com/bitcoin-sv/alert-system/app/config"
@@ -72,6 +74,7 @@ func NewServer(o ServerOptions) (*Server, error) {
 	if h, err = libp2p.New(
 		libp2p.ListenAddrStrings(fmt.Sprintf("/ip4/%s/tcp/%s", o.Config.P2PIP, o.Config.P2PPort)),
 		libp2p.Identity(*pk),
+		libp2p.EnableHolePunching(),
 	); err != nil {
 		return nil, err
 	}
@@ -243,7 +246,7 @@ func (s *Server) discoverPeers(ctx context.Context, tn []string, routingDiscover
 
 			var peerChan <-chan peer.AddrInfo
 			var err error
-			if peerChan, err = routingDiscovery.FindPeers(ctx, topicName); err != nil {
+			if peerChan, err = routingDiscovery.FindPeers(ctx, topicName, discovery.TTL(1*time.Minute)); err != nil {
 				return err
 			}
 
@@ -286,6 +289,8 @@ func (s *Server) discoverPeers(ctx context.Context, tn []string, routingDiscover
 					continue
 				}
 
+				s.config.Services.Log.Debugf("successfully synced messages from peer %s", foundPeer.ID.String())
+
 				// Set the flag
 				anyConnected = true
 			}
@@ -303,6 +308,7 @@ func (s *Server) discoverPeers(ctx context.Context, tn []string, routingDiscover
 
 // Subscribe will subscribe to the alert system
 func (s *Server) Subscribe(ctx context.Context, subscriber *pubsub.Subscription, hostID peer.ID) {
+	s.config.Services.Log.Infof("subscribing to alert_system topic")
 	for {
 		msg, err := subscriber.Next(ctx)
 		if err != nil {

@@ -89,7 +89,7 @@ func (s *StreamThread) ProcessSyncMessage(ctx context.Context) error {
 			if err = s.ProcessGotLatest(ctx, msg); err != nil {
 				return err
 			}
-			if s.myLatestSequence == s.latestSequence {
+			if s.myLatestSequence >= s.latestSequence {
 				_ = s.stream.Close()
 				return nil
 			}

@@ -17,12 +17,11 @@ import (
 func LoadConfig(ctx context.Context, models []interface{}, isTesting bool) (_appConfig *Config, err error) {
 	var ok bool
 
-	dbPath := ""
 	// Load the database path
-	if dbPath, ok = gocore.Config().Get("ALERT_SYSTEM_DATABASE_PATH"); !ok {
+	dbPath, _ := gocore.Config().Get("ALERT_SYSTEM_DATABASE_PATH")
+	if dbPath == "" {
 		dbPath = DatabasePathDefault
 	}
-
 	// Sync the configuration struct
 	_appConfig = &Config{
 		RequestLogging: true,
@@ -73,7 +72,7 @@ func LoadConfig(ctx context.Context, models []interface{}, isTesting bool) (_app
 
 	// Load the P2P Bootstrap peer
 	if _appConfig.P2PBootstrapPeer, ok = gocore.Config().Get("P2P_BOOTSTRAP_PEER"); !ok {
-		_appConfig.P2PBootstrapPeer = SeedIpfsNode
+		_appConfig.P2PBootstrapPeer = ""
 	}
 
 	// Load the P2P alert system protocol ID

@@ -17,7 +17,7 @@ var (
 	LocalPrivateKeyDefault       = "alert_system_private_key"                                                             // Default local private key
 	LocalPrivateKeyDirectory     = ".bitcoin"                                                                             // Default local private key directory
 	SeedIpfsNode                 = "/ip4/68.183.57.231/tcp/9906/p2p/12D3KooWQs6ptKvoKNHurCzqRaVp3uFs9731NQwS3AmVcNc2TGpb" // Default seed IPFS node
-	DefaultAlertSystemProtocolID = "/bitcoin/alert-system/1.0.1"                                                          // Default alert system protocol for libp2p syncing
+	DefaultAlertSystemProtocolID = "/bitcoin/alert-system/0.0.1"                                                          // Default alert system protocol for libp2p syncing
 )
 
 // The global configuration settings
