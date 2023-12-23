@@ -36,6 +36,8 @@ To run this application with a custom configuration file, run:
 export ALERT_SYSTEM_CONFIG_FILEPATH=path/to/file/config.json && go run cmd/main.go
 ```
 
+Configuration files can be found in the [config](app/config/envs) directory.
+
 <br/>
 
 ## Documentation
@@ -131,5 +133,4 @@ View the [contributing guidelines](.github/CONTRIBUTING.md) and follow the [code
 
 ## License
 
-[![License](https://img.shields.io/github/license/bitcoin-sv/alert-system.svg?style=flat&v=2)](LICENSE)
-
+![License](https://img.shields.io/badge/license-OpenBSV-green.svg?style=flat&v=2)
