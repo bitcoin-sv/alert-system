@@ -2,10 +2,10 @@
 > A go mirco-service for managing alerts that runs alongside a Bitcoin SV node
 
 [![Release](https://img.shields.io/github/release-pre/bitcoin-sv/alert-system.svg?logo=github&style=flat&v=2)](https://github.com/bitcoin-sv/alert-system/releases)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/bitcoin-sv/alert-system/run-tests.yml?branch=master&logo=github&v=2)](https://github.com/bitcoin-sv/alert-system/actions)
+[![Build](https://github.com/bitcoin-sv/alert-system/workflows/run-go-tests/badge.svg?branch=master&v=1)](https://github.com/bitcoin-sv/alert-system/actions)
 [![Report](https://goreportcard.com/badge/github.com/bitcoin-sv/alert-system?style=flat&v=2)](https://goreportcard.com/report/github.com/bitcoin-sv/alert-system)
-[![codecov](https://codecov.io/gh/bitcoin-sv/alert-system/branch/master/graph/badge.svg?v=2)](https://codecov.io/gh/bitcoin-sv/alert-system)
-[![Go](https://img.shields.io/github/go-mod/go-version/bitcoin-sv/alert-system?v=2)](https://golang.org/)
+<!-- [![Go](https://img.shields.io/github/go-mod/go-version/bitcoin-sv/alert-system?v=2)](https://golang.org/) -->
+[![Go](https://img.shields.io/badge/Go-1.21.xx-blue.svg?v=1)](https://golang.org/)
 <br>
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat&v=2)](https://github.com/RichardLitt/standard-readme)
 [![Makefile Included](https://img.shields.io/badge/Makefile-Supported%20-brightgreen?=flat&logo=probot&v=2)](Makefile)
