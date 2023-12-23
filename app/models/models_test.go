@@ -2,10 +2,10 @@ package models
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	"github.com/bitcoin-sv/alert-system/app/config"
-	"github.com/bitcoin-sv/alert-system/app/tester"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -19,11 +19,11 @@ type TestSuite struct {
 func (ts *TestSuite) SetupSuite() {
 
 	// Set the env to test
-	tester.SetupEnv(ts.T())
+	err := os.Setenv(config.EnvironmentKey, config.EnvironmentTest)
+	ts.Require().NoError(err)
 
 	// Load the configuration
-	var err error
-	ts.Dependencies, err = config.LoadConfig(context.Background(), BaseModels, true)
+	ts.Dependencies, err = config.LoadDependencies(context.Background(), BaseModels, true)
 	ts.Require().NoError(err)
 }
 
@@ -34,19 +34,17 @@ func (ts *TestSuite) TearDownSuite() {
 	if ts.Dependencies != nil {
 		ts.Dependencies.CloseAll(context.Background())
 	}
-
-	tester.TeardownEnv(ts.T())
 }
 
 // SetupTest runs before each test
 func (ts *TestSuite) SetupTest() {
 
 	// Set the env to test
-	tester.SetupEnv(ts.T())
+	err := os.Setenv(config.EnvironmentKey, config.EnvironmentTest)
+	ts.Require().NoError(err)
 
 	// Load the services
-	var err error
-	ts.Dependencies, err = config.LoadConfig(context.Background(), BaseModels, true)
+	ts.Dependencies, err = config.LoadDependencies(context.Background(), BaseModels, true)
 	ts.Require().NoError(err)
 }
 
@@ -55,8 +53,6 @@ func (ts *TestSuite) TearDownTest() {
 	if ts.Dependencies != nil {
 		ts.Dependencies.CloseAll(context.Background())
 	}
-
-	tester.TeardownEnv(ts.T())
 }
 
 // TestTestSuiteApp kick-starts all suite tests

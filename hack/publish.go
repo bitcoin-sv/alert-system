@@ -33,7 +33,7 @@ func main() {
 	log := gocore.Log("sig-test")
 
 	// Load the configuration and services
-	_appConfig, err := config.LoadConfig(context.Background(), models.BaseModels, false)
+	_appConfig, err := config.LoadDependencies(context.Background(), models.BaseModels, false)
 	if err != nil {
 		_appConfig.Services.Log.Fatalf("error loading configuration: %s", err.Error())
 	}

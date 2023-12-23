@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/bitcoin-sv/alert-system/app/tester"
 	"github.com/mrz1836/go-datastore"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -12,32 +11,11 @@ import (
 
 // TestLoadDatastore tests the cases of loadDatastore
 func TestLoadDatastore(t *testing.T) {
-	t.Run("failure - no datastore", func(t *testing.T) {
-		// Setup
-		tester.SetupEnv(t)
-		defer func() {
-			tester.TeardownEnv(t)
-		}()
-
-		// Execute
-		c := &Config{}
-		err := c.loadDatastore(context.Background(), nil)
-
-		// Assert
-		require.Error(t, err)
-		assert.Equal(t, ErrDatastoreRequired, err)
-	})
 
 	t.Run("failure - datastore unsupported", func(t *testing.T) {
-		// Setup
-		tester.SetupEnv(t)
-		defer func() {
-			tester.TeardownEnv(t)
-		}()
-
 		// Execute
 		c := &Config{
-			Datastore: &DatastoreConfig{
+			Datastore: DatastoreConfig{
 				Engine: "unsupported",
 			},
 		}
@@ -49,16 +27,11 @@ func TestLoadDatastore(t *testing.T) {
 	})
 
 	t.Run("success - sqlite", func(t *testing.T) {
-		// Setup
-		tester.SetupEnv(t)
-		defer func() {
-			tester.TeardownEnv(t)
-		}()
 
 		// Execute
 		c := &Config{
-			Services: &Services{},
-			Datastore: &DatastoreConfig{
+			Services: Services{},
+			Datastore: DatastoreConfig{
 				Engine:      datastore.SQLite,
 				AutoMigrate: true,
 				TablePrefix: "test",

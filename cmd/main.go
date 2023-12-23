@@ -18,7 +18,7 @@ import (
 func main() {
 
 	// Load the configuration and services
-	_appConfig, err := config.LoadConfig(context.Background(), models.BaseModels, false)
+	_appConfig, err := config.LoadDependencies(context.Background(), models.BaseModels, false)
 	if err != nil {
 		log.Fatalf("error loading configuration: %s", err.Error())
 	}

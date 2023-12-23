@@ -33,10 +33,10 @@ func (s *Server) initDHT(ctx context.Context) (*dht.IpfsDHT, error) {
 
 	// Append the bootstrap nodes
 	peers := dht.DefaultBootstrapPeers
-	if s.config.P2PBootstrapPeer != "" {
+	if s.config.P2P.BootstrapPeer != "" {
 		// Connect to the chosen ipfs nodes
 		var pubPeer multiaddr.Multiaddr
-		if pubPeer, err = multiaddr.NewMultiaddr(s.config.P2PBootstrapPeer); err != nil {
+		if pubPeer, err = multiaddr.NewMultiaddr(s.config.P2P.BootstrapPeer); err != nil {
 			return nil, err
 		}
 		peers = append(peers, pubPeer)

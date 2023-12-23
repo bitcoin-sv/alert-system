@@ -12,11 +12,6 @@ func (c *Config) loadDatastore(ctx context.Context, models []interface{}) error 
 	// Sync collecting the options
 	var options []datastore.ClientOps
 
-	// No datastore set?
-	if c.Datastore == nil {
-		return ErrDatastoreRequired
-	}
-
 	// Select the datastore
 	if c.Datastore.Engine == datastore.SQLite {
 		options = append(options, datastore.WithSQLite(&datastore.SQLiteConfig{
