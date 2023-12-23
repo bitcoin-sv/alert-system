@@ -22,7 +22,7 @@ endif
 .PHONY: bench
 bench:  ## Run all benchmarks in the Go application
 	@echo "running benchmarks..."
-	@go test -bench=. -benchmem $(TAGS)
+	@go test ./... -bench=. -benchmem $(TAGS)
 
 .PHONY: build-go
 build-go:  ## Build the Go application (locally)
