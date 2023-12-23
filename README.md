@@ -133,4 +133,4 @@ View the [contributing guidelines](.github/CONTRIBUTING.md) and follow the [code
 
 ## License
 
-![License](https://img.shields.io/badge/license-OpenBSV-green.svg?style=flat&v=2)
+[![License](https://img.shields.io/badge/license-OpenBSV-green.svg?style=flat&v=2)](LICENSE)
