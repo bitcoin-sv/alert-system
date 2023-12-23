@@ -1,5 +1,5 @@
 # alert-system
-> A go mirco-service for managing alerts that runs alongside a Bitcoin SV node
+> A go microservice for managing alerts and runs alongside Bitcoin SV nodes utilizing RPC
 
 [![Release](https://img.shields.io/github/release-pre/bitcoin-sv/alert-system.svg?logo=github&style=flat&v=2)](https://github.com/bitcoin-sv/alert-system/releases)
 [![Build](https://github.com/bitcoin-sv/alert-system/workflows/run-go-tests/badge.svg?branch=master&v=1)](https://github.com/bitcoin-sv/alert-system/actions)
