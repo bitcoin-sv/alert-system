@@ -1,129 +1,73 @@
 package config
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"io/fs"
 	"net/http"
 	"os"
-	"time"
+	"strings"
+	"sync"
 
 	"github.com/mrz1836/go-datastore"
 	"github.com/ordishs/gocore"
+	"github.com/spf13/viper"
 )
 
-// LoadConfig will load the configuration and services
-// models is a list of models to auto-migrate when the datastore is created
-func LoadConfig(ctx context.Context, models []interface{}, isTesting bool) (_appConfig *Config, err error) {
-	var ok bool
+// Added a mutex lock for a race-condition
+var viperLock sync.Mutex
 
-	// Load the database path
-	dbPath, _ := gocore.Config().Get("ALERT_SYSTEM_DATABASE_PATH")
-	if dbPath == "" {
-		dbPath = DatabasePathDefault
-	}
-	// Sync the configuration struct
-	_appConfig = &Config{
-		RequestLogging: true,
-		Services:       &Services{},
-		Datastore: &DatastoreConfig{
-			AutoMigrate: true,
-			Engine:      datastore.SQLite,
-			TablePrefix: DatabasePrefix,
-			Debug:       false,
-			SQLite: &datastore.SQLiteConfig{
-				CommonConfig: datastore.CommonConfig{
-					Debug:              false,
-					MaxIdleConnections: 1,
-					MaxOpenConnections: 1,
-					TablePrefix:        DatabasePrefix,
-				},
-				Shared:       false,
-				DatabasePath: dbPath,
-			},
-		},
-		WebServer: &WebServerConfig{
-			IdleTimeout:  60 * time.Second, // For idle connections
-			Port:         "3000",           // Default port
-			ReadTimeout:  15 * time.Second, // For reading the request
-			WriteTimeout: 15 * time.Second, // For writing the response
-		},
-	}
-
-	// Load the logger service (gocore.Logger meets the LoggerInterface)
-	_appConfig.Services.Log = &ExtendedLogger{
-		Logger: gocore.Log(ApplicationName),
-	}
-
-	// Load the RPC user
-	if _appConfig.RPCUser, ok = gocore.Config().Get("RPC_USER"); !ok {
-		return nil, ErrNoRPCUser
-	}
-
-	// Load the RPC password
-	if _appConfig.RPCPassword, ok = gocore.Config().Get("RPC_PASSWORD"); !ok {
-		return nil, ErrNoRPCPassword
-	}
-
-	// Load the RPC host
-	if _appConfig.RPCHost, ok = gocore.Config().Get("RPC_HOST"); !ok {
-		return nil, ErrNoRPCHost
-	}
-
-	// Load the P2P Bootstrap peer
-	if _appConfig.P2PBootstrapPeer, ok = gocore.Config().Get("P2P_BOOTSTRAP_PEER"); !ok {
-		_appConfig.P2PBootstrapPeer = ""
-	}
-
-	// Load the P2P alert system protocol ID
-	if _appConfig.P2PAlertSystemProtocolID, ok = gocore.Config().Get("P2P_ALERT_SYSTEM_PROTOCOL_ID"); !ok {
-		_appConfig.P2PAlertSystemProtocolID = DefaultAlertSystemProtocolID
-	}
-
-	// Load the private key path
-	// If not found, create a default one
-	if _appConfig.P2PPrivateKeyPath, ok = gocore.Config().Get("P2P_PRIVATE_KEY_PATH"); !ok {
-		if err = _appConfig.createPrivateKeyDirectory(); err != nil {
-			return nil, err
+// isValidEnvironment will return true if the testEnv is a known valid environment
+func isValidEnvironment(testEnv string) bool {
+	testEnv = strings.ToLower(testEnv)
+	for _, env := range environments {
+		if env == testEnv {
+			return true
 		}
 	}
+	return false
+}
 
-	// Load the p2p ip
-	if _appConfig.P2PIP, ok = gocore.Config().Get("P2P_IP"); !ok {
-		return nil, ErrNoP2PIP
+// LoadDependencies will load the configuration and services
+// models is a list of models to auto-migrate when the datastore is created
+// if testing is true, the node will be mocked
+func LoadDependencies(ctx context.Context, models []interface{}, isTesting bool) (_appConfig *Config, err error) {
+
+	// Load the config file
+	_appConfig, err = LoadConfigFile()
+	if err != nil {
+		return nil, err
 	}
 
-	// Load the p2p port
-	if _appConfig.P2PPort, ok = gocore.Config().Get("P2P_PORT"); !ok {
-		return nil, ErrNoP2PPort
+	// Require at least one RPC connection
+	if len(_appConfig.RPCConnections) == 0 {
+		return nil, ErrNoRPCConnections
 	}
 
-	// Load the webhook URL (if set - this is optional)
-	if _appConfig.AlertWebhookURL, ok = gocore.Config().Get("ALERT_WEBHOOK_URL"); !ok {
-		_appConfig.Services.Log.Debugf("webhook url is not configured, webhook usage is disabled")
+	// Ensure the P2P configuration is valid
+	if err = requireP2P(_appConfig); err != nil {
+		return nil, err
 	}
 
 	// Set the node config (either a real node or a mock node)
 	if !isTesting {
-		_appConfig.Services.Node = NewNodeConfig(_appConfig.RPCUser, _appConfig.RPCPassword, _appConfig.RPCHost)
+		// todo support multiple nodes (this is an example)
+		for i := range _appConfig.RPCConnections {
+			_appConfig.Services.Node = NewNodeConfig(
+				_appConfig.RPCConnections[i].User,
+				_appConfig.RPCConnections[i].Password,
+				_appConfig.RPCConnections[i].Host,
+			)
+		}
 	} else {
-		_appConfig.Services.Node = NewNodeMock(_appConfig.RPCUser, _appConfig.RPCPassword, _appConfig.RPCHost)
-	}
-
-	// Use sql in-memory for testing
-	// todo this could come from a test struct or test env file
-	if isTesting {
-		_appConfig.Datastore.AutoMigrate = true
-		_appConfig.Datastore.Engine = datastore.SQLite
-		_appConfig.Datastore.TablePrefix = DatabasePrefix
-		_appConfig.Datastore.SQLite = &datastore.SQLiteConfig{
-			CommonConfig: datastore.CommonConfig{
-				Debug:              true,
-				MaxIdleConnections: 1,
-				MaxOpenConnections: 1,
-			},
-			Shared:       false,
-			DatabasePath: "",
+		for i := range _appConfig.RPCConnections {
+			_appConfig.Services.Node = NewNodeMock(
+				_appConfig.RPCConnections[i].User,
+				_appConfig.RPCConnections[i].Password,
+				_appConfig.RPCConnections[i].Host,
+			)
 		}
 	}
 
@@ -138,6 +82,130 @@ func LoadConfig(ctx context.Context, models []interface{}, isTesting bool) (_app
 	return
 }
 
+// requireP2P will ensure the P2P configuration is valid
+func requireP2P(_appConfig *Config) error {
+
+	// Set the P2P alert system protocol ID if it's missing
+	if len(_appConfig.P2P.AlertSystemProtocolID) == 0 {
+		_appConfig.P2P.AlertSystemProtocolID = DefaultAlertSystemProtocolID
+	}
+
+	// Load the private key path
+	// If not found, create a default one
+	if len(_appConfig.P2P.PrivateKeyPath) == 0 {
+		if err := _appConfig.createPrivateKeyDirectory(); err != nil {
+			return err
+		}
+	}
+
+	// Load the p2p ip (local, ip address or domain name)
+	// todo better validation of what is a valid IP, domain name or local address
+	if len(_appConfig.P2P.IP) < 5 {
+		return ErrNoP2PIP
+	}
+
+	// Load the p2p port ( >= XX)
+	if len(_appConfig.P2P.Port) < 2 {
+		return ErrNoP2PPort
+	}
+
+	return nil
+}
+
+// LoadConfigFile will load the config file and environment variables
+func LoadConfigFile() (_appConfig *Config, err error) {
+
+	// Start the configuration struct
+	_appConfig = &Config{
+		Datastore: DatastoreConfig{
+			SQLite:   &datastore.SQLiteConfig{},
+			SQLRead:  &datastore.SQLConfig{},
+			SQLWrite: &datastore.SQLConfig{},
+		},
+		P2P:            P2PConfig{},
+		Services:       Services{},
+		WebServer:      WebServerConfig{},
+		RPCConnections: make([]RPCConfig, 0),
+	}
+
+	// Check the environment we are running
+	environment := os.Getenv(EnvironmentKey)
+	if !isValidEnvironment(environment) {
+		err = ErrInvalidEnvironment
+		return nil, err
+	}
+
+	// Lock viper
+	viperLock.Lock()
+
+	// Unlock the viper mutex
+	defer viperLock.Unlock()
+
+	// Set a replacer for replacing double underscore with nested period
+	replacer := strings.NewReplacer(".", "__")
+	viper.SetEnvKeyReplacer(replacer)
+
+	// Set the prefix
+	viper.SetEnvPrefix(EnvironmentPrefix)
+
+	// Use env vars
+	viper.AutomaticEnv()
+
+	// Get the embedded envs directory
+	var files []fs.DirEntry
+	if files, err = envDir.ReadDir("envs"); err != nil {
+		return nil, err
+	}
+
+	// Set the configuration type
+	viper.SetConfigType("json")
+
+	// Do we have a custom config file? (use this instead of the environment file)
+	customConfigFileWithPath := os.Getenv(EnvironmentCustomFilePath)
+	if len(customConfigFileWithPath) > 0 {
+		var b []byte
+
+		// Read the file
+		if b, err = os.ReadFile(customConfigFileWithPath); err != nil { //nolint:gosec // This is a custom file path
+			return nil, err
+		}
+
+		// Read the config
+		if err = viper.ReadConfig(bytes.NewBuffer(b)); err != nil {
+			return nil, err
+		}
+	} else {
+		// Loop through the various environment files
+		for _, file := range files {
+			if file.Name() == environment+".json" {
+				var f fs.File
+				if f, err = envDir.Open("envs/" + file.Name()); err != nil {
+					return nil, err
+				}
+				if err = viper.ReadConfig(f); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+
+	// Unmarshal into values struct
+	if err = viper.Unmarshal(&_appConfig); err != nil {
+		err = fmt.Errorf("error loading viper values: %w", err)
+		return nil, err
+	}
+
+	// Load the logger service (gocore.Logger meets the LoggerInterface)
+	_appConfig.Services.Log = &ExtendedLogger{
+		Logger: gocore.Log(ApplicationName),
+	}
+
+	// Log the configuration that was detected and where it was loaded from
+	_appConfig.Services.Log.Debug("loaded configuration from: " + viper.ConfigFileUsed())
+
+	return
+}
+
 // createPrivateKeyDirectory will create the private key directory
 func (c *Config) createPrivateKeyDirectory() error {
 	dirName, err := os.UserHomeDir()
@@ -147,17 +215,12 @@ func (c *Config) createPrivateKeyDirectory() error {
 	if err = os.Mkdir(fmt.Sprintf("%s/%s", dirName, LocalPrivateKeyDirectory), 0750); err != nil && !errors.Is(err, os.ErrExist) {
 		return fmt.Errorf("failed to ensure %s dir exists: %w", LocalPrivateKeyDirectory, err)
 	}
-	c.P2PPrivateKeyPath = fmt.Sprintf("%s/%s/%s", dirName, LocalPrivateKeyDirectory, LocalPrivateKeyDefault)
+	c.P2P.PrivateKeyPath = fmt.Sprintf("%s/%s/%s", dirName, LocalPrivateKeyDirectory, LocalPrivateKeyDefault)
 	return nil
 }
 
 // CloseAll will close all connections to all services
 func (c *Config) CloseAll(ctx context.Context) {
-
-	// No services to close
-	if c.Services == nil {
-		return
-	}
 
 	// Close the datastore
 	if c.Services.Datastore != nil {

@@ -60,11 +60,11 @@ func NewServer(o ServerOptions) (*Server, error) {
 	o.Config.Services.Log.Debug("creating P2P service")
 
 	// Attempt to read the private key from the file
-	pk, err := readPrivateKey(o.Config.P2PPrivateKeyPath)
+	pk, err := readPrivateKey(o.Config.P2P.PrivateKeyPath)
 	if err != nil {
 
 		// If the file doesn't exist, generate a new private key
-		if pk, err = generatePrivateKey(o.Config.P2PPrivateKeyPath); err != nil {
+		if pk, err = generatePrivateKey(o.Config.P2P.PrivateKeyPath); err != nil {
 			return nil, err
 		}
 	}
@@ -72,7 +72,7 @@ func NewServer(o ServerOptions) (*Server, error) {
 	// Create a new host
 	var h host.Host
 	if h, err = libp2p.New(
-		libp2p.ListenAddrStrings(fmt.Sprintf("/ip4/%s/tcp/%s", o.Config.P2PIP, o.Config.P2PPort)),
+		libp2p.ListenAddrStrings(fmt.Sprintf("/ip4/%s/tcp/%s", o.Config.P2P.IP, o.Config.P2P.Port)),
 		libp2p.Identity(*pk),
 		libp2p.EnableHolePunching(),
 	); err != nil {
@@ -124,7 +124,7 @@ func (s *Server) Start(ctx context.Context) error {
 	topics := map[string]*pubsub.Topic{}
 	subscriptions := map[string]*pubsub.Subscription{}
 
-	s.host.SetStreamHandler(protocol.ID(s.config.P2PAlertSystemProtocolID), func(stream network.Stream) {
+	s.host.SetStreamHandler(protocol.ID(s.config.P2P.AlertSystemProtocolID), func(stream network.Stream) {
 		t := StreamThread{
 			stream: stream,
 			config: s.config,
@@ -270,8 +270,8 @@ func (s *Server) discoverPeers(ctx context.Context, tn []string, routingDiscover
 
 				// Open a stream to the peer
 				var stream network.Stream
-				if stream, err = s.host.NewStream(ctx, foundPeer.ID, protocol.ID(s.config.P2PAlertSystemProtocolID)); err != nil {
-					s.config.Services.Log.Debugf("failed new stream to %s", foundPeer.ID.String(), ", error: %s", err.Error())
+				if stream, err = s.host.NewStream(ctx, foundPeer.ID, protocol.ID(s.config.P2P.AlertSystemProtocolID)); err != nil {
+					s.config.Services.Log.Debugf("failed new stream to %s error: %s", foundPeer.ID.String(), err.Error())
 					continue
 				}
 
@@ -285,7 +285,7 @@ func (s *Server) discoverPeers(ctx context.Context, tn []string, routingDiscover
 
 				// Sync the stream thread
 				if err = t.Sync(ctx); err != nil {
-					s.config.Services.Log.Debugf("failed to start stream thread to %s", foundPeer.ID.String(), ", error: %s", err.Error())
+					s.config.Services.Log.Debugf("failed to start stream thread to %s error: %s", foundPeer.ID.String(), err.Error())
 					continue
 				}
 

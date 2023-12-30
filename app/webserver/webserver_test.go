@@ -2,10 +2,10 @@ package webserver
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	"github.com/bitcoin-sv/alert-system/app/config"
-	"github.com/bitcoin-sv/alert-system/app/tester"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -60,13 +60,13 @@ func TestServer_Shutdown(t *testing.T) {
 		// Set the ctx
 		ctx := context.Background()
 
-		tester.SetupEnv(t)
-		defer func() {
-			tester.TeardownEnv(t)
-		}()
+		// Set the env to test
+		err := os.Setenv(config.EnvironmentKey, config.EnvironmentTest)
+		require.NoError(t, err)
 
 		// Execute
-		appConfig, err := config.LoadConfig(ctx, nil, true)
+		var appConfig *config.Config
+		appConfig, err = config.LoadDependencies(ctx, nil, true)
 		require.NoError(t, err)
 
 		// Load the config from env/json

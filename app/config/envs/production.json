@@ -1,0 +1,68 @@
+{
+  "alert_webhook_url": "",
+  "request_logging": true,
+  "web_server": {
+    "idle_timeout": "60s",
+    "port": "3000",
+    "read_timeout": "15s",
+    "write_timeout": "15s"
+  },
+  "environment": "production",
+  "datastore": {
+    "auto_migrate": true,
+    "debug": true,
+    "engine": "sqlite",
+    "password": "",
+    "table_prefix": "alert_system",
+    "sqlite": {
+      "database_path": "alert_system_datastore.db",
+      "shared": false
+    },
+    "sql_read": {
+      "driver": "postgresql",
+      "host": "localhost",
+      "max_connection_idle_time": "20s",
+      "max_connection_time": "20s",
+      "max_idle_connections": 2,
+      "max_open_connections": 5,
+      "name": "alert_system_db",
+      "password": "",
+      "port": "5432",
+      "replica": true,
+      "skip_initialize_with_version": true,
+      "time_zone": "UTC",
+      "tx_timeout": "20s",
+      "user": "your_user"
+    },
+    "sql_write": {
+      "driver": "postgresql",
+      "host": "localhost",
+      "max_connection_idle_time": "20s",
+      "max_connection_time": "20s",
+      "max_idle_connections": 2,
+      "max_open_connections": 5,
+      "name": "alert_system_db",
+      "password": "",
+      "port": "5432",
+      "replica": false,
+      "skip_initialize_with_version": true,
+      "time_zone": "UTC",
+      "tx_timeout": "20s",
+      "user": "your_user"
+    }
+  },
+  "p2p": {
+    "ip": "0.0.0.0",
+    "port": "9906",
+    "alert_system_protocol_id": "/bitcoin/alert-system/1.0.1",
+    "bootstrap_peer": "",
+    "private_key_path": ""
+  },
+  "rpc_connections": [
+    {
+      "user": "your_user",
+      "password": "",
+      "host": "http://localhost:8333"
+    }
+  ]
+}
