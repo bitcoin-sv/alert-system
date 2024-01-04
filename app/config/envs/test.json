@@ -54,7 +54,7 @@
   "p2p": {
     "ip": "192.168.1.1",
     "port": "8000",
-    "alert_system_protocol_id": "/bitcoin/alert-system/1.0.1",
+    "alert_system_protocol_id": "/bitcoin/alert-system/0.0.1",
     "bootstrap_peer": "",
     "private_key_path": "/path/to/private/key"
   },

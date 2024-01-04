@@ -40,6 +40,13 @@ Configuration files can be found in the [config](app/config/envs) directory.
 
 <br/>
 
+## Container Environment
+**Note:** to use a custom settings file, it needs to be mounted and the appropriate environment variables set. Running it as below will run an ephemeral database but the container should sync up from the peers on the network on startup.
+### podman
+```
+$ podman run -u root -e P2P_PORT=9908 -e P2P_IP=0.0.0.0  --expose 9908 docker.io/galtbv/alert-system:0.0.2
+```
+
 ## Documentation
 View the generated [documentation](https://pkg.go.dev/github.com/bitcoin-sv/alert-system)
 

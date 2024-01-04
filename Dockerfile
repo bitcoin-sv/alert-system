@@ -15,6 +15,6 @@ WORKDIR /
 RUN mkdir /.bitcoin
 RUN touch /.bitcoin/alert_system_private_key
 COPY --from=builder /opt/app-root/src/alert-system .
-COPY example_settings_local.conf settings_local.conf
 USER 65534:65534
+ENV ALERT_SYSTEM_ENVIRONMENT=local
 CMD ["/alert-system"]

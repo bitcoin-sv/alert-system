@@ -35,7 +35,7 @@ var (
 var (
 	ApplicationName              = "alert_system"                // Application name used in places where we need an application name space
 	DatabasePrefix               = "alert_system"                // Default database prefix
-	DefaultAlertSystemProtocolID = "/bitcoin/alert-system/1.0.1" // Default alert system protocol for libp2p syncing
+	DefaultAlertSystemProtocolID = "/bitcoin/alert-system/0.0.1" // Default alert system protocol for libp2p syncing
 	DefaultServerShutdown        = 5 * time.Second               // Default server shutdown delay time (to finish any requests or internal processes)
 	LocalPrivateKeyDefault       = "alert_system_private_key"    // Default local private key
 	LocalPrivateKeyDirectory     = ".bitcoin"                    // Default local private key directory
@@ -61,7 +61,7 @@ type (
 		Debug       bool                    `json:"debug" mapstructure:"debug"`               // True for sql statements
 		Engine      datastore.Engine        `json:"engine" mapstructure:"engine"`             // MySQL, Postgres, SQLite
 		Password    string                  `json:"password" mapstructure:"password"`         // Used for MySQL or Postgresql
-		SQLite      *datastore.SQLiteConfig `json:"sqlite" mapstructure:"sq_lite"`            // Configuration for SQLite
+		SQLite      *datastore.SQLiteConfig `json:"sqlite" mapstructure:"sqlite"`             // Configuration for SQLite
 		SQLRead     *datastore.SQLConfig    `json:"sql_read" mapstructure:"sql_read"`         // Configuration for MySQL or Postgres
 		SQLWrite    *datastore.SQLConfig    `json:"sql_write" mapstructure:"sql_write"`       // Configuration for MySQL or Postgres
 		TablePrefix string                  `json:"table_prefix" mapstructure:"table_prefix"` // pre_table_name (pre)

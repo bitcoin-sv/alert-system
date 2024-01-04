@@ -103,7 +103,7 @@ func (s *StreamThread) ProcessSyncMessage(ctx context.Context) error {
 				_ = s.stream.Close()
 				return nil
 			}
-			s.config.Services.Log.Infof("wrote msg requesting next sequence from peer %s", s.peer.String())
+			s.config.Services.Log.Infof("wrote msg requesting next sequence %d from peer %s", msg.SequenceNumber+1, s.peer.String())
 		case IWantSequenceNumber:
 			s.config.Services.Log.Infof("received IWantSequenceNumber %d from peer %s", msg.SequenceNumber, s.peer.String())
 			if err = s.ProcessWantSequenceNumber(ctx, msg); err != nil {
