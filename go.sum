@@ -383,8 +383,8 @@ github.com/opentracing/opentracing-go v1.2.0/go.mod h1:GxEUsuufX4nBwe+T+Wl9TAgYr
 github.com/openzipkin/zipkin-go v0.1.1/go.mod h1:NtoC/o8u3JlF1lSlyPNswIbeQH9bJTmOf0Erfk+hxe8=
 github.com/ordishs/go-bt/v2 v2.2.5 h1:PMty/zNK5pdgKDTfnnV9djH4eTwIqNZt+iSoGKCc/lY=
 github.com/ordishs/go-bt/v2 v2.2.5/go.mod h1:GzP/0J7RbEgMZ20pt6zuBgZuuaZwUKBl5wKJmPRst/I=
-github.com/ordishs/gocore v1.0.54 h1:C80Odqwv2PluRH8sjsa7fyag1LtX5l8otVlQv4WElDg=
-github.com/ordishs/gocore v1.0.54/go.mod h1:Nm48yxIUBuKvVXwLC8bB8aQDNUsBpaoVRTtcmjKlhrQ=
+github.com/ordishs/gocore v1.0.55 h1:ZqrgQQOVX82VXrmCdOEcHOWCewPtZFiDAEI2QWvtgd8=
+github.com/ordishs/gocore v1.0.55/go.mod h1:Nm48yxIUBuKvVXwLC8bB8aQDNUsBpaoVRTtcmjKlhrQ=
 github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 h1:onHthvaw9LFnH4t2DcNVpwGmV9E1BkGknEliJkfwQj0=
 github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58/go.mod h1:DXv8WO4yhMYhSNPKjeNKa5WY9YCIEBRbNzFFPJbWO6Y=
 github.com/pelletier/go-toml/v2 v2.1.1 h1:LWAJwfNvjQZCFIDKWYQaM62NcYeYViCmWIwmOStowAI=
