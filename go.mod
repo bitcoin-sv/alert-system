@@ -195,7 +195,7 @@ require (
 replace github.com/libsv/go-bt/v2 => github.com/ordishs/go-bt/v2 v2.2.5
 
 // Use this specific version of go-bn (galt-tr vs libsv)
-replace github.com/libsv/go-bn => github.com/galt-tr/go-bn v0.0.2
+replace github.com/libsv/go-bn => github.com/galt-tr/go-bn v0.0.3
 
 // Stuck on this version because of the Tokenized package
 replace github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.20.1-beta

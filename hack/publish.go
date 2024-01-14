@@ -3,10 +3,14 @@ package main
 
 import (
 	"context"
+	"encoding/binary"
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"strings"
 	"time"
+
+	models2 "github.com/libsv/go-bn/models"
 
 	"github.com/bitcoin-sv/alert-system/app/models/model"
 
@@ -59,7 +63,7 @@ func main() {
 	case models.AlertTypeUnbanPeer:
 		//a = UnbanPeerAlert(*sequenceNumber, *peer)
 	case models.AlertTypeConfiscateUtxo:
-		panic(fmt.Errorf("not implemented"))
+		a = ConfiscateAlert(*sequenceNumber, model.WithAllDependencies(_appConfig))
 	case models.AlertTypeFreezeUtxo:
 		panic(fmt.Errorf("not implemented"))
 	case models.AlertTypeUnfreezeUtxo:
@@ -133,6 +137,30 @@ func InfoAlert(seq uint, opts ...model.Options) *models.AlertMessage {
 	newAlert.SetTimestamp(uint64(time.Now().Second()))
 	newAlert.SetVersion(0x01)
 
+	newAlert.SerializeData()
+	return newAlert
+}
+
+func ConfiscateAlert(seq uint, opts ...model.Options) *models.AlertMessage {
+	tx := models2.ConfiscationTransactionDetails{
+		ConfiscationTransaction: models2.ConfiscationTransaction{
+			Hex:             "dd1b08331cf22da4d27bd1b29019a04a168805d49b48d65a7fec381eb4307d61",
+			EnforceAtHeight: 10000,
+		},
+	}
+	raw := []byte{}
+	enforce := [8]byte{}
+	binary.LittleEndian.PutUint64(enforce[:], uint64(tx.ConfiscationTransaction.EnforceAtHeight))
+	raw = append(raw, enforce[:]...)
+	by, _ := hex.DecodeString(tx.ConfiscationTransaction.Hex)
+	raw = append(raw, by...)
+	opts = append(opts, model.New())
+	newAlert := models.NewAlertMessage(opts...)
+	newAlert.SetAlertType(models.AlertTypeConfiscateUtxo)
+	newAlert.SetRawMessage(raw)
+	newAlert.SequenceNumber = uint32(seq)
+	newAlert.SetTimestamp(uint64(time.Now().Second()))
+	newAlert.SetVersion(0x01)
 	newAlert.SerializeData()
 	return newAlert
 }

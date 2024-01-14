@@ -201,7 +201,7 @@ func (m *AlertMessage) ProcessAlertMessage() AlertMessageInterface {
 			AlertMessage: *m,
 		}
 	case AlertTypeConfiscateUtxo:
-		return &AlertMessageConfiscateUtxo{
+		return &AlertMessageConfiscateTransaction{
 			AlertMessage: *m,
 		}
 	case AlertTypeBanPeer:
