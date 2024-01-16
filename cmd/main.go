@@ -36,7 +36,7 @@ func main() {
 	// Create the p2p server
 	var p2pServer *p2p.Server
 	if p2pServer, err = p2p.NewServer(p2p.ServerOptions{
-		TopicNames: []string{config.DatabasePrefix},
+		TopicNames: []string{_appConfig.P2P.TopicName},
 		Config:     _appConfig,
 	}); err != nil {
 		_appConfig.Services.Log.Fatalf("error creating p2p server: %s", err.Error())

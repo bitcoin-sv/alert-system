@@ -90,6 +90,11 @@ func requireP2P(_appConfig *Config) error {
 		_appConfig.P2P.AlertSystemProtocolID = DefaultAlertSystemProtocolID
 	}
 
+	// Set the p2p alert system topic name if it's missing
+	if len(_appConfig.P2P.TopicName) == 0 {
+		_appConfig.P2P.TopicName = DefaultTopicName
+	}
+
 	// Load the private key path
 	// If not found, create a default one
 	if len(_appConfig.P2P.PrivateKeyPath) == 0 {

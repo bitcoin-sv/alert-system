@@ -36,6 +36,7 @@ var (
 	ApplicationName              = "alert_system"                // Application name used in places where we need an application name space
 	DatabasePrefix               = "alert_system"                // Default database prefix
 	DefaultAlertSystemProtocolID = "/bitcoin/alert-system/0.0.1" // Default alert system protocol for libp2p syncing
+	DefaultTopicName             = "alert_system"                // Default alert system topic name for libp2p subscription
 	DefaultServerShutdown        = 5 * time.Second               // Default server shutdown delay time (to finish any requests or internal processes)
 	LocalPrivateKeyDefault       = "alert_system_private_key"    // Default local private key
 	LocalPrivateKeyDirectory     = ".bitcoin"                    // Default local private key directory
@@ -86,6 +87,7 @@ type (
 		IP                    string `json:"ip" mapstructure:"ip"`                                             // IP is the IP address for the P2P server
 		Port                  string `json:"port" mapstructure:"port"`                                         // Port is the port for the P2P server
 		PrivateKeyPath        string `json:"private_key_path" mapstructure:"private_key_path"`                 // PrivateKeyPath is the path to the private key
+		TopicName             string `json:"topic_name" mapstructure:"topic_name"`                             // TopicName is the name of the topic to subscribe to
 	}
 
 	// RPCConfig is the configuration for the RPC client
