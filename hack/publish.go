@@ -3,10 +3,14 @@ package main
 
 import (
 	"context"
+	"encoding/binary"
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"strings"
 	"time"
+
+	models2 "github.com/libsv/go-bn/models"
 
 	"github.com/bitcoin-sv/alert-system/app/models/model"
 
@@ -35,7 +39,7 @@ func main() {
 	// Load the configuration and services
 	_appConfig, err := config.LoadDependencies(context.Background(), models.BaseModels, false)
 	if err != nil {
-		_appConfig.Services.Log.Fatalf("error loading configuration: %s", err.Error())
+		log.Fatalf("error loading configuration: %s", err.Error())
 	}
 	defer func() {
 		_appConfig.CloseAll(context.Background())
@@ -59,9 +63,9 @@ func main() {
 	case models.AlertTypeUnbanPeer:
 		//a = UnbanPeerAlert(*sequenceNumber, *peer)
 	case models.AlertTypeConfiscateUtxo:
-		panic(fmt.Errorf("not implemented"))
+		a = confiscateAlert(*sequenceNumber, model.WithAllDependencies(_appConfig))
 	case models.AlertTypeFreezeUtxo:
-		panic(fmt.Errorf("not implemented"))
+		a = freezeAlert(*sequenceNumber, model.WithAllDependencies(_appConfig))
 	case models.AlertTypeUnfreezeUtxo:
 		panic(fmt.Errorf("not implemented"))
 	case models.AlertTypeSetKeys:
@@ -133,6 +137,50 @@ func InfoAlert(seq uint, opts ...model.Options) *models.AlertMessage {
 	newAlert.SetTimestamp(uint64(time.Now().Second()))
 	newAlert.SetVersion(0x01)
 
+	newAlert.SerializeData()
+	return newAlert
+}
+
+func freezeAlert(seq uint, opts ...model.Options) *models.AlertMessage {
+	tx, _ := hex.DecodeString("d83dee7aec89a9437345d9676bc727a2592e5b3988f4343931181f86b666eace")
+	fund := models.Fund{
+		TransactionOutID:           [32]byte(tx),
+		Vout:                       uint64(0),
+		EnforceAtHeightStart:       uint64(10000),
+		EnforceAtHeightEnd:         uint64(10100),
+		PolicyExpiresWithConsensus: false,
+	}
+	opts = append(opts, model.New())
+	newAlert := models.NewAlertMessage(opts...)
+	newAlert.SetAlertType(models.AlertTypeFreezeUtxo)
+	newAlert.SetRawMessage(fund.Serialize())
+	newAlert.SequenceNumber = uint32(seq)
+	newAlert.SetTimestamp(uint64(time.Now().Second()))
+	newAlert.SetVersion(0x01)
+	newAlert.SerializeData()
+	return newAlert
+}
+
+func confiscateAlert(seq uint, opts ...model.Options) *models.AlertMessage {
+	tx := models2.ConfiscationTransactionDetails{
+		ConfiscationTransaction: models2.ConfiscationTransaction{
+			Hex:             "dd1b08331cf22da4d27bd1b29019a04a168805d49b48d65a7fec381eb4307d61",
+			EnforceAtHeight: 10000,
+		},
+	}
+	raw := []byte{}
+	enforce := [8]byte{}
+	binary.LittleEndian.PutUint64(enforce[:], uint64(tx.ConfiscationTransaction.EnforceAtHeight))
+	raw = append(raw, enforce[:]...)
+	by, _ := hex.DecodeString(tx.ConfiscationTransaction.Hex)
+	raw = append(raw, by...)
+	opts = append(opts, model.New())
+	newAlert := models.NewAlertMessage(opts...)
+	newAlert.SetAlertType(models.AlertTypeConfiscateUtxo)
+	newAlert.SetRawMessage(raw)
+	newAlert.SequenceNumber = uint32(seq)
+	newAlert.SetTimestamp(uint64(time.Now().Second()))
+	newAlert.SetVersion(0x01)
 	newAlert.SerializeData()
 	return newAlert
 }

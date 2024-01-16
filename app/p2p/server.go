@@ -379,13 +379,13 @@ func (s *Server) Subscribe(ctx context.Context, subscriber *pubsub.Subscription,
 
 		// Perform alert action
 		if err = am.Do(ctx); err != nil {
-			s.config.Services.Log.Infof("failed to do alert action: %s", err.Error())
+			s.config.Services.Log.Errorf("failed to do alert action: %s", err.Error())
 			continue
 		}
 
 		// Save the alert message
 		if err = ak.Save(ctx); err != nil {
-			s.config.Services.Log.Infof("failed to save alert message: %s", err.Error())
+			s.config.Services.Log.Errorf("failed to save alert message: %s", err.Error())
 		}
 
 		s.config.Services.Log.Infof("[%s] got alert type: %d, from: %s", subscriber.Topic(), ak.GetAlertType(), msg.ReceivedFrom.String())

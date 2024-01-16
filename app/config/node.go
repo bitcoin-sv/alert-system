@@ -3,6 +3,8 @@ package config
 import (
 	"context"
 
+	"github.com/libsv/go-bn/models"
+
 	"github.com/bitcoin-sv/alert-system/app/config/mocks"
 	"github.com/libsv/go-bn"
 )
@@ -15,6 +17,8 @@ type NodeInterface interface {
 	GetRPCUser() string
 	InvalidateBlock(ctx context.Context, hash string) error
 	UnbanPeer(ctx context.Context, peer string) error
+	AddToConsensusBlacklist(ctx context.Context, funds []models.Fund) (*models.AddToConsensusBlacklistResponse, error)
+	AddToConfiscationTransactionWhitelist(ctx context.Context, tx []models.ConfiscationTransactionDetails) (*models.AddToConfiscationTransactionWhitelistResponse, error)
 }
 
 // NewNodeConfig creates a new NodeConfig struct
@@ -66,4 +70,16 @@ func (n *Node) BanPeer(ctx context.Context, peer string) error {
 func (n *Node) UnbanPeer(ctx context.Context, peer string) error {
 	c := bn.NewNodeClient(bn.WithCreds(n.RPCUser, n.RPCPassword), bn.WithHost(n.RPCHost))
 	return c.SetBan(ctx, peer, bn.BanActionRemove, nil)
+}
+
+// AddToConsensusBlacklist adds frozen utxos to blacklist
+func (n *Node) AddToConsensusBlacklist(ctx context.Context, funds []models.Fund) (*models.AddToConsensusBlacklistResponse, error) {
+	c := bn.NewNodeClient(bn.WithCreds(n.RPCUser, n.RPCPassword), bn.WithHost(n.RPCHost))
+	return c.AddToConsensusBlacklist(ctx, funds)
+}
+
+// AddToConfiscationTransactionWhitelist adds confiscation transactions to the whitelist
+func (n *Node) AddToConfiscationTransactionWhitelist(ctx context.Context, tx []models.ConfiscationTransactionDetails) (*models.AddToConfiscationTransactionWhitelistResponse, error) {
+	c := bn.NewNodeClient(bn.WithCreds(n.RPCUser, n.RPCPassword), bn.WithHost(n.RPCHost))
+	return c.AddToConfiscationTransactionWhitelist(ctx, tx)
 }
