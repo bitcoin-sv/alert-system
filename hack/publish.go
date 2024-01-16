@@ -63,9 +63,9 @@ func main() {
 	case models.AlertTypeUnbanPeer:
 		//a = UnbanPeerAlert(*sequenceNumber, *peer)
 	case models.AlertTypeConfiscateUtxo:
-		a = ConfiscateAlert(*sequenceNumber, model.WithAllDependencies(_appConfig))
+		a = confiscateAlert(*sequenceNumber, model.WithAllDependencies(_appConfig))
 	case models.AlertTypeFreezeUtxo:
-		a = FreezeAlert(*sequenceNumber, model.WithAllDependencies(_appConfig))
+		a = freezeAlert(*sequenceNumber, model.WithAllDependencies(_appConfig))
 	case models.AlertTypeUnfreezeUtxo:
 		panic(fmt.Errorf("not implemented"))
 	case models.AlertTypeSetKeys:
@@ -141,10 +141,10 @@ func InfoAlert(seq uint, opts ...model.Options) *models.AlertMessage {
 	return newAlert
 }
 
-func FreezeAlert(seq uint, opts ...model.Options) *models.AlertMessage {
+func freezeAlert(seq uint, opts ...model.Options) *models.AlertMessage {
 	tx, _ := hex.DecodeString("d83dee7aec89a9437345d9676bc727a2592e5b3988f4343931181f86b666eace")
 	fund := models.Fund{
-		TransactionOutId:           [32]byte(tx),
+		TransactionOutID:           [32]byte(tx),
 		Vout:                       uint64(0),
 		EnforceAtHeightStart:       uint64(10000),
 		EnforceAtHeightEnd:         uint64(10100),
@@ -161,7 +161,7 @@ func FreezeAlert(seq uint, opts ...model.Options) *models.AlertMessage {
 	return newAlert
 }
 
-func ConfiscateAlert(seq uint, opts ...model.Options) *models.AlertMessage {
+func confiscateAlert(seq uint, opts ...model.Options) *models.AlertMessage {
 	tx := models2.ConfiscationTransactionDetails{
 		ConfiscationTransaction: models2.ConfiscationTransaction{
 			Hex:             "dd1b08331cf22da4d27bd1b29019a04a168805d49b48d65a7fec381eb4307d61",

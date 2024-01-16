@@ -15,9 +15,10 @@ type AlertMessageConfiscateTransaction struct {
 	Transactions []models.ConfiscationTransactionDetails
 }
 
+// ConfiscateTransaction defines the parameters for the confiscation transaction
 type ConfiscateTransaction struct {
 	EnforceAtHeight [8]byte
-	Id              [32]byte
+	ID              [32]byte
 }
 
 // Read reads the alert
@@ -34,12 +35,12 @@ func (a *AlertMessageConfiscateTransaction) Read(raw []byte) error {
 	for i := 0; i < txCount; i++ {
 		tx := ConfiscateTransaction{
 			EnforceAtHeight: [8]byte(raw[:8]),
-			Id:              [32]byte(raw[8:40]),
+			ID:              [32]byte(raw[8:40]),
 		}
 		detail := models.ConfiscationTransactionDetails{
 			ConfiscationTransaction: models.ConfiscationTransaction{
 				EnforceAtHeight: int64(binary.LittleEndian.Uint64(tx.EnforceAtHeight[:])),
-				Hex:             hex.EncodeToString(tx.Id[:]),
+				Hex:             hex.EncodeToString(tx.ID[:]),
 			},
 		}
 		details = append(details, detail)

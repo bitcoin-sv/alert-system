@@ -15,17 +15,19 @@ type AlertMessageFreezeUtxo struct {
 	Funds []models.Fund
 }
 
+// Fund is the struct defining funds to freeze
 type Fund struct {
-	TransactionOutId           [32]byte
+	TransactionOutID           [32]byte
 	Vout                       uint64
 	EnforceAtHeightStart       uint64
 	EnforceAtHeightEnd         uint64
 	PolicyExpiresWithConsensus bool
 }
 
+// Serialize creates the raw hex string of the fund
 func (f *Fund) Serialize() []byte {
 	raw := []byte{}
-	raw = append(raw, f.TransactionOutId[:]...)
+	raw = append(raw, f.TransactionOutID[:]...)
 	raw = binary.LittleEndian.AppendUint64(raw, f.Vout)
 	raw = binary.LittleEndian.AppendUint64(raw, f.EnforceAtHeightStart)
 	raw = binary.LittleEndian.AppendUint64(raw, f.EnforceAtHeightEnd)
@@ -49,7 +51,7 @@ func (a *AlertMessageFreezeUtxo) Read(raw []byte) error {
 	funds := []models.Fund{}
 	for i := 0; i < fundCount; i++ {
 		fund := Fund{
-			TransactionOutId:     [32]byte(raw[0:32]),
+			TransactionOutID:     [32]byte(raw[0:32]),
 			Vout:                 binary.LittleEndian.Uint64(raw[32:40]),
 			EnforceAtHeightStart: binary.LittleEndian.Uint64(raw[40:48]),
 			EnforceAtHeightEnd:   binary.LittleEndian.Uint64(raw[48:56]),
@@ -61,7 +63,7 @@ func (a *AlertMessageFreezeUtxo) Read(raw []byte) error {
 		}
 		funds = append(funds, models.Fund{
 			TxOut: models.TxOut{
-				TxId: hex.EncodeToString(fund.TransactionOutId[:]),
+				TxId: hex.EncodeToString(fund.TransactionOutID[:]),
 				Vout: int(fund.Vout),
 			},
 			EnforceAtHeight: []models.Enforce{
