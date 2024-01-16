@@ -39,7 +39,7 @@ func main() {
 	// Load the configuration and services
 	_appConfig, err := config.LoadDependencies(context.Background(), models.BaseModels, false)
 	if err != nil {
-		_appConfig.Services.Log.Fatalf("error loading configuration: %s", err.Error())
+		log.Fatalf("error loading configuration: %s", err.Error())
 	}
 	defer func() {
 		_appConfig.CloseAll(context.Background())
@@ -65,7 +65,7 @@ func main() {
 	case models.AlertTypeConfiscateUtxo:
 		a = ConfiscateAlert(*sequenceNumber, model.WithAllDependencies(_appConfig))
 	case models.AlertTypeFreezeUtxo:
-		panic(fmt.Errorf("not implemented"))
+		a = FreezeAlert(*sequenceNumber, model.WithAllDependencies(_appConfig))
 	case models.AlertTypeUnfreezeUtxo:
 		panic(fmt.Errorf("not implemented"))
 	case models.AlertTypeSetKeys:
@@ -137,6 +137,26 @@ func InfoAlert(seq uint, opts ...model.Options) *models.AlertMessage {
 	newAlert.SetTimestamp(uint64(time.Now().Second()))
 	newAlert.SetVersion(0x01)
 
+	newAlert.SerializeData()
+	return newAlert
+}
+
+func FreezeAlert(seq uint, opts ...model.Options) *models.AlertMessage {
+	tx, _ := hex.DecodeString("d83dee7aec89a9437345d9676bc727a2592e5b3988f4343931181f86b666eace")
+	fund := models.Fund{
+		TransactionOutId:           [32]byte(tx),
+		Vout:                       uint64(0),
+		EnforceAtHeightStart:       uint64(10000),
+		EnforceAtHeightEnd:         uint64(10100),
+		PolicyExpiresWithConsensus: false,
+	}
+	opts = append(opts, model.New())
+	newAlert := models.NewAlertMessage(opts...)
+	newAlert.SetAlertType(models.AlertTypeFreezeUtxo)
+	newAlert.SetRawMessage(fund.Serialize())
+	newAlert.SequenceNumber = uint32(seq)
+	newAlert.SetTimestamp(uint64(time.Now().Second()))
+	newAlert.SetVersion(0x01)
 	newAlert.SerializeData()
 	return newAlert
 }

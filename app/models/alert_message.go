@@ -27,6 +27,7 @@ type AlertMessage struct {
 	Hash           string `json:"hash" toml:"hash" yaml:"hash" bson:"hash" gorm:"<-;type:char(64);index;comment:This is the hash"`
 	SequenceNumber uint32 `json:"sequence_number" toml:"sequence_number" yaml:"sequence_number" bson:"sequence_number" gorm:"<-;type:int8;index;comment:This is the alert sequence number"`
 	Raw            string `json:"raw" toml:"raw" yaml:"raw" bson:"raw" gorm:"<-;type:text;comment:This is the raw alert message"`
+	Processed      bool   `json:"processed" toml:"processed" yaml:"processed" bson:"processed"`
 
 	// Private fields (never to be exported)
 	alertType  AlertType

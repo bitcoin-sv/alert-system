@@ -45,6 +45,7 @@ func (a *AlertMessageConfiscateTransaction) Read(raw []byte) error {
 		details = append(details, detail)
 		raw = raw[40:]
 	}
+	a.Transactions = details
 	return nil
 }
 

@@ -17,43 +17,57 @@ type AlertMessageFreezeUtxo struct {
 
 type Fund struct {
 	TransactionOutId           [32]byte
-	Vout                       [8]byte
-	EnforceAtHeightStart       [8]byte
-	EnforceAtHeightEnd         [8]byte
+	Vout                       uint64
+	EnforceAtHeightStart       uint64
+	EnforceAtHeightEnd         uint64
 	PolicyExpiresWithConsensus bool
+}
+
+func (f *Fund) Serialize() []byte {
+	raw := []byte{}
+	raw = append(raw, f.TransactionOutId[:]...)
+	raw = binary.LittleEndian.AppendUint64(raw, f.Vout)
+	raw = binary.LittleEndian.AppendUint64(raw, f.EnforceAtHeightStart)
+	raw = binary.LittleEndian.AppendUint64(raw, f.EnforceAtHeightEnd)
+	expire := uint8(0)
+	if f.PolicyExpiresWithConsensus {
+		expire = uint8(1)
+	}
+	raw = append(raw, expire)
+	return raw
 }
 
 // Read reads the message
 func (a *AlertMessageFreezeUtxo) Read(raw []byte) error {
 	if len(raw) < 57 {
-		return fmt.Errorf("freeze alert is less than 58 bytes")
+		return fmt.Errorf("freeze alert is less than 57 bytes, got %d bytes", len(raw))
 	}
 	if len(raw)%57 != 0 {
-		return fmt.Errorf("freeze alert is not a multiple of 58 bytes")
+		return fmt.Errorf("freeze alert is not a multiple of 57 bytes, got %d bytes", len(raw))
 	}
 	fundCount := len(raw) / 57
 	funds := []models.Fund{}
 	for i := 0; i < fundCount; i++ {
 		fund := Fund{
 			TransactionOutId:     [32]byte(raw[0:32]),
-			Vout:                 [8]byte(raw[32:40]),
-			EnforceAtHeightStart: [8]byte(raw[40:48]),
-			EnforceAtHeightEnd:   [8]byte(raw[48:56]),
+			Vout:                 binary.LittleEndian.Uint64(raw[32:40]),
+			EnforceAtHeightStart: binary.LittleEndian.Uint64(raw[40:48]),
+			EnforceAtHeightEnd:   binary.LittleEndian.Uint64(raw[48:56]),
 		}
-		enforceByte := binary.LittleEndian.Uint16(raw[56:57])
+		enforceByte := raw[56]
 
-		if enforceByte != uint16(0) {
+		if enforceByte != uint8(0) {
 			fund.PolicyExpiresWithConsensus = true
 		}
 		funds = append(funds, models.Fund{
 			TxOut: models.TxOut{
 				TxId: hex.EncodeToString(fund.TransactionOutId[:]),
-				Vout: int(binary.LittleEndian.Uint64(fund.Vout[:])),
+				Vout: int(fund.Vout),
 			},
 			EnforceAtHeight: []models.Enforce{
 				{
-					Start: int(binary.LittleEndian.Uint64(fund.EnforceAtHeightStart[:])),
-					Stop:  int(binary.LittleEndian.Uint64(fund.EnforceAtHeightEnd[:])),
+					Start: int(fund.EnforceAtHeightStart),
+					Stop:  int(fund.EnforceAtHeightEnd),
 				},
 			},
 			PolicyExpiresWithConsensus: fund.PolicyExpiresWithConsensus,
