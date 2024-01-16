@@ -308,7 +308,7 @@ func (s *Server) discoverPeers(ctx context.Context, tn []string, routingDiscover
 
 // Subscribe will subscribe to the alert system
 func (s *Server) Subscribe(ctx context.Context, subscriber *pubsub.Subscription, hostID peer.ID) {
-	s.config.Services.Log.Infof("subscribing to alert_system topic")
+	s.config.Services.Log.Infof("subscribing to %s topic", subscriber.Topic())
 	for {
 		msg, err := subscriber.Next(ctx)
 		if err != nil {
@@ -376,11 +376,12 @@ func (s *Server) Subscribe(ctx context.Context, subscriber *pubsub.Subscription,
 			s.config.Services.Log.Errorf("failed to read message: %s", err.Error())
 			continue
 		}
+		ak.Processed = true
 
 		// Perform alert action
 		if err = am.Do(ctx); err != nil {
 			s.config.Services.Log.Errorf("failed to do alert action: %s", err.Error())
-			continue
+			ak.Processed = false
 		}
 
 		// Save the alert message
