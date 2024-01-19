@@ -16,40 +16,13 @@ spec:
       labels:
         app: alert-system
     spec:
-      #securityContext:
-      #  sysctls:
-      #  - name: net.core.rmem_max
-      #    value: "26214400"
+      securityContext:
+        runAsUser: 0
       containers:
-        - env:
-            - name: p2p_ip
-              value: "0.0.0.0"
-            - name: p2p_port
-              value: "9906"
-            - name: rpc_user
-              value: "galt"
-            - name: rpc_password
-              value: "galt"
-            - name: rpc_host
-              value: "http://localhost:8333"
-            - name: database_path
-              value: "/database/alerts.db"
-          image: docker.io/galtbv/alert-system
+        - image: docker.io/galtbv/alert-system:stn
           imagePullPolicy: Always
           name: alert-system
           ports:
             - containerPort: 9906
           resources: {}
-          volumeMounts:
-            - mountPath: /.bitcoin
-              name: bitcoin-conf
-            - mountPath: /database
-              name: database
       restartPolicy: Always
-      volumes:
-        - name: bitcoin-conf
-          persistentVolumeClaim:
-            claimName: bitcoin-conf
-        - name: database
-          persistentVolumeClaim:
-            claimName: database
