@@ -29,6 +29,11 @@ type StreamThread struct {
 	stream           network.Stream
 }
 
+// LatestSequence will return the threads latest sequence
+func (s *StreamThread) LatestSequence() uint32 {
+	return s.latestSequence
+}
+
 // Sync will start the thread
 func (s *StreamThread) Sync(ctx context.Context) error {
 
@@ -57,7 +62,7 @@ func (s *StreamThread) Sync(ctx context.Context) error {
 		return err
 	}
 
-	s.config.Services.Log.Infof("requested latest sequence in stream %s", s.stream.ID())
+	s.config.Services.Log.Debugf("requested latest sequence in stream %s", s.stream.ID())
 
 	return s.ProcessSyncMessage(ctx)
 }
@@ -85,7 +90,7 @@ func (s *StreamThread) ProcessSyncMessage(ctx context.Context) error {
 		}
 		switch msg.Type {
 		case IGotLatest:
-			s.config.Services.Log.Infof("received latest sequence %d from peer %s", msg.SequenceNumber, s.peer.String())
+			s.config.Services.Log.Debugf("received latest sequence %d from peer %s", msg.SequenceNumber, s.peer.String())
 			if err = s.ProcessGotLatest(ctx, msg); err != nil {
 				return err
 			}
@@ -93,9 +98,9 @@ func (s *StreamThread) ProcessSyncMessage(ctx context.Context) error {
 				_ = s.stream.Close()
 				return nil
 			}
-			s.config.Services.Log.Infof("wrote msg requesting next sequence %d from peer %s", s.myLatestSequence+1, s.peer.String())
+			s.config.Services.Log.Debugf("wrote msg requesting next sequence %d from peer %s", s.myLatestSequence+1, s.peer.String())
 		case IGotSequenceNumber:
-			s.config.Services.Log.Infof("received IGotSequenceNumber %d from peer %s", msg.SequenceNumber, s.peer.String())
+			s.config.Services.Log.Debugf("received IGotSequenceNumber %d from peer %s", msg.SequenceNumber, s.peer.String())
 			if err = s.ProcessGotSequenceNumber(msg); err != nil {
 				return err
 			}
@@ -103,23 +108,23 @@ func (s *StreamThread) ProcessSyncMessage(ctx context.Context) error {
 				_ = s.stream.Close()
 				return nil
 			}
-			s.config.Services.Log.Infof("wrote msg requesting next sequence %d from peer %s", msg.SequenceNumber+1, s.peer.String())
+			s.config.Services.Log.Debugf("wrote msg requesting next sequence %d from peer %s", msg.SequenceNumber+1, s.peer.String())
 		case IWantSequenceNumber:
-			s.config.Services.Log.Infof("received IWantSequenceNumber %d from peer %s", msg.SequenceNumber, s.peer.String())
+			s.config.Services.Log.Debugf("received IWantSequenceNumber %d from peer %s", msg.SequenceNumber, s.peer.String())
 			if err = s.ProcessWantSequenceNumber(ctx, msg); err != nil {
 				return err
 			}
-			s.config.Services.Log.Infof("wrote sequence %d to peer %s", msg.SequenceNumber, s.peer.String())
+			s.config.Services.Log.Debugf("wrote sequence %d to peer %s", msg.SequenceNumber, s.peer.String())
 			if msg.SequenceNumber == s.myLatestSequence {
 				_ = s.stream.Close()
 				return nil
 			}
 		case IWantLatest:
-			s.config.Services.Log.Infof("received IWantLatest from peer %s", s.peer.String())
+			s.config.Services.Log.Debugf("received IWantLatest from peer %s", s.peer.String())
 			if err = s.ProcessWantLatest(ctx); err != nil {
 				return err
 			}
-			s.config.Services.Log.Infof("wrote latest sequence %d to peer %s", s.myLatestSequence, s.peer.String())
+			s.config.Services.Log.Debugf("wrote latest sequence %d to peer %s", s.myLatestSequence, s.peer.String())
 		}
 	}
 }

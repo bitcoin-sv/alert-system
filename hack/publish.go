@@ -27,7 +27,7 @@ func main() {
 	alertTypeFlag := flag.Uint("type", uint(1), "type of alert to publish")
 	sequenceNumber := flag.Uint("sequence", uint(1), "sequence number to publish")
 	//pubKeys := flag.String("pub-keys", "", "public keys to be used for set keys")
-	//blockHash := flag.String("block-hash", "", "block hash to invalidate")
+	blockHash := flag.String("block-hash", "", "block hash to invalidate")
 	//peer := flag.String("peer", "", "peer to ban/unban")
 	keys := flag.String("signing-keys", "", "signing keys")
 
@@ -55,9 +55,12 @@ func main() {
 	a := &models.AlertMessage{}
 	switch alertType {
 	case models.AlertTypeInformational:
-		a = InfoAlert(*sequenceNumber, model.WithAllDependencies(_appConfig))
+		//reader := bufio.NewReader(os.Stdin)
+		//text, _ := reader.ReadString('\n')
+		a = InfoAlert(*sequenceNumber, "Testing block invalidation on testnet of 00000000000439a2c310b4e457f7e36f51c25931ccda8d512aeb2300587bcd5d", model.WithAllDependencies(_appConfig))
 	case models.AlertTypeInvalidateBlock:
-		//a = InvalidateBlockAlert(*sequenceNumber, *blockHash)
+
+		a = InvalidateBlockAlert(*sequenceNumber, *blockHash, model.WithAllDependencies(_appConfig))
 	case models.AlertTypeBanPeer:
 		//a = BanPeerAlert(*sequenceNumber, *peer)
 	case models.AlertTypeUnbanPeer:
@@ -93,19 +96,10 @@ func main() {
 
 	a.SetSignatures(sigs)
 
-	var v bool
-	if v, err = a.AreSignaturesValid(ctx); err != nil {
-		panic(err)
-	}
-	if !v {
-		log.Errorf("signature is not valid")
-		return
-	}
-
 	// Create the p2p server
 	var p2pServer *p2p.Server
 	if p2pServer, err = p2p.NewServer(p2p.ServerOptions{
-		TopicNames: []string{config.DatabasePrefix},
+		TopicNames: []string{_appConfig.P2P.TopicName},
 		Config:     _appConfig,
 	}); err != nil {
 		_appConfig.Services.Log.Fatalf("error creating p2p server: %s", err.Error())
@@ -121,18 +115,26 @@ func main() {
 	}
 	topics := p2pServer.Topics()
 
+	var v bool
+	if v, err = a.AreSignaturesValid(ctx); err != nil {
+		panic(err)
+	}
+	if !v {
+		log.Errorf("signature is not valid")
+		return
+	}
 	log.Infof("bytes: %x", a.Serialize())
-	publish(ctx, topics[config.DatabasePrefix], a.Serialize())
-	log.Infof("successfully published alert")
+	publish(ctx, topics[_appConfig.P2P.TopicName], a.Serialize())
+	log.Infof("successfully published alert to topic %s", _appConfig.P2P.TopicName)
 }
 
 // InfoAlert creates an informational alert
-func InfoAlert(seq uint, opts ...model.Options) *models.AlertMessage {
+func InfoAlert(seq uint, msg string, opts ...model.Options) *models.AlertMessage {
 	// Create the new alert
 	opts = append(opts, model.New())
 	newAlert := models.NewAlertMessage(opts...)
 	newAlert.SetAlertType(models.AlertTypeInformational)
-	newAlert.SetRawMessage([]byte{0x05, 0x68, 0x65, 0x6c, 0x6c, 0x6f})
+	newAlert.SetRawMessage([]byte(msg))
 	newAlert.SequenceNumber = uint32(seq)
 	newAlert.SetTimestamp(uint64(time.Now().Second()))
 	newAlert.SetVersion(0x01)
@@ -241,31 +243,30 @@ func UnbanPeerAlert(seq uint, peer string) alert.Alert {
 	a.Data = data
 	return a
 }
-
+*/
 // InvalidateBlockAlert creates an invalidate block alert
-func InvalidateBlockAlert(seq uint, blockHash string) alert.Alert {
+func InvalidateBlockAlert(seq uint, blockHash string, opts ...model.Options) *models.AlertMessage {
 	hash, err := hex.DecodeString(blockHash)
 	if err != nil {
 		panic(err)
 	}
-	msg := []byte{}
-	msg = append(msg, hash...)
-	msg = append(msg, []byte{0x01, 0x01}...) // Just append a 1 byte reason for simplicity
-	a := alert.Alert{
-		Version:        0x01,
-		SequenceNumber: uint32(seq),
-		Timestamp:      uint64(time.Now().Second()),
-		AlertType:      models.AlertTypeInvalidateBlock,
-		AlertMessage:   msg,
-	}
-	var data []byte
-	if data, err = a.SerializeData(); err != nil {
-		panic(err)
-	}
-	a.Data = data
-	return a
+	raw := []byte{}
+
+	opts = append(opts, model.New())
+	raw = append(raw, hash...)
+	raw = append(raw, 0x07, 0x74, 0x65, 0x73, 0x74, 0x69, 0x6E, 0x67)
+	newAlert := models.NewAlertMessage(opts...)
+	newAlert.SetAlertType(models.AlertTypeInvalidateBlock)
+	newAlert.SetVersion(0x01)
+	newAlert.SetTimestamp(uint64(time.Now().Unix()))
+	newAlert.SequenceNumber = uint32(seq)
+	newAlert.SetRawMessage(raw)
+	newAlert.SerializeData()
+
+	return newAlert
 }
 
+/*
 // SetKeys creates a set keys alert
 func SetKeys(seq uint, keys []string) alert.Alert {
 	a := alert.Alert{

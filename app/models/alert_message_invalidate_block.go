@@ -42,6 +42,7 @@ func (a *AlertMessageInvalidateBlock) Read(alert []byte) error {
 	a.ReasonLength = length
 	a.Reason = msg
 	a.BlockHash = blockHash
+	a.Config().Services.Log.Infof("InvalidateBlock alert; hash [%s]; reason [%s]", a.BlockHash, a.Reason)
 	return nil
 }
 
