@@ -50,6 +50,7 @@ type Server struct {
 	topicNames    []string
 	topics        map[string]*pubsub.Topic
 	dht           *dht.IpfsDHT
+	//peers         []peer.AddrInfo
 }
 
 // NewServer will create a new server
@@ -112,10 +113,10 @@ func (s *Server) Start(ctx context.Context) error {
 		dutil.Advertise(ctx, routingDiscovery, topicName)
 	}
 
-	go func() {
-		// todo handle errors
-		_ = s.discoverPeers(ctx, s.topicNames, routingDiscovery)
-	}()
+	_ = s.RunPeerDiscovery(ctx, routingDiscovery)
+	for !s.connected {
+		time.Sleep(5 * time.Second)
+	}
 
 	ps, err := pubsub.NewGossipSub(ctx, s.host, pubsub.WithDiscovery(routingDiscovery))
 	if err != nil {
@@ -142,6 +143,7 @@ func (s *Server) Start(ctx context.Context) error {
 		//_ = stream.Close()
 	})
 
+	s.config.Services.Log.Debugf("stream handler set")
 	for _, topicName := range s.topicNames {
 		var topic *pubsub.Topic
 		if topic, err = ps.Join(topicName); err != nil {
@@ -160,9 +162,7 @@ func (s *Server) Start(ctx context.Context) error {
 	}
 	s.topics = topics
 	s.subscriptions = subscriptions
-
-	s.config.Services.Log.Info("p2p service start ending")
-
+	s.config.Services.Log.Infof("P2P successfully started")
 	go func() {
 		for { //nolint:gosimple // This is the only way to perform this loop at the moment
 			select {
@@ -185,6 +185,31 @@ func (s *Server) Stop(_ context.Context) error {
 	// todo there needs to be a way to stop the server
 	s.config.Services.Log.Info("stopping P2P service")
 	return nil
+}
+
+// RunPeerDiscovery starts a 5 min cron job to resync peers and update routable peers
+func (s *Server) RunPeerDiscovery(ctx context.Context, routingDiscovery *drouting.RoutingDiscovery) chan bool {
+	ticker := time.NewTicker(5 * time.Minute)
+	quit := make(chan bool, 1)
+	go func() {
+		err := s.discoverPeers(ctx, s.topicNames, routingDiscovery)
+		if err != nil {
+			s.config.Services.Log.Errorf("error discovering peers: %v", err.Error())
+		}
+		for {
+			select {
+			case <-ticker.C:
+				err := s.discoverPeers(ctx, s.topicNames, routingDiscovery)
+				if err != nil {
+					s.config.Services.Log.Errorf("error discovering peers: %v", err.Error())
+				}
+			case <-quit:
+				ticker.Stop()
+			}
+
+		}
+	}()
+	return quit
 }
 
 // generatePrivateKey generates a private key and stores it in `private_key` file
@@ -238,9 +263,11 @@ func (s *Server) Topics() map[string]*pubsub.Topic {
 
 // discoverPeers will discover peers
 func (s *Server) discoverPeers(ctx context.Context, tn []string, routingDiscovery *drouting.RoutingDiscovery) error {
+	s.config.Services.Log.Infof("Running peer discovery at %s", time.Now().String())
+
 	// Look for others who have announced and attempt to connect to them
-	anyConnected := false
-	for !anyConnected {
+	connected := 0
+	for connected < 7 {
 		for _, topicName := range tn {
 			s.config.Services.Log.Debugf("searching for peers for topic %s..\n", topicName)
 
@@ -259,6 +286,8 @@ func (s *Server) discoverPeers(ctx context.Context, tn []string, routingDiscover
 				}
 
 				// Failed to connect to peer
+				s.config.Services.Log.Debugf("attempting connection to %s", foundPeer.ID.String())
+
 				if err = s.host.Connect(ctx, foundPeer); err != nil {
 					// we fail to connect to a lot of peers. Just ignore it for now.
 					s.config.Services.Log.Debugf("failed connecting to %s, error: %s", foundPeer.ID.String(), err.Error())
@@ -289,10 +318,10 @@ func (s *Server) discoverPeers(ctx context.Context, tn []string, routingDiscover
 					continue
 				}
 
-				s.config.Services.Log.Debugf("successfully synced messages from peer %s", foundPeer.ID.String())
+				s.config.Services.Log.Infof("successfully synced up to %d from peer %s", t.LatestSequence(), foundPeer.ID.String())
 
 				// Set the flag
-				anyConnected = true
+				connected++
 			}
 			time.Sleep(1 * time.Second)
 		}
@@ -302,6 +331,7 @@ func (s *Server) discoverPeers(ctx context.Context, tn []string, routingDiscover
 	s.config.Services.Log.Debugf("peer discovery complete")
 	s.config.Services.Log.Debugf("connected to %d peers\n", len(s.host.Network().Peers()))
 	s.config.Services.Log.Debugf("peerstore has %d peers\n", len(s.host.Peerstore().Peers()))
+	s.config.Services.Log.Infof("Successfully discovered %d active peers at %s", connected, time.Now().String())
 	s.connected = true
 	return nil
 }
@@ -310,7 +340,9 @@ func (s *Server) discoverPeers(ctx context.Context, tn []string, routingDiscover
 func (s *Server) Subscribe(ctx context.Context, subscriber *pubsub.Subscription, hostID peer.ID) {
 	s.config.Services.Log.Infof("subscribing to %s topic", subscriber.Topic())
 	for {
+
 		msg, err := subscriber.Next(ctx)
+
 		if err != nil {
 			s.config.Services.Log.Infof("error subscribing via next: %s", err.Error())
 			continue
