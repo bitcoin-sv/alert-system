@@ -50,7 +50,7 @@ type Server struct {
 	topicNames    []string
 	topics        map[string]*pubsub.Topic
 	dht           *dht.IpfsDHT
-	peers         []peer.AddrInfo
+	//peers         []peer.AddrInfo
 }
 
 // NewServer will create a new server
@@ -187,6 +187,7 @@ func (s *Server) Stop(_ context.Context) error {
 	return nil
 }
 
+// RunPeerDiscovery starts a 5 min cron job to resync peers and update routable peers
 func (s *Server) RunPeerDiscovery(ctx context.Context, routingDiscovery *drouting.RoutingDiscovery) chan bool {
 	ticker := time.NewTicker(5 * time.Minute)
 	quit := make(chan bool, 1)
