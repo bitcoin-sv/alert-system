@@ -60,7 +60,7 @@ func main() {
 		a = InfoAlert(*sequenceNumber, "Testing block invalidation on testnet of 00000000000439a2c310b4e457f7e36f51c25931ccda8d512aeb2300587bcd5d", model.WithAllDependencies(_appConfig))
 	case models.AlertTypeInvalidateBlock:
 
-		a = InvalidateBlockAlert(*sequenceNumber, *blockHash, model.WithAllDependencies(_appConfig))
+		a = invalidateBlockAlert(*sequenceNumber, *blockHash, model.WithAllDependencies(_appConfig))
 	case models.AlertTypeBanPeer:
 		//a = BanPeerAlert(*sequenceNumber, *peer)
 	case models.AlertTypeUnbanPeer:
@@ -244,8 +244,8 @@ func UnbanPeerAlert(seq uint, peer string) alert.Alert {
 	return a
 }
 */
-// InvalidateBlockAlert creates an invalidate block alert
-func InvalidateBlockAlert(seq uint, blockHash string, opts ...model.Options) *models.AlertMessage {
+// invalidateBlockAlert creates an invalidate block alert
+func invalidateBlockAlert(seq uint, blockHash string, opts ...model.Options) *models.AlertMessage {
 	hash, err := hex.DecodeString(blockHash)
 	if err != nil {
 		panic(err)

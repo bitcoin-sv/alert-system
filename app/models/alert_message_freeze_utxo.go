@@ -42,10 +42,10 @@ func (f *Fund) Serialize() []byte {
 // Read reads the message
 func (a *AlertMessageFreezeUtxo) Read(raw []byte) error {
 	if len(raw) < 57 {
-		return fmt.Errorf("freeze alert is less than 57 bytes, got %d bytes", len(raw))
+		return fmt.Errorf("freeze alert is less than 57 bytes, got %d bytes; raw: %x", len(raw), raw)
 	}
 	if len(raw)%57 != 0 {
-		return fmt.Errorf("freeze alert is not a multiple of 57 bytes, got %d bytes", len(raw))
+		return fmt.Errorf("freeze alert is not a multiple of 57 bytes, got %d bytes; raw: %x", len(raw), raw)
 	}
 	fundCount := len(raw) / 57
 	funds := []models.Fund{}

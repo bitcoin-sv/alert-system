@@ -82,9 +82,9 @@ func NewServer(o ServerOptions) (*Server, error) {
 
 	// Print out the peer ID and addresses
 	o.Config.Services.Log.Debugf("peer ID: %s", h.ID().String())
-	o.Config.Services.Log.Debug("connect to me on:")
+	o.Config.Services.Log.Info("connect to me on:")
 	for _, addr := range h.Addrs() {
-		o.Config.Services.Log.Debugf(" %s/p2p/%s", addr, h.ID().String())
+		o.Config.Services.Log.Infof(" %s/p2p/%s", addr, h.ID().String())
 	}
 
 	// Return the server
@@ -267,7 +267,7 @@ func (s *Server) discoverPeers(ctx context.Context, tn []string, routingDiscover
 
 	// Look for others who have announced and attempt to connect to them
 	connected := 0
-	for connected < 7 {
+	for connected < 2 {
 		for _, topicName := range tn {
 			s.config.Services.Log.Debugf("searching for peers for topic %s..\n", topicName)
 
