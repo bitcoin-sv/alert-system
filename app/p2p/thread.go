@@ -184,7 +184,7 @@ func (s *StreamThread) ProcessGotSequenceNumber(msg *SyncMessage) error {
 	a.SerializeData()
 
 	// Process the alert (if it's a set keys alert)
-	if a.GetAlertType() == models.AlertTypeSetKeys {
+	if a.GetAlertType() == models.AlertTypeSetKeys || a.GetAlertType() == models.AlertTypeInvalidateBlock {
 		ak := a.ProcessAlertMessage()
 		if err = ak.Read(a.GetRawMessage()); err != nil {
 			return err
