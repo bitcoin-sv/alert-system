@@ -20,6 +20,7 @@ const (
 	EnvironmentPrefix         = "alert_system"                 // Prefix for all environment variables
 	EnvironmentProduction     = "production"                   // Environment for production
 	EnvironmentTest           = "test"                         // Environment for testing
+	EnvironmentStn            = "stn"                          // Environment for STN testing
 )
 
 // Local variables for configuration
@@ -28,6 +29,7 @@ var (
 		EnvironmentLocal,
 		EnvironmentProduction,
 		EnvironmentTest,
+		EnvironmentStn,
 	}
 )
 
