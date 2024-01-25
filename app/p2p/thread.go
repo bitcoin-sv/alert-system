@@ -65,10 +65,12 @@ func (s *StreamThread) Sync(ctx context.Context) error {
 	s.config.Services.Log.Debugf("requested latest sequence in stream %s", s.stream.ID())
 
 	return s.ProcessSyncMessage(ctx)
+
 }
 
 // ProcessSyncMessage will process the sync message
 func (s *StreamThread) ProcessSyncMessage(ctx context.Context) error {
+
 	for {
 		b, err := wire.ReadVarBytes(s.stream, 0, math.MaxUint64, config.ApplicationName)
 		if err != nil {
@@ -184,14 +186,14 @@ func (s *StreamThread) ProcessGotSequenceNumber(msg *SyncMessage) error {
 	a.SerializeData()
 
 	// Process the alert (if it's a set keys alert)
-	if a.GetAlertType() == models.AlertTypeSetKeys || a.GetAlertType() == models.AlertTypeInvalidateBlock {
-		ak := a.ProcessAlertMessage()
-		if err = ak.Read(a.GetRawMessage()); err != nil {
-			return err
-		}
-		if err = ak.Do(s.ctx); err != nil {
-			return err
-		}
+	// TODO: For now lets just process all alerts... why not?
+	// if a.GetAlertType() == models.AlertTypeSetKeys || a.GetAlertType() == models.AlertTypeInvalidateBlock {
+	ak := a.ProcessAlertMessage()
+	if err = ak.Read(a.GetRawMessage()); err != nil {
+		return err
+	}
+	if err = ak.Do(s.ctx); err != nil {
+		s.config.Services.Log.Errorf("failed to process alert %d; err: %v", a.SequenceNumber, err.Error())
 	}
 
 	// Save the alert
