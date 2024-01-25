@@ -15,7 +15,7 @@ require (
 	github.com/libp2p/go-libp2p-pubsub v0.10.0
 	github.com/libsv/go-bn v0.0.2
 	github.com/libsv/go-bt/v2 v2.2.5
-	github.com/libsv/go-p2p v0.1.8
+	github.com/libsv/go-p2p v0.1.9
 	github.com/mrz1836/go-api-router v0.7.0
 	github.com/mrz1836/go-datastore v0.5.10
 	github.com/multiformats/go-multiaddr v0.12.1
