@@ -283,8 +283,8 @@ github.com/libsv/go-bk v0.1.6/go.mod h1:khJboDoH18FPUaZlzRFKzlVN84d4YfdmlDtdX4LA
 github.com/libsv/go-bt v1.0.4/go.mod h1:AfXoLFYEbY/TvCq/84xTce2xGjPUuC5imokHmcykF2k=
 github.com/libsv/go-bt v1.0.8 h1:nWLLcnUm0dxNO3exqrL5jvAcTGkl0dsnBuQqB6+M6vQ=
 github.com/libsv/go-bt v1.0.8/go.mod h1:yO023bNYLh5DwcOYl+ZqLAeTemoy6K+2UbQlIBMv+EQ=
-github.com/libsv/go-p2p v0.1.8 h1:qo1co5AJ+BmXmjUVVk2vECCOXNQp4swW2NGIrCY4T7w=
-github.com/libsv/go-p2p v0.1.8/go.mod h1:9KhX8e+3oEmGiYQSeF/CrHj22YNHqiof3TH77VqcMCs=
+github.com/libsv/go-p2p v0.1.9 h1:cMo8FS66oMOS47lmh8yPVNm0nGIz2Zlxi/zncPD0/o8=
+github.com/libsv/go-p2p v0.1.9/go.mod h1:9KhX8e+3oEmGiYQSeF/CrHj22YNHqiof3TH77VqcMCs=
 github.com/lunixbochs/vtclean v1.0.0/go.mod h1:pHhQNgMf3btfWnGBVipUOjRYhoOsdGqdm/+2c2E2WMI=
 github.com/magiconair/properties v1.8.7 h1:IeQXZAiQcpL9mgcAe1Nu6cX9LLw6ExEHKjN0VQdvPDY=
 github.com/magiconair/properties v1.8.7/go.mod h1:Dhd985XPs7jluiymwWYZ0G4Z61jb3vdS329zhj2hYo0=
