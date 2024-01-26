@@ -27,7 +27,7 @@ type AlertMessage struct {
 	Hash           string `json:"hash" toml:"hash" yaml:"hash" bson:"hash" gorm:"<-;type:char(64);index;comment:This is the hash"`
 	SequenceNumber uint32 `json:"sequence_number" toml:"sequence_number" yaml:"sequence_number" bson:"sequence_number" gorm:"<-;type:int8;index;comment:This is the alert sequence number"`
 	Raw            string `json:"raw" toml:"raw" yaml:"raw" bson:"raw" gorm:"<-;type:text;comment:This is the raw alert message"`
-	Processed      bool   `json:"processed" toml:"processed" yaml:"processed" bson:"processed"`
+	Processed      bool   `json:"processed" toml:"processed" yaml:"processed" bson:"processed" gorm:"<-;type:boolean;comment:This determine if the alert was processed"`
 
 	// Private fields (never to be exported)
 	alertType  AlertType
@@ -247,14 +247,21 @@ func (m *AlertMessage) Timestamp() uint64 {
 	return m.timestamp
 }
 
-// NewAlertFromBytes creates a new alert from bytes
-func NewAlertFromBytes(ak []byte, opts ...model.Options) (*AlertMessage, error) {
-
-	// Check if the alert is valid
-	if len(ak) < 16 {
-		// todo DETERMINE ACTUAL PROPER LENGTH
-		return nil, fmt.Errorf("alert needs to be at least 16")
+// ReadRaw sets the model fields based on the raw message
+func (m *AlertMessage) ReadRaw() error {
+	if len(m.GetRawMessage()) == 0 {
+		ak, err := hex.DecodeString(m.Raw)
+		if err != nil {
+			return err
+		}
+		m.SetRawMessage(ak)
 	}
+
+	if len(m.GetRawMessage()) < 16 {
+		// todo DETERMINE ACTUAL PROPER LENGTH
+		return fmt.Errorf("alert needs to be at least 16 bytes")
+	}
+	ak := m.GetRawMessage()
 	version := binary.LittleEndian.Uint32(ak[:4])
 	sequenceNumber := binary.LittleEndian.Uint32(ak[4:8])
 	timestamp := binary.LittleEndian.Uint64(ak[8:16])
@@ -274,7 +281,7 @@ func NewAlertFromBytes(ak []byte, opts ...model.Options) (*AlertMessage, error) 
 	// but possible. Regardless let's just error out now if this length is lower. At least
 	// allows us to grab the expected signature.
 	if len(alertAndSignature) < sigLen+2 {
-		return nil, fmt.Errorf("alert message is invalid - too short length")
+		return fmt.Errorf("alert message is invalid - too short length")
 	}
 
 	// Get alert message bytes
@@ -292,17 +299,26 @@ func NewAlertFromBytes(ak []byte, opts ...model.Options) (*AlertMessage, error) 
 
 	dataLen := 20 + len(alert)
 
-	// Create the new alert
+	m.SetAlertType(AlertType(alertType))
+	m.message = alert
+	m.SequenceNumber = sequenceNumber
+	m.timestamp = timestamp
+	m.version = version
+	m.data = ak[:dataLen]
+	m.signatures = sigs
+	_ = m.Serialize()
+	return nil
+}
+
+// NewAlertFromBytes creates a new alert from bytes
+func NewAlertFromBytes(ak []byte, opts ...model.Options) (*AlertMessage, error) {
 	opts = append(opts, model.New())
 	newAlert := NewAlertMessage(opts...)
-	newAlert.SetAlertType(AlertType(alertType))
-	newAlert.message = alert
-	newAlert.SequenceNumber = sequenceNumber
-	newAlert.timestamp = timestamp
-	newAlert.version = version
-	newAlert.data = ak[:dataLen]
-	newAlert.signatures = sigs
-	_ = newAlert.Serialize()
+	newAlert.SetRawMessage(ak)
+	err := newAlert.ReadRaw()
+	if err != nil {
+		return nil, err
+	}
 
 	// Return alert
 	return newAlert, nil
@@ -358,4 +374,35 @@ func GetLatestAlert(ctx context.Context, metadata *model.Metadata, opts ...model
 
 	// Return the first item (only item)
 	return modelItems[0], nil
+}
+
+// GetAllUnprocessedAlerts will get all alerts that weren't successfully processed
+func GetAllUnprocessedAlerts(ctx context.Context, metadata *model.Metadata, opts ...model.Options) ([]*AlertMessage, error) {
+
+	// Set the conditions
+	conditions := &map[string]interface{}{
+		utils.FieldDeletedAt: map[string]interface{}{ // IS NULL
+			utils.ExistsCondition: false,
+		},
+		"processed": false,
+	}
+
+	// Set the query params
+	queryParams := &datastore.QueryParams{
+		OrderByField:  utils.FieldSequenceNumber,
+		SortDirection: utils.SortAscending,
+	}
+
+	// Get the record
+	modelItems := make([]*AlertMessage, 0)
+	if err := model.GetModelsByConditions(
+		ctx, model.NameAlertMessage, &modelItems, metadata, conditions, queryParams, opts...,
+	); err != nil {
+		return nil, err
+	} else if len(modelItems) == 0 {
+		return nil, nil
+	}
+
+	// Return the first item (only item)
+	return modelItems, nil
 }

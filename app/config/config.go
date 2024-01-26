@@ -35,13 +35,15 @@ var (
 
 // Application configuration constants
 var (
-	ApplicationName              = "alert_system"                // Application name used in places where we need an application name space
-	DatabasePrefix               = "alert_system"                // Default database prefix
-	DefaultAlertSystemProtocolID = "/bitcoin/alert-system/0.0.1" // Default alert system protocol for libp2p syncing
-	DefaultTopicName             = "alert_system"                // Default alert system topic name for libp2p subscription
-	DefaultServerShutdown        = 5 * time.Second               // Default server shutdown delay time (to finish any requests or internal processes)
-	LocalPrivateKeyDefault       = "alert_system_private_key"    // Default local private key
-	LocalPrivateKeyDirectory     = ".bitcoin"                    // Default local private key directory
+	ApplicationName                = "alert_system"                // Application name used in places where we need an application name space
+	DatabasePrefix                 = "alert_system"                // Default database prefix
+	DefaultAlertSystemProtocolID   = "/bitcoin/alert-system/0.0.1" // Default alert system protocol for libp2p syncing
+	DefaultTopicName               = "alert_system"                // Default alert system topic name for libp2p subscription
+	DefaultServerShutdown          = 5 * time.Second               // Default server shutdown delay time (to finish any requests or internal processes)
+	DefaultPeerDiscoveryInterval   = 10 * time.Minute              // Default peer discovery refresh interval
+	DefaultAlertProcessingInterval = 5 * time.Minute               // Default alert processing retry interval
+	LocalPrivateKeyDefault         = "alert_system_private_key"    // Default local private key
+	LocalPrivateKeyDirectory       = ".bitcoin"                    // Default local private key directory
 )
 
 // The global configuration settings
@@ -49,13 +51,14 @@ type (
 
 	// Config is the global configuration settings
 	Config struct {
-		AlertWebhookURL string          `json:"alert_webhook_url" mapstructure:"alert_webhook_url"` // AlertWebhookURL is the URL for the alert webhook
-		Datastore       DatastoreConfig `json:"datastore" mapstructure:"datastore"`                 // Datastore's configuration
-		P2P             P2PConfig       `json:"p2p" mapstructure:"p2p"`                             // P2P is the configuration for the P2P server
-		RPCConnections  []RPCConfig     `json:"rpc_connections" mapstructure:"rpc_connections"`     // RPCConnections is a list of RPC connections
-		RequestLogging  bool            `json:"request_logging" mapstructure:"request_logging"`     // Toggle for verbose request logging (API requests)
-		Services        Services        `json:"-" mapstructure:"services"`                          // Services is the global services
-		WebServer       WebServerConfig `json:"web_server" mapstructure:"web_server"`               // WebServer is the configuration for the web HTTP Server
+		AlertWebhookURL         string          `json:"alert_webhook_url" mapstructure:"alert_webhook_url"`                 // AlertWebhookURL is the URL for the alert webhook
+		Datastore               DatastoreConfig `json:"datastore" mapstructure:"datastore"`                                 // Datastore's configuration
+		P2P                     P2PConfig       `json:"p2p" mapstructure:"p2p"`                                             // P2P is the configuration for the P2P server
+		RPCConnections          []RPCConfig     `json:"rpc_connections" mapstructure:"rpc_connections"`                     // RPCConnections is a list of RPC connections
+		RequestLogging          bool            `json:"request_logging" mapstructure:"request_logging"`                     // Toggle for verbose request logging (API requests)
+		Services                Services        `json:"-" mapstructure:"services"`                                          // Services is the global services
+		WebServer               WebServerConfig `json:"web_server" mapstructure:"web_server"`                               // WebServer is the configuration for the web HTTP Server
+		AlertProcessingInterval time.Duration   `json:"alert_processing_interval" mapstructure:"alert_processing_interval"` // AlertProcessingInterval is the interval in which the system will go through all of the saved alerts and attempt to retry any unprocessed alerts
 	}
 
 	// DatastoreConfig is the configuration for the datastore
@@ -84,12 +87,13 @@ type (
 
 	// P2PConfig is the configuration for the P2P server and connection
 	P2PConfig struct {
-		AlertSystemProtocolID string `json:"alert_system_protocol_id" mapstructure:"alert_system_protocol_id"` // AlertSystemProtocolID is the protocol ID to use on the libp2p network for alert system communication
-		BootstrapPeer         string `json:"bootstrap_peer" mapstructure:"bootstrap_peer"`                     // BootstrapPeer is the bootstrap peer for the libp2p network
-		IP                    string `json:"ip" mapstructure:"ip"`                                             // IP is the IP address for the P2P server
-		Port                  string `json:"port" mapstructure:"port"`                                         // Port is the port for the P2P server
-		PrivateKeyPath        string `json:"private_key_path" mapstructure:"private_key_path"`                 // PrivateKeyPath is the path to the private key
-		TopicName             string `json:"topic_name" mapstructure:"topic_name"`                             // TopicName is the name of the topic to subscribe to
+		AlertSystemProtocolID string        `json:"alert_system_protocol_id" mapstructure:"alert_system_protocol_id"` // AlertSystemProtocolID is the protocol ID to use on the libp2p network for alert system communication
+		BootstrapPeer         string        `json:"bootstrap_peer" mapstructure:"bootstrap_peer"`                     // BootstrapPeer is the bootstrap peer for the libp2p network
+		IP                    string        `json:"ip" mapstructure:"ip"`                                             // IP is the IP address for the P2P server
+		Port                  string        `json:"port" mapstructure:"port"`                                         // Port is the port for the P2P server
+		PrivateKeyPath        string        `json:"private_key_path" mapstructure:"private_key_path"`                 // PrivateKeyPath is the path to the private key
+		TopicName             string        `json:"topic_name" mapstructure:"topic_name"`                             // TopicName is the name of the topic to subscribe to
+		PeerDiscoveryInterval time.Duration `json:"peer_discovery_interval" mapstructure:"peer_discovery_interval"`   // PeerDiscoveryInterval is the interval in which we will refresh the peer table and check peers for missing messages
 	}
 
 	// RPCConfig is the configuration for the RPC client

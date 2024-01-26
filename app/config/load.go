@@ -103,6 +103,11 @@ func requireP2P(_appConfig *Config) error {
 		}
 	}
 
+	// Load the peer discovery interval
+	if _appConfig.P2P.PeerDiscoveryInterval <= 0 {
+		_appConfig.P2P.PeerDiscoveryInterval = DefaultPeerDiscoveryInterval
+	}
+
 	// Load the p2p ip (local, ip address or domain name)
 	// todo better validation of what is a valid IP, domain name or local address
 	if len(_appConfig.P2P.IP) < 5 {
@@ -203,6 +208,11 @@ func LoadConfigFile() (_appConfig *Config, err error) {
 	// Load the logger service (gocore.Logger meets the LoggerInterface)
 	_appConfig.Services.Log = &ExtendedLogger{
 		Logger: gocore.Log(ApplicationName),
+	}
+
+	// Set default alert processing interval if it doesn't exist
+	if _appConfig.AlertProcessingInterval <= 0 {
+		_appConfig.AlertProcessingInterval = DefaultAlertProcessingInterval
 	}
 
 	// Log the configuration that was detected and where it was loaded from

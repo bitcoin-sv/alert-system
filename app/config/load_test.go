@@ -29,6 +29,8 @@ func TestLoadConfig_Success(t *testing.T) {
 		assert.Equal(t, "/path/to/private/key", c.P2P.PrivateKeyPath)
 		assert.Equal(t, "", c.P2P.BootstrapPeer)
 		assert.Equal(t, DefaultAlertSystemProtocolID, c.P2P.AlertSystemProtocolID)
+		assert.Equal(t, DefaultPeerDiscoveryInterval, c.P2P.PeerDiscoveryInterval)
+		assert.Equal(t, DefaultAlertProcessingInterval, c.AlertProcessingInterval)
 		assert.Equal(t, "192.168.1.1", c.P2P.IP)
 		assert.Equal(t, "8000", c.P2P.Port)
 		assert.Equal(t, "https://webhook.url", c.AlertWebhookURL)

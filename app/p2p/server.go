@@ -114,6 +114,7 @@ func (s *Server) Start(ctx context.Context) error {
 	}
 
 	_ = s.RunPeerDiscovery(ctx, routingDiscovery)
+	_ = s.RunAlertProcessingCron(ctx)
 	for !s.connected {
 		time.Sleep(5 * time.Second)
 	}
@@ -187,19 +188,82 @@ func (s *Server) Stop(_ context.Context) error {
 	return nil
 }
 
-// RunPeerDiscovery starts a 5 min cron job to resync peers and update routable peers
-func (s *Server) RunPeerDiscovery(ctx context.Context, routingDiscovery *drouting.RoutingDiscovery) chan bool {
-	ticker := time.NewTicker(5 * time.Minute)
+// RunAlertProcessingCron starts a cron job to attempt to retry unprocessed alerts
+func (s *Server) RunAlertProcessingCron(ctx context.Context) chan bool {
+	ticker := time.NewTicker(s.config.AlertProcessingInterval)
 	quit := make(chan bool, 1)
 	go func() {
-		err := s.discoverPeers(ctx, s.topicNames, routingDiscovery)
+		for {
+			select {
+			case <-ticker.C:
+				err := s.processAlerts(ctx)
+				if err != nil {
+					s.config.Services.Log.Errorf("error processing alerts: %v", err.Error())
+				}
+			case <-quit:
+				ticker.Stop()
+			}
+		}
+	}()
+	return quit
+}
+
+// processAlerts performs the alert processing
+func (s *Server) processAlerts(ctx context.Context) error {
+	alerts, err := models.GetAllUnprocessedAlerts(ctx, nil, model.WithAllDependencies(s.config))
+	if err != nil {
+		return err
+	}
+	s.config.Services.Log.Infof("Attempting to process %d failed alerts", len(alerts))
+	success := 0
+	for _, alert := range alerts {
+		alert.SetOptions(model.WithAllDependencies(s.config))
+		// Serialize the alert data and hash
+		err := alert.ReadRaw()
+		if err != nil {
+			continue
+		}
+		alert.SerializeData()
+		// Process the alert
+		ak := alert.ProcessAlertMessage()
+		if ak == nil {
+			continue
+		}
+		if err = ak.Read(alert.GetRawMessage()); err != nil {
+			return err
+		}
+		s.config.Services.Log.Debugf("attempting to process alert %d of type %d", alert.SequenceNumber, alert.GetAlertType())
+		alert.Processed = true
+		if err = ak.Do(ctx); err != nil {
+			s.config.Services.Log.Errorf("failed to process alert %d; err: %v", alert.SequenceNumber, err.Error())
+			alert.Processed = false
+		}
+
+		if alert.Processed {
+			success++
+			// Save the alert
+			if err = alert.Save(ctx); err != nil {
+				return err
+			}
+		}
+	}
+	s.config.Services.Log.Infof("Processed %d failed alerts", success)
+	return nil
+}
+
+// RunPeerDiscovery starts a cron job to resync peers and update routable peers
+func (s *Server) RunPeerDiscovery(ctx context.Context, routingDiscovery *drouting.RoutingDiscovery) chan bool {
+	ticker := time.NewTicker(s.config.P2P.PeerDiscoveryInterval)
+	quit := make(chan bool, 1)
+	go func() {
+		err := s.discoverPeers(ctx, routingDiscovery)
 		if err != nil {
 			s.config.Services.Log.Errorf("error discovering peers: %v", err.Error())
 		}
 		for {
 			select {
 			case <-ticker.C:
-				err := s.discoverPeers(ctx, s.topicNames, routingDiscovery)
+				err := s.discoverPeers(ctx, routingDiscovery)
 				if err != nil {
 					s.config.Services.Log.Errorf("error discovering peers: %v", err.Error())
 				}
@@ -262,13 +326,13 @@ func (s *Server) Topics() map[string]*pubsub.Topic {
 }
 
 // discoverPeers will discover peers
-func (s *Server) discoverPeers(ctx context.Context, tn []string, routingDiscovery *drouting.RoutingDiscovery) error {
+func (s *Server) discoverPeers(ctx context.Context, routingDiscovery *drouting.RoutingDiscovery) error {
 	s.config.Services.Log.Infof("Running peer discovery at %s", time.Now().String())
 
 	// Look for others who have announced and attempt to connect to them
 	connected := 0
 	for connected < 2 {
-		for _, topicName := range tn {
+		for _, topicName := range s.topicNames {
 			s.config.Services.Log.Debugf("searching for peers for topic %s..\n", topicName)
 
 			var peerChan <-chan peer.AddrInfo
