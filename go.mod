@@ -17,7 +17,7 @@ require (
 	github.com/libsv/go-bt/v2 v2.2.5
 	github.com/libsv/go-p2p v0.1.9
 	github.com/mrz1836/go-api-router v0.7.0
-	github.com/mrz1836/go-datastore v0.5.10
+	github.com/mrz1836/go-datastore v0.5.11
 	github.com/multiformats/go-multiaddr v0.12.1
 	github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.0.2
 	github.com/ordishs/gocore v1.0.57
@@ -27,7 +27,7 @@ require (
 	github.com/tokenized/pkg v0.7.0
 	go.mongodb.org/mongo-driver v1.13.1
 	gorm.io/driver/sqlite v1.5.4
-	gorm.io/gorm v1.25.5
+	gorm.io/gorm v1.25.6
 )
 
 require (
@@ -57,7 +57,7 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/gopacket v1.1.19 // indirect
 	github.com/google/pprof v0.0.0-20231212022811-ec68065c825e // indirect
-	github.com/google/uuid v1.5.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
@@ -106,7 +106,7 @@ require (
 	github.com/matryer/respond v1.0.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/mattn/go-sqlite3 v1.14.19 // indirect
+	github.com/mattn/go-sqlite3 v1.14.20 // indirect
 	github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/miekg/dns v1.1.57 // indirect
@@ -127,8 +127,8 @@ require (
 	github.com/multiformats/go-multihash v0.2.3 // indirect
 	github.com/multiformats/go-multistream v0.5.0 // indirect
 	github.com/multiformats/go-varint v0.0.7 // indirect
-	github.com/newrelic/go-agent/v3 v3.29.0 // indirect
-	github.com/newrelic/go-agent/v3/integrations/nrmongo v1.1.2 // indirect
+	github.com/newrelic/go-agent/v3 v3.29.1 // indirect
+	github.com/newrelic/go-agent/v3/integrations/nrmongo v1.1.3 // indirect
 	github.com/onsi/ginkgo/v2 v2.13.2 // indirect
 	github.com/opencontainers/runtime-spec v1.1.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
@@ -180,8 +180,8 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/tools v0.16.1 // indirect
 	gonum.org/v1/gonum v0.14.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240116215550-a9fa1716bcac // indirect
-	google.golang.org/grpc v1.60.1 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240125205218-1f4bbc51befe // indirect
+	google.golang.org/grpc v1.61.0 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
