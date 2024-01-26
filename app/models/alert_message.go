@@ -249,15 +249,19 @@ func (m *AlertMessage) Timestamp() uint64 {
 
 // ReadRaw sets the model fields based on the raw message
 func (m *AlertMessage) ReadRaw() error {
-	ak, err := hex.DecodeString(m.Raw)
-	if err != nil {
-		return err
+	if len(m.GetRawMessage()) == 0 {
+		ak, err := hex.DecodeString(m.Raw)
+		if err != nil {
+			return err
+		}
+		m.SetRawMessage(ak)
 	}
-	m.SetRawMessage(ak)
+
 	if len(m.GetRawMessage()) < 16 {
 		// todo DETERMINE ACTUAL PROPER LENGTH
 		return fmt.Errorf("alert needs to be at least 16 bytes")
 	}
+	ak := m.GetRawMessage()
 	version := binary.LittleEndian.Uint32(ak[:4])
 	sequenceNumber := binary.LittleEndian.Uint32(ak[4:8])
 	timestamp := binary.LittleEndian.Uint64(ak[8:16])
