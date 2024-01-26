@@ -212,8 +212,10 @@ func (s *StreamThread) ProcessGotSequenceNumber(msg *SyncMessage) error {
 	if err = ak.Read(a.GetRawMessage()); err != nil {
 		return err
 	}
+	a.Processed = true
 	if err = ak.Do(s.ctx); err != nil {
 		s.config.Services.Log.Errorf("failed to process alert %d; err: %v", a.SequenceNumber, err.Error())
+		a.Processed = false
 	}
 
 	// Save the alert

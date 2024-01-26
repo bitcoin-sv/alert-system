@@ -1,6 +1,7 @@
 {
   "alert_webhook_url": "",
   "request_logging": true,
+  "alert_processing_interval": "5m",
   "web_server": {
     "idle_timeout": "60s",
     "port": "3000",

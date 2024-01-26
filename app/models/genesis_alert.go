@@ -59,6 +59,7 @@ func CreateGenesisAlert(ctx context.Context, opts ...model.Options) error {
 	newAlert.SequenceNumber = 0
 	newAlert.timestamp = uint64(time.Date(2923, time.November, 1, 1, 1, 1, 1, time.UTC).Unix())
 	newAlert.version = 1
+	newAlert.Processed = true
 
 	// Serialize the data
 	newAlert.SerializeData()
