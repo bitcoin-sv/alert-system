@@ -115,9 +115,6 @@ func (s *Server) Start(ctx context.Context) error {
 
 	_ = s.RunPeerDiscovery(ctx, routingDiscovery)
 	_ = s.RunAlertProcessingCron(ctx)
-	for !s.connected {
-		time.Sleep(5 * time.Second)
-	}
 
 	ps, err := pubsub.NewGossipSub(ctx, s.host, pubsub.WithDiscovery(routingDiscovery))
 	if err != nil {
@@ -145,6 +142,9 @@ func (s *Server) Start(ctx context.Context) error {
 	})
 
 	s.config.Services.Log.Debugf("stream handler set")
+	for !s.connected {
+		time.Sleep(5 * time.Second)
+	}
 	for _, topicName := range s.topicNames {
 		var topic *pubsub.Topic
 		if topic, err = ps.Join(topicName); err != nil {
