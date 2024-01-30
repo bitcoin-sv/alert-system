@@ -36,4 +36,7 @@ func RegisterRoutes(router *apirouter.Router, conf *config.Config) {
 
 	// Set the health request
 	router.HTTPRouter.GET("/health", action.Request(router, action.health))
+
+	// Set the get alerts request
+	router.HTTPRouter.GET("/alerts", action.Request(router, action.alerts))
 }

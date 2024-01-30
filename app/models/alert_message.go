@@ -376,6 +376,35 @@ func GetLatestAlert(ctx context.Context, metadata *model.Metadata, opts ...model
 	return modelItems[0], nil
 }
 
+// GetAllAlerts
+func GetAllAlerts(ctx context.Context, metadata *model.Metadata, opts ...model.Options) ([]*AlertMessage, error) {
+	// Set the conditions
+	conditions := &map[string]interface{}{
+		utils.FieldDeletedAt: map[string]interface{}{ // IS NULL
+			utils.ExistsCondition: false,
+		},
+	}
+
+	// Set the query params
+	queryParams := &datastore.QueryParams{
+		OrderByField:  utils.FieldSequenceNumber,
+		SortDirection: utils.SortAscending,
+	}
+
+	// Get the record
+	modelItems := make([]*AlertMessage, 0)
+	if err := model.GetModelsByConditions(
+		ctx, model.NameAlertMessage, &modelItems, metadata, conditions, queryParams, opts...,
+	); err != nil {
+		return nil, err
+	} else if len(modelItems) == 0 {
+		return nil, nil
+	}
+
+	// Return the first item (only item)
+	return modelItems, nil
+}
+
 // GetAllUnprocessedAlerts will get all alerts that weren't successfully processed
 func GetAllUnprocessedAlerts(ctx context.Context, metadata *model.Metadata, opts ...model.Options) ([]*AlertMessage, error) {
 

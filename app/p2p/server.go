@@ -42,14 +42,16 @@ type ServerOptions struct {
 // Server is the P2P server
 type Server struct {
 	// alertKeyTopicName string
-	connected     bool
-	config        *config.Config
-	host          host.Host
-	privateKey    *crypto.PrivKey
-	subscriptions map[string]*pubsub.Subscription
-	topicNames    []string
-	topics        map[string]*pubsub.Topic
-	dht           *dht.IpfsDHT
+	connected                  bool
+	config                     *config.Config
+	host                       host.Host
+	privateKey                 *crypto.PrivKey
+	subscriptions              map[string]*pubsub.Subscription
+	topicNames                 []string
+	topics                     map[string]*pubsub.Topic
+	dht                        *dht.IpfsDHT
+	quitAlertProcessingChannel chan bool
+	quitPeerDiscoveryChannel   chan bool
 	//peers         []peer.AddrInfo
 }
 
@@ -113,8 +115,8 @@ func (s *Server) Start(ctx context.Context) error {
 		dutil.Advertise(ctx, routingDiscovery, topicName)
 	}
 
-	_ = s.RunPeerDiscovery(ctx, routingDiscovery)
-	_ = s.RunAlertProcessingCron(ctx)
+	s.quitPeerDiscoveryChannel = s.RunPeerDiscovery(ctx, routingDiscovery)
+	s.quitAlertProcessingChannel = s.RunAlertProcessingCron(ctx)
 
 	ps, err := pubsub.NewGossipSub(ctx, s.host, pubsub.WithDiscovery(routingDiscovery))
 	if err != nil {
@@ -185,6 +187,8 @@ func (s *Server) Connected() bool {
 func (s *Server) Stop(_ context.Context) error {
 	// todo there needs to be a way to stop the server
 	s.config.Services.Log.Info("stopping P2P service")
+	s.quitPeerDiscoveryChannel <- true
+	s.quitAlertProcessingChannel <- true
 	return nil
 }
 
