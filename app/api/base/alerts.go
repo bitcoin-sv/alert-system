@@ -12,16 +12,16 @@ import (
 	apirouter "github.com/mrz1836/go-api-router"
 )
 
-// HealthResponse is the response for the health endpoint
+// AlertsResponse is the response for the alerts endpoint
 type AlertsResponse struct {
 	Alerts         []*models.AlertMessage `json:"alerts"`
 	LatestSequence uint32                 `json:"latest_sequence"`
 }
 
-// health will return the health of the API and the current alert
+// alerts will return the saved
 func (a *Action) alerts(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 
-	// Get the latest alert
+	// Get all alerts
 	alerts, err := models.GetAllAlerts(req.Context(), nil, model.WithAllDependencies(a.Config))
 	if err != nil {
 		app.APIErrorResponse(w, req, http.StatusBadRequest, err)

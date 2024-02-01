@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+
 	"github.com/libsv/go-bn/models"
 	"github.com/libsv/go-p2p/wire"
 )
@@ -68,9 +69,13 @@ func (a *AlertMessageConfiscateTransaction) Read(raw []byte) error {
 
 // Do executes the alert
 func (a *AlertMessageConfiscateTransaction) Do(ctx context.Context) error {
-	_, err := a.Config().Services.Node.AddToConfiscationTransactionWhitelist(ctx, a.Transactions)
+	res, err := a.Config().Services.Node.AddToConfiscationTransactionWhitelist(ctx, a.Transactions)
 	if err != nil {
 		return err
+	}
+	if len(res.NotProcessed) > 0 {
+		a.Config().Services.Log.Errorf("confiscation alert RPC response indicates it might have not been processed")
+		// TODO: I think we want to error here in the future so that the RPC call will be retried... but not clear right now
 	}
 	return nil
 }

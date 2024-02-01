@@ -376,7 +376,7 @@ func GetLatestAlert(ctx context.Context, metadata *model.Metadata, opts ...model
 	return modelItems[0], nil
 }
 
-// GetAllAlerts
+// GetAllAlerts returns all alerts in the database
 func GetAllAlerts(ctx context.Context, metadata *model.Metadata, opts ...model.Options) ([]*AlertMessage, error) {
 	// Set the conditions
 	conditions := &map[string]interface{}{
