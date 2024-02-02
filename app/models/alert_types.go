@@ -3,6 +3,29 @@ package models
 // AlertType is the type of alert
 type AlertType uint32
 
+// Name returns the name of the alert type as a string
+func (a AlertType) Name() string {
+	switch a {
+	case AlertTypeInformational:
+		return "Informational"
+	case AlertTypeFreezeUtxo:
+		return "Freeze"
+	case AlertTypeUnfreezeUtxo:
+		return "Unfreeze"
+	case AlertTypeConfiscateUtxo:
+		return "Confiscate"
+	case AlertTypeBanPeer:
+		return "Ban Peer"
+	case AlertTypeUnbanPeer:
+		return "Unban Peer"
+	case AlertTypeInvalidateBlock:
+		return "Invalidate Block"
+	case AlertTypeSetKeys:
+		return "Set Keys"
+	}
+	return ""
+}
+
 // AlertTypeInformational an alert type for informational alerts
 const AlertTypeInformational AlertType = 0x01
 

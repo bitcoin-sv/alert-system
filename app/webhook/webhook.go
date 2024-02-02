@@ -43,7 +43,7 @@ func PostAlert(ctx context.Context, httpClient config.HTTPInterface, url string,
 		AlertType: alert.GetAlertType(),
 		Sequence:  alert.SequenceNumber,
 		Raw:       hex.EncodeToString(raw),
-		Text:      fmt.Sprintf("Alert type [`%d`], sequence [`%d`], with raw data [`%x`]; Successfully processed [`%v`]", alert.GetAlertType(), alert.SequenceNumber, raw, alert.Processed),
+		Text:      fmt.Sprintf("Alert type [`%s`], sequence [`%d`], with raw data [`%x`]; Successfully processed [`%v`]", alert.GetAlertType().Name(), alert.SequenceNumber, raw, alert.Processed),
 	}
 
 	// Marshal the payload
