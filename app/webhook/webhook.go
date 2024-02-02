@@ -37,13 +37,17 @@ func PostAlert(ctx context.Context, httpClient config.HTTPInterface, url string,
 
 	// Serialize the alert
 	raw := alert.Serialize()
+	m := alert.ProcessAlertMessage()
+	// TODO: Come back and add a message interface for each alert
+	_ = m.Read(alert.GetRawMessage())
+	data, _ := json.MarshalIndent(m, "", "    ")
 
 	// Create the payload
 	p := Payload{
 		AlertType: alert.GetAlertType(),
 		Sequence:  alert.SequenceNumber,
 		Raw:       hex.EncodeToString(raw),
-		Text:      fmt.Sprintf("Alert type [`%s`], sequence [`%d`], with raw data [`%x`]; Successfully processed [`%v`]", alert.GetAlertType().Name(), alert.SequenceNumber, raw, alert.Processed),
+		Text:      fmt.Sprintf("Sequence [`%d`], alert type [`%s`];\n\n```\n%s\n```\n\nSuccessfully processed [`%v`]", alert.SequenceNumber, alert.GetAlertType().Name(), data, alert.Processed),
 	}
 
 	// Marshal the payload
