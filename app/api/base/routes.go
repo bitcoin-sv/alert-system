@@ -20,7 +20,7 @@ func RegisterRoutes(router *apirouter.Router, conf *config.Config) {
 	action := &Action{app.Action{Config: conf}}
 
 	// Set the main index page (navigating to slash or the root of the major version)
-	router.HTTPRouter.GET("/", action.Request(router, index))
+	router.HTTPRouter.GET("/", action.Request(router, action.index))
 
 	// Options request (for CORs)
 	router.HTTPRouter.OPTIONS("/", router.SetCrossOriginHeaders)

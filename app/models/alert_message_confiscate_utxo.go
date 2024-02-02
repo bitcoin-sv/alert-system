@@ -74,8 +74,8 @@ func (a *AlertMessageConfiscateTransaction) Do(ctx context.Context) error {
 		return err
 	}
 	if len(res.NotProcessed) > 0 {
-		a.Config().Services.Log.Errorf("confiscation alert RPC response indicates it might have not been processed")
-		// TODO: I think we want to error here in the future so that the RPC call will be retried... but not clear right now
+		// we can safely assume this is just one not processed tx because we are only publishing one tx with the alert right now
+		return fmt.Errorf("confiscation alert RPC response returned an error; reason: %s", res.NotProcessed[0].Reason)
 	}
 	return nil
 }
