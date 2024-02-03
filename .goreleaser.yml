@@ -18,8 +18,38 @@ changelog:
 # ---------------------------
 # Builder
 # ---------------------------
-build:
-  skip: true
+builds:
+  - env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
+    binary: "alert_system"
+    goarch:
+      - amd64
+      - arm64
+    goos:
+      - darwin
+      - linux
+    goarm:
+      - 6
+      - 7
+    ldflags:
+      - -s -w -X github.com/bitcoin-sv/{{ .ProjectName }}/cmd.Version={{ .Version }}
+
+# ---------------------------
+# Archives + Checksums
+# ---------------------------
+archives:
+  - wrap_in_directory: app
+    name_template: >-
+      {{- .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end -}}
+checksum:
+  name_template: "{{ .ProjectName }}_checksums.txt"
+  algorithm: sha256
 
 # ---------------------------
 # GitHub Release
