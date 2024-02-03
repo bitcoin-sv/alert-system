@@ -20,7 +20,7 @@ changelog:
 # ---------------------------
 builds:
   - env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=1 # Required for SQLite
       - GO111MODULE=on
     binary: "alert_system"
     goarch:
@@ -32,6 +32,10 @@ builds:
     goarm:
       - 6
       - 7
+    goamd64:
+      - v2
+      - v3
+    mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
       - -s -w -X github.com/bitcoin-sv/{{ .ProjectName }}/cmd.Version={{ .Version }}
 
