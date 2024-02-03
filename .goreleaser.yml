@@ -22,6 +22,7 @@ builds:
   - env:
       - CGO_ENABLED=1 # Required for SQLite
       - GO111MODULE=on
+      - Wno-error=unused-command-line-argument
     main: ./cmd/
     binary: "alert_system"
     goarch:
