@@ -22,6 +22,7 @@ builds:
   - env:
       - CGO_ENABLED=1 # Required for SQLite
       - GO111MODULE=on
+    main: ./cmd/
     binary: "alert_system"
     goarch:
       - amd64
