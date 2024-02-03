@@ -50,7 +50,7 @@ install-releaser: ## Install the GoReleaser application
 release:: ## Full production release (creates release in GitHub)
 	@echo "releasing..."
 	@test $(github_token)
-	@export GITHUB_TOKEN=$(github_token) && goreleaser --rm-dist
+	@export GITHUB_TOKEN=$(github_token) && goreleaser --clean
 
 .PHONY: release-test
 release-test: ## Full production test release (everything except deploy)
