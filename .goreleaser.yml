@@ -45,14 +45,10 @@ builds:
 # Archives + Checksums
 # ---------------------------
 archives:
-  - wrap_in_directory: app
-    name_template: >-
-      {{- .ProjectName }}_
-      {{- title .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "386" }}i386
-      {{- else }}{{ .Arch }}{{ end }}
-      {{- if .Arm }}v{{ .Arm }}{{ end -}}
+  - wrap_in_directory: true
+    format: tar.gz
+    name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}_{{ .Version }}'
+
 checksum:
   name_template: "{{ .ProjectName }}_checksums.txt"
   algorithm: sha256
