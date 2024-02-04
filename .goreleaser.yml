@@ -29,7 +29,7 @@ builds:
       - amd64
       - arm64
     goos:
-      - darwin
+      #- darwin
       - linux
     goarm:
       - 6
