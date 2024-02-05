@@ -42,6 +42,8 @@ type AlertMessage struct {
 type AlertMessageInterface interface {
 	Read(msg []byte) error
 	Do(ctx context.Context) error
+	ToJSON(ctx context.Context) []byte
+	MessageString() string
 }
 
 // NewAlertMessage creates a new alert message

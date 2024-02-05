@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 
 	"github.com/bitcoin-sv/alert-system/app/models/model"
@@ -57,4 +58,21 @@ func (a *AlertMessageSetKeys) Do(ctx context.Context) error {
 		}
 	}
 	return nil
+}
+
+// ToJSON is the alert in JSON format
+func (a *AlertMessageSetKeys) ToJSON(_ context.Context) []byte {
+	m := a.ProcessAlertMessage()
+	// TODO: Come back and add a message interface for each alert
+	_ = m.Read(a.GetRawMessage())
+	data, err := json.MarshalIndent(m, "", "    ")
+	if err != nil {
+		return []byte{}
+	}
+	return data
+}
+
+// MessageString executes the alert
+func (a *AlertMessageSetKeys) MessageString() string {
+	return fmt.Sprintf("Setting keys: %x, %x, %x, %x, %x", a.Keys[0], a.Keys[1], a.Keys[2], a.Keys[3], a.Keys[4])
 }

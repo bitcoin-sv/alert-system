@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -78,4 +79,21 @@ func (a *AlertMessageConfiscateTransaction) Do(ctx context.Context) error {
 		return fmt.Errorf("confiscation alert RPC response returned an error; reason: %s", res.NotProcessed[0].Reason)
 	}
 	return nil
+}
+
+// ToJSON is the alert in JSON format
+func (a *AlertMessageConfiscateTransaction) ToJSON(_ context.Context) []byte {
+	m := a.ProcessAlertMessage()
+	// TODO: Come back and add a message interface for each alert
+	_ = m.Read(a.GetRawMessage())
+	data, err := json.MarshalIndent(m, "", "    ")
+	if err != nil {
+		return []byte{}
+	}
+	return data
+}
+
+// MessageString executes the alert
+func (a *AlertMessageConfiscateTransaction) MessageString() string {
+	return fmt.Sprintf("Adding confiscation transaction [%x] to whitelist enforcing at height [%d].", a.Transactions[0].ConfiscationTransaction.Hex, a.Transactions[0].ConfiscationTransaction.EnforceAtHeight)
 }

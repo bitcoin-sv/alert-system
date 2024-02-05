@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/binary"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 
 	"github.com/libsv/go-bn/models"
@@ -66,4 +67,21 @@ func (a *AlertMessageUnfreezeUtxo) Do(ctx context.Context) error {
 		return err
 	}
 	return nil
+}
+
+// ToJSON is the alert in JSON format
+func (a *AlertMessageUnfreezeUtxo) ToJSON(_ context.Context) []byte {
+	m := a.ProcessAlertMessage()
+	// TODO: Come back and add a message interface for each alert
+	_ = m.Read(a.GetRawMessage())
+	data, err := json.MarshalIndent(m, "", "    ")
+	if err != nil {
+		return []byte{}
+	}
+	return data
+}
+
+// MessageString executes the alert
+func (a *AlertMessageUnfreezeUtxo) MessageString() string {
+	return fmt.Sprintf("Unfreezing utxo id [%x]; vout: [%d], by setting enforce height at start [%d], end [%d].", a.Funds[0].TxOut.TxId, a.Funds[0].TxOut.Vout, a.Funds[0].EnforceAtHeight[0].Start, a.Funds[0].EnforceAtHeight[0].Stop)
 }
