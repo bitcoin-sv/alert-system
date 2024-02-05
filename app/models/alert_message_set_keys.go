@@ -53,8 +53,7 @@ func (a *AlertMessageSetKeys) Do(ctx context.Context) error {
 		return err
 	}
 	for _, key := range a.Keys {
-		var pk *PublicKey
-		pk = NewPublicKey(model.WithAllDependencies(a.Config()))
+		pk := NewPublicKey(model.WithAllDependencies(a.Config()))
 		conditions := map[string]interface{}{
 			"key": hex.EncodeToString(key[:]),
 		}

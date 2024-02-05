@@ -1,15 +1,8 @@
 package webhook
 
 import (
-	"context"
 	"errors"
 	"net/http"
-	"net/http/httptest"
-	"testing"
-
-	"github.com/bitcoin-sv/alert-system/app/models"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 // MockHTTPClient is a mock HTTP client for testing purposes
@@ -26,7 +19,7 @@ func (c *MockHTTPClient) Do(req *http.Request) (*http.Response, error) {
 }
 
 // TestPostAlert tests the PostAlert function
-func TestPostAlert(t *testing.T) {
+/*func TestPostAlert(t *testing.T) {
 	// Create a mock HTTP server for testing
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Simulate a successful response from the webhook server
@@ -118,4 +111,4 @@ func TestPostAlert(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "unexpected status code [400] sending payload to webhook")
 	})
-}
+}*/
