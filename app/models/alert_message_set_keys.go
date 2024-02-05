@@ -5,7 +5,11 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"time"
+
+	"github.com/mrz1836/go-datastore"
 
 	"github.com/bitcoin-sv/alert-system/app/models/model"
 )
@@ -49,7 +53,15 @@ func (a *AlertMessageSetKeys) Do(ctx context.Context) error {
 		return err
 	}
 	for _, key := range a.Keys {
-		pk := NewPublicKey(model.WithAllDependencies(a.Config()))
+		var pk *PublicKey
+		pk = NewPublicKey(model.WithAllDependencies(a.Config()))
+		conditions := map[string]interface{}{
+			"key": hex.EncodeToString(key[:]),
+		}
+		err := model.Get(ctx, pk, conditions, 5*time.Second, false)
+		if !errors.Is(err, datastore.ErrNoResults) && err != nil {
+			return err
+		}
 		pk.Key = hex.EncodeToString(key[:])
 		pk.Active = true
 		pk.LastUpdateHash = a.Hash
