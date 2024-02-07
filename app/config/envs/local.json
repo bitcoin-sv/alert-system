@@ -1,6 +1,7 @@
 {
   "alert_webhook_url": "",
   "request_logging": true,
+  "bitcoin_config_path": "/home/galt/.bitcoin/bitcoin.conf",
   "alert_processing_interval": "5m",
   "web_server": {
     "idle_timeout": "60s",
@@ -55,16 +56,16 @@
   "p2p": {
     "ip": "0.0.0.0",
     "port": "9906",
-    "alert_system_protocol_id": "/bitcoin/alert-system/0.0.1",
+    "alert_system_protocol_id": "/bitcoin-testnet/alert-system/0.0.1",
     "bootstrap_peer": "",
     "private_key_path": "",
     "peer_discovery_interval": "10m",
-    "topic_name": "alert_system"
+    "topic_name": "alert_system_testnet"
   },
   "rpc_connections": [
     {
-      "user": "galt",
-      "password": "galt",
+      "user": "foo",
+      "password": "foo",
       "host": "http://localhost:8333"
     }
   ]

@@ -1,13 +1,14 @@
 {
   "alert_webhook_url": "",
   "request_logging": true,
+  "alert_processing_interval": "5m",
   "web_server": {
     "idle_timeout": "60s",
     "port": "3000",
     "read_timeout": "15s",
     "write_timeout": "15s"
   },
-  "environment": "production",
+  "environment": "testnet",
   "datastore": {
     "auto_migrate": true,
     "debug": true,
@@ -26,13 +27,13 @@
       "max_idle_connections": 2,
       "max_open_connections": 5,
       "name": "alert_system_db",
-      "password": "",
+      "password": "postgres",
       "port": "5432",
       "replica": true,
       "skip_initialize_with_version": true,
       "time_zone": "UTC",
       "tx_timeout": "20s",
-      "user": "your_user"
+      "user": "postgres"
     },
     "sql_write": {
       "driver": "postgresql",
@@ -42,27 +43,27 @@
       "max_idle_connections": 2,
       "max_open_connections": 5,
       "name": "alert_system_db",
-      "password": "",
+      "password": "postgres",
       "port": "5432",
       "replica": false,
       "skip_initialize_with_version": true,
       "time_zone": "UTC",
       "tx_timeout": "20s",
-      "user": "your_user"
+      "user": "postgres"
     }
   },
   "p2p": {
     "ip": "0.0.0.0",
     "port": "9906",
-    "alert_system_protocol_id": "/bitcoin/alert-system/1.0.1",
+    "alert_system_protocol_id": "/bitcoin-testnet/alert-system/0.0.1",
     "bootstrap_peer": "",
     "private_key_path": "",
-    "topic_name": "bitcoin_alert_system"
+    "topic_name": "alert_system_testnet"
   },
   "rpc_connections": [
     {
-      "user": "your_user",
-      "password": "",
+      "user": "galt",
+      "password": "galt",
       "host": "http://localhost:8333"
     }
   ]
