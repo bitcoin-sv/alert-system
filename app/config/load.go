@@ -1,11 +1,13 @@
 package config
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"io/fs"
+	"net"
 	"net/http"
 	"os"
 	"strings"
@@ -99,6 +101,13 @@ func requireP2P(_appConfig *Config) error {
 	// If not found, create a default one
 	if len(_appConfig.P2P.PrivateKeyPath) == 0 {
 		if err := _appConfig.createPrivateKeyDirectory(); err != nil {
+			return err
+		}
+	}
+
+	// Load bitcoin configuration if specified
+	if len(_appConfig.BitcoinConfigPath) > 0 {
+		if err := _appConfig.loadBitcoinConfiguration(); err != nil {
 			return err
 		}
 	}
@@ -232,6 +241,73 @@ func (c *Config) createPrivateKeyDirectory() error {
 	}
 	c.P2P.PrivateKeyPath = fmt.Sprintf("%s/%s/%s", dirName, LocalPrivateKeyDirectory, LocalPrivateKeyDefault)
 	return nil
+}
+
+// loadBitcoinConfiguration will load the RPC configuration from bitcoin.conf
+func (c *Config) loadBitcoinConfiguration() error {
+	if len(c.BitcoinConfigPath) == 0 {
+		return nil
+	}
+	c.Services.Log.Infof("loading RPC configuration from %s", c.BitcoinConfigPath)
+	file, err := os.Open(c.BitcoinConfigPath)
+	if err != nil {
+		return err
+	}
+	scanner := bufio.NewScanner(file)
+	scanner.Split(splitFunc)
+	confValues := map[string]string{}
+	for scanner.Scan() {
+		kv := scanner.Text()
+		keyValue := strings.Split(kv, "=")
+		if len(keyValue) != 2 {
+			continue
+		}
+		confValues[keyValue[0]] = keyValue[1]
+	}
+	host := confValues["rpcconnect"]
+	if host == "" {
+		host = "127.0.0.1"
+	}
+	port := confValues["rpcport"]
+	if port == "" {
+		c.Services.Log.Debugf("rpcport value not detected ")
+		port = "8332"
+	}
+
+	user := confValues["rpcuser"]
+	if user == "" {
+		return fmt.Errorf("rpcuser missing from bitcoin.conf file")
+	}
+	pass := confValues["rpcpassword"]
+	if pass == "" {
+		return fmt.Errorf("rpcpassword missing from bitcoin.conf file")
+	}
+	c.RPCConnections = []RPCConfig{
+		{
+			Host:     fmt.Sprintf("http://%s", net.JoinHostPort(host, port)),
+			Password: pass,
+			User:     user,
+		},
+	}
+
+	return file.Close()
+}
+
+func splitFunc(data []byte, atEOF bool) (advance int, token []byte, err error) {
+	if atEOF && len(data) == 0 {
+		return 0, nil, nil
+	}
+
+	if atEOF {
+		return len(data), data, nil
+	}
+
+	//newline is the k-v pair delimiter
+	if i := strings.Index(string(data), "\n"); i >= 0 {
+		//skip the delimiter in advancing to the next pair
+		return i + 1, data[0:i], nil
+	}
+	return
 }
 
 // CloseAll will close all connections to all services

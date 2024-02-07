@@ -19,7 +19,9 @@ const (
 	EnvironmentLocal          = "local"                        // Environment for local development
 	EnvironmentPrefix         = "alert_system"                 // Prefix for all environment variables
 	EnvironmentProduction     = "production"                   // Environment for production
+	EnvironmentMainnet        = "mainnet"                      // Environment for mainnet (same as production)
 	EnvironmentTest           = "test"                         // Environment for testing
+	EnvironmentTestnet        = "testnet"                      // Environment for testnet
 	EnvironmentStn            = "stn"                          // Environment for STN testing
 )
 
@@ -28,7 +30,9 @@ var (
 	environments = []interface{}{
 		EnvironmentLocal,
 		EnvironmentProduction,
+		EnvironmentMainnet,
 		EnvironmentTest,
+		EnvironmentTestnet,
 		EnvironmentStn,
 	}
 )
@@ -53,6 +57,7 @@ type (
 	Config struct {
 		AlertWebhookURL         string          `json:"alert_webhook_url" mapstructure:"alert_webhook_url"`                 // AlertWebhookURL is the URL for the alert webhook
 		Datastore               DatastoreConfig `json:"datastore" mapstructure:"datastore"`                                 // Datastore's configuration
+		BitcoinConfigPath       string          `json:"bitcoin_config_path" mapstructure:"bitcoin_config_path"`             // BitcoinConfigPath is the path to the bitcoin.conf file
 		P2P                     P2PConfig       `json:"p2p" mapstructure:"p2p"`                                             // P2P is the configuration for the P2P server
 		RPCConnections          []RPCConfig     `json:"rpc_connections" mapstructure:"rpc_connections"`                     // RPCConnections is a list of RPC connections
 		RequestLogging          bool            `json:"request_logging" mapstructure:"request_logging"`                     // Toggle for verbose request logging (API requests)

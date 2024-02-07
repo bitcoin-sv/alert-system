@@ -7,7 +7,7 @@
     "read_timeout": "15s",
     "write_timeout": "15s"
   },
-  "environment": "production",
+  "environment": "mainnet",
   "datastore": {
     "auto_migrate": true,
     "debug": true,
