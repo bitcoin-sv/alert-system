@@ -209,6 +209,7 @@ func (s *Server) RunAlertProcessingCron(ctx context.Context) chan bool {
 				}
 			case <-quit:
 				ticker.Stop()
+				return
 			}
 		}
 	}()
@@ -276,8 +277,8 @@ func (s *Server) RunPeerDiscovery(ctx context.Context, routingDiscovery *droutin
 				}
 			case <-quit:
 				ticker.Stop()
+				return
 			}
-
 		}
 	}()
 	return quit
@@ -377,10 +378,11 @@ func (s *Server) discoverPeers(ctx context.Context, routingDiscovery *drouting.R
 
 				// Sync the stream thread
 				t := StreamThread{
-					config: s.config,
-					ctx:    ctx,
-					peer:   foundPeer.ID,
-					stream: stream,
+					config:      s.config,
+					ctx:         ctx,
+					peer:        foundPeer.ID,
+					stream:      stream,
+					quitChannel: s.quitPeerDiscoveryChannel,
 				}
 
 				// Sync the stream thread

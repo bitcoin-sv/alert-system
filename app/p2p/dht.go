@@ -44,11 +44,11 @@ func (s *Server) initDHT(ctx context.Context) (*dht.IpfsDHT, error) {
 	}
 
 	// Connect to the chosen ipfs nodes
-	var connected = false
+	connected := false
 	for !connected {
 		select {
 		case <-s.quitPeerInitializationChannel:
-			return nil, nil
+			return kademliaDHT, nil
 		default:
 			var wg sync.WaitGroup
 			for _, peerAddr := range peers {
