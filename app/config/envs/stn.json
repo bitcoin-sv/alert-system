@@ -1,5 +1,6 @@
 {
   "alert_webhook_url": "",
+  "bitcoin_config_path": "",
   "request_logging": true,
   "alert_processing_interval": "5m",
   "web_server": {
@@ -58,13 +59,13 @@
     "alert_system_protocol_id": "/bitcoin-stn/alert-system/0.0.1",
     "bootstrap_peer": "",
     "private_key_path": "",
-    "topic_name": "alert_system_stn"
+    "topic_name": "bsv_alert_system_stn"
   },
   "rpc_connections": [
     {
       "user": "galt",
       "password": "galt",
-      "host": "http://localhost:8333"
+      "host": "http://localhost:9332"
     }
   ]
 }

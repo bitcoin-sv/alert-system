@@ -1,5 +1,6 @@
 {
   "alert_webhook_url": "",
+  "bitcoin_config_path": "",
   "request_logging": true,
   "bitcoin_config_path": "/home/galt/.bitcoin/bitcoin.conf",
   "alert_processing_interval": "5m",
