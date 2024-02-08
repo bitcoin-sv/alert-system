@@ -12,6 +12,7 @@ import (
 // NodeInterface is the interface for a node
 type NodeInterface interface {
 	BanPeer(ctx context.Context, peer string) error
+	BestBlockHash(ctx context.Context) (string, error)
 	GetRPCHost() string
 	GetRPCPassword() string
 	GetRPCUser() string
@@ -64,6 +65,12 @@ func (n *Node) InvalidateBlock(ctx context.Context, hash string) error {
 func (n *Node) BanPeer(ctx context.Context, peer string) error {
 	c := bn.NewNodeClient(bn.WithCreds(n.RPCUser, n.RPCPassword), bn.WithHost(n.RPCHost))
 	return c.SetBan(ctx, peer, bn.BanActionAdd, nil)
+}
+
+// BestBlockHash gets the best block hash
+func (n *Node) BestBlockHash(ctx context.Context) (string, error) {
+	c := bn.NewNodeClient(bn.WithCreds(n.RPCUser, n.RPCPassword), bn.WithHost(n.RPCHost))
+	return c.BestBlockHash(ctx)
 }
 
 // UnbanPeer unbans a peer
