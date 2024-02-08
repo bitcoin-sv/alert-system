@@ -33,6 +33,12 @@ func main() {
 		_appConfig.Services.Log.Fatalf("error creating genesis alert: %s", err.Error())
 	}
 
+	// Ensure that RPC connection is valid
+	if _, err = _appConfig.Services.Node.BestBlockHash(context.Background()); err != nil {
+		_appConfig.Services.Log.Errorf("error talking to Bitcoin node with supplied RPC credentials: %s", err.Error())
+		return
+	}
+
 	// Create the p2p server
 	var p2pServer *p2p.Server
 	if p2pServer, err = p2p.NewServer(p2p.ServerOptions{

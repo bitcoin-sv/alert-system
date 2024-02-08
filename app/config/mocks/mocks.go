@@ -16,6 +16,7 @@ type Node struct {
 
 	// Functions
 	BanPeerFunc                               func(ctx context.Context, peer string) error
+	BestBlockHashFunc                         func(ctx context.Context) (string, error)
 	InvalidateBlockFunc                       func(ctx context.Context, hash string) error
 	UnbanPeerFunc                             func(ctx context.Context, peer string) error
 	AddToConsensusBlacklistFunc               func(ctx context.Context, funds []models.Fund) (*models.AddToConsensusBlacklistResponse, error)
@@ -45,6 +46,14 @@ func (n *Node) BanPeer(ctx context.Context, peer string) error {
 	}
 	// Default behavior if no mock function provided
 	return nil
+}
+
+// BestBlockHash will call the BestBlockHashFunc
+func (n *Node) BestBlockHash(ctx context.Context) (string, error) {
+	if n.BestBlockHashFunc != nil {
+		return n.BestBlockHashFunc(ctx)
+	}
+	return "", nil
 }
 
 // InvalidateBlock will call the InvalidateBlockFunc if not nil, otherwise return nil
