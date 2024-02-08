@@ -1,10 +1,13 @@
 package base
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
+
+	"github.com/bitcoin-sv/alert-system/app/webhook"
 
 	"github.com/bitcoin-sv/alert-system/app"
 	"github.com/bitcoin-sv/alert-system/app/models"
@@ -38,17 +41,37 @@ func (a *Action) alert(w http.ResponseWriter, req *http.Request, _ httprouter.Pa
 	// Get alert
 	alertModel, err := models.GetAlertMessageBySequenceNumber(req.Context(), uint32(sequenceNumber), model.WithAllDependencies(a.Config))
 	if err != nil {
-		app.APIErrorResponse(w, req, http.StatusBadRequest, err)
+		app.APIErrorResponse(w, req, http.StatusInternalServerError, err)
 		return
 	} else if alertModel == nil {
 		app.APIErrorResponse(w, req, http.StatusNotFound, errors.New("alert not found"))
 		return
 	}
-
+	err = alertModel.ReadRaw()
+	if err != nil {
+		app.APIErrorResponse(w, req, http.StatusInternalServerError, errors.New("alert faile"))
+		return
+	}
+	am := alertModel.ProcessAlertMessage()
+	if am == nil {
+		app.APIErrorResponse(w, req, http.StatusInternalServerError, errors.New("alert not valid type"))
+		return
+	}
+	err = am.Read(alertModel.GetRawMessage())
+	if err != nil {
+		app.APIErrorResponse(w, req, http.StatusInternalServerError, err)
+		return
+	}
+	p := webhook.Payload{
+		AlertType: alertModel.GetAlertType(),
+		Sequence:  alertModel.SequenceNumber,
+		Raw:       hex.EncodeToString(alertModel.GetRawData()),
+		Text:      am.MessageString(),
+	}
 	// Return the response
 	_ = apirouter.ReturnJSONEncode(
 		w,
 		http.StatusOK,
 		json.NewEncoder(w),
-		alertModel, []string{"sequence_number", "raw"})
+		p, []string{"sequence", "raw", "text", "alert_type"})
 }
