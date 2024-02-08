@@ -39,4 +39,7 @@ func RegisterRoutes(router *apirouter.Router, conf *config.Config) {
 
 	// Set the get alerts request
 	router.HTTPRouter.GET("/alerts", action.Request(router, action.alerts))
+
+	// Set the get alert request
+	router.HTTPRouter.GET("/alert/:sequence", action.Request(router, action.alert))
 }

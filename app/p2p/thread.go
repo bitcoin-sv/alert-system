@@ -29,6 +29,7 @@ type StreamThread struct {
 	myLatestSequence uint32
 	peer             peer.ID
 	stream           network.Stream
+	quitChannel      chan bool
 }
 
 // LatestSequence will return the threads latest sequence
@@ -83,6 +84,7 @@ func (s *StreamThread) ProcessSyncMessage(ctx context.Context) error {
 				}
 				s.config.Services.Log.Debugf("failed to read sync message: %s; closing stream", err.Error())
 				done <- s.stream.Close()
+				return
 			}
 
 			if len(b) == 0 {
@@ -144,6 +146,8 @@ func (s *StreamThread) ProcessSyncMessage(ctx context.Context) error {
 		}
 	}()
 	select {
+	case <-s.quitChannel:
+		return nil
 	case err := <-done:
 		return err
 	case <-time.After(time.Minute * 1):

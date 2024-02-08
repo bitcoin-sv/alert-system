@@ -42,16 +42,17 @@ type ServerOptions struct {
 // Server is the P2P server
 type Server struct {
 	// alertKeyTopicName string
-	connected                  bool
-	config                     *config.Config
-	host                       host.Host
-	privateKey                 *crypto.PrivKey
-	subscriptions              map[string]*pubsub.Subscription
-	topicNames                 []string
-	topics                     map[string]*pubsub.Topic
-	dht                        *dht.IpfsDHT
-	quitAlertProcessingChannel chan bool
-	quitPeerDiscoveryChannel   chan bool
+	connected                     bool
+	config                        *config.Config
+	host                          host.Host
+	privateKey                    *crypto.PrivKey
+	subscriptions                 map[string]*pubsub.Subscription
+	topicNames                    []string
+	topics                        map[string]*pubsub.Topic
+	dht                           *dht.IpfsDHT
+	quitAlertProcessingChannel    chan bool
+	quitPeerDiscoveryChannel      chan bool
+	quitPeerInitializationChannel chan bool
 	//peers         []peer.AddrInfo
 }
 
@@ -91,10 +92,11 @@ func NewServer(o ServerOptions) (*Server, error) {
 
 	// Return the server
 	return &Server{
-		host:       h,
-		topicNames: o.TopicNames,
-		privateKey: pk,
-		config:     o.Config,
+		host:                          h,
+		topicNames:                    o.TopicNames,
+		privateKey:                    pk,
+		config:                        o.Config,
+		quitPeerInitializationChannel: make(chan bool),
 	}, nil
 }
 
@@ -189,6 +191,7 @@ func (s *Server) Stop(_ context.Context) error {
 	s.config.Services.Log.Info("stopping P2P service")
 	s.quitPeerDiscoveryChannel <- true
 	s.quitAlertProcessingChannel <- true
+	s.quitPeerInitializationChannel <- true
 	return nil
 }
 
@@ -206,6 +209,7 @@ func (s *Server) RunAlertProcessingCron(ctx context.Context) chan bool {
 				}
 			case <-quit:
 				ticker.Stop()
+				return
 			}
 		}
 	}()
@@ -273,8 +277,8 @@ func (s *Server) RunPeerDiscovery(ctx context.Context, routingDiscovery *droutin
 				}
 			case <-quit:
 				ticker.Stop()
+				return
 			}
-
 		}
 	}()
 	return quit
@@ -374,10 +378,11 @@ func (s *Server) discoverPeers(ctx context.Context, routingDiscovery *drouting.R
 
 				// Sync the stream thread
 				t := StreamThread{
-					config: s.config,
-					ctx:    ctx,
-					peer:   foundPeer.ID,
-					stream: stream,
+					config:      s.config,
+					ctx:         ctx,
+					peer:        foundPeer.ID,
+					stream:      stream,
+					quitChannel: s.quitPeerDiscoveryChannel,
 				}
 
 				// Sync the stream thread

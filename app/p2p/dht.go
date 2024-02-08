@@ -5,11 +5,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bitcoin-sv/alert-system/app/config"
+	"github.com/libp2p/go-libp2p/core/peer"
+
 	"github.com/multiformats/go-multiaddr"
 
-	"github.com/bitcoin-sv/alert-system/app/config"
 	dht "github.com/libp2p/go-libp2p-kad-dht"
-	"github.com/libp2p/go-libp2p/core/peer"
 )
 
 // initDHT will initialize the DHT
@@ -43,27 +44,32 @@ func (s *Server) initDHT(ctx context.Context) (*dht.IpfsDHT, error) {
 	}
 
 	// Connect to the chosen ipfs nodes
-	var connected = false
+	connected := false
 	for !connected {
-		var wg sync.WaitGroup
-		for _, peerAddr := range peers {
-			var peerInfo *peer.AddrInfo
-			if peerInfo, err = peer.AddrInfoFromP2pAddr(peerAddr); err != nil {
-				return nil, err
-			}
-			wg.Add(1)
-			go func(logger config.LoggerInterface) {
-				defer wg.Done()
-				if err = s.host.Connect(ctx, *peerInfo); err != nil {
-					logger.Errorf("bootstrap warning: %s", err.Error())
-					return
+		select {
+		case <-s.quitPeerInitializationChannel:
+			return kademliaDHT, nil
+		default:
+			var wg sync.WaitGroup
+			for _, peerAddr := range peers {
+				var peerInfo *peer.AddrInfo
+				if peerInfo, err = peer.AddrInfoFromP2pAddr(peerAddr); err != nil {
+					return nil, err
 				}
-				logger.Infof("connected to peer %v", peerInfo.ID)
-				connected = true
-			}(logger)
+				wg.Add(1)
+				go func(logger config.LoggerInterface) {
+					defer wg.Done()
+					if err = s.host.Connect(ctx, *peerInfo); err != nil {
+						logger.Errorf("bootstrap warning: %s", err.Error())
+						return
+					}
+					logger.Infof("connected to peer %v", peerInfo.ID)
+					connected = true
+				}(logger)
+			}
+			time.Sleep(1 * time.Second)
+			wg.Wait()
 		}
-		time.Sleep(1 * time.Second)
-		wg.Wait()
 	}
 
 	return kademliaDHT, nil
