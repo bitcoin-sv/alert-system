@@ -17,7 +17,7 @@ require (
 	github.com/libsv/go-bt/v2 v2.2.5
 	github.com/libsv/go-p2p v0.1.9
 	github.com/mrz1836/go-api-router v0.7.1
-	github.com/mrz1836/go-datastore v0.5.12
+	github.com/mrz1836/go-datastore v0.5.13
 	github.com/multiformats/go-multiaddr v0.12.2
 	github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.0.2
 	github.com/ordishs/gocore v1.0.57
@@ -75,7 +75,7 @@ require (
 	github.com/ipld/go-ipld-prime v0.21.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
-	github.com/jackc/pgx/v5 v5.5.2 // indirect
+	github.com/jackc/pgx/v5 v5.5.3 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/jbenet/go-temp-err-catcher v0.1.0 // indirect
@@ -83,7 +83,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
-	github.com/klauspost/compress v1.17.5 // indirect
+	github.com/klauspost/compress v1.17.6 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.6 // indirect
 	github.com/koron/go-ssdp v0.0.4 // indirect
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
@@ -178,13 +178,13 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/tools v0.17.0 // indirect
 	gonum.org/v1/gonum v0.14.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240125205218-1f4bbc51befe // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240205150955-31a09d347014 // indirect
 	google.golang.org/grpc v1.61.0 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/mysql v1.5.2 // indirect
-	gorm.io/driver/postgres v1.5.4 // indirect
+	gorm.io/driver/mysql v1.5.4 // indirect
+	gorm.io/driver/postgres v1.5.6 // indirect
 	gorm.io/plugin/dbresolver v1.5.0 // indirect
 	lukechampine.com/blake3 v1.2.1 // indirect
 )
