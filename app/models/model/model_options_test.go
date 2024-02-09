@@ -1,10 +1,11 @@
 package model
 
 import (
+	"log"
+	"os"
 	"testing"
 
 	"github.com/bitcoin-sv/alert-system/app/config"
-	"github.com/ordishs/gocore"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -82,7 +83,7 @@ func TestWithLogger(t *testing.T) {
 
 	t.Run("valid logger", func(t *testing.T) {
 		l := &config.ExtendedLogger{
-			Logger: gocore.Log("test"),
+			Logger: log.New(os.Stdout, "alert-system: ", log.LstdFlags),
 		}
 		require.NotNil(t, l)
 		opt := WithLogger(l)

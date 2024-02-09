@@ -1,7 +1,7 @@
 {
   "alert_webhook_url": "",
   "bitcoin_config_path": "",
-  "log_output_file": "/tmp/foo",
+  "log_output_file": "",
   "disable_rpc_verification": false,
   "request_logging": true,
   "alert_processing_interval": "5m",

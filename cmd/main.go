@@ -79,7 +79,9 @@ func main() {
 		}
 
 		close(idleConnectionsClosed)
-		appConfig.Services.Log.CloseWriter()
+		if err = appConfig.Services.Log.CloseWriter(); err != nil {
+			log.Printf("error closing logger: %s", err)
+		}
 	}(_appConfig)
 
 	// Start the p2p server

@@ -1,6 +1,7 @@
 {
   "alert_webhook_url": "https://webhook.url",
   "bitcoin_config_path": "",
+  "log_output_file": "",
   "disable_rpc_verification": false,
   "request_logging": true,
   "web_server": {

@@ -6,17 +6,6 @@ import (
 	"os"
 )
 
-type logLevel int
-
-const (
-	DEBUG logLevel = iota
-	INFO
-	WARN
-	ERROR
-	FATAL
-	PANIC
-)
-
 // LoggerInterface is the interface for the logger
 // This is used to allow the logger to be mocked and tested
 // These methods are the same as the gocore.Logger methods
@@ -36,7 +25,7 @@ type LoggerInterface interface {
 	Warn(args ...interface{})
 	Warnf(msg string, args ...interface{})
 	Printf(format string, v ...interface{}) // Custom method for go-api-router
-	CloseWriter()
+	CloseWriter() error
 	// GetLogLevel() gocore.logLevel
 }
 
@@ -48,8 +37,8 @@ type ExtendedLogger struct {
 }
 
 // CloseWriter close the log writer
-func (es *ExtendedLogger) CloseWriter() {
-	es.writer.Close()
+func (es *ExtendedLogger) CloseWriter() error {
+	return es.writer.Close()
 }
 
 // Printf will print the log message to the console

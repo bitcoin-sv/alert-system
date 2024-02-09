@@ -217,7 +217,7 @@ func LoadConfigFile() (_appConfig *Config, err error) {
 	// Load the logger service (ExtendedLogger meets the LoggerInterface)
 	writer := os.Stdout
 	if _appConfig.LogOutputFile != "" {
-		writer, err = os.OpenFile(_appConfig.LogOutputFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		writer, err = os.OpenFile(_appConfig.LogOutputFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 		if err != nil {
 			return nil, err
 		}
