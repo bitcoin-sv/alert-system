@@ -34,9 +34,11 @@ func main() {
 	}
 
 	// Ensure that RPC connection is valid
-	if _, err = _appConfig.Services.Node.BestBlockHash(context.Background()); err != nil {
-		_appConfig.Services.Log.Errorf("error talking to Bitcoin node with supplied RPC credentials: %s", err.Error())
-		return
+	if !_appConfig.DisableRPCVerification {
+		if _, err = _appConfig.Services.Node.BestBlockHash(context.Background()); err != nil {
+			_appConfig.Services.Log.Errorf("error talking to Bitcoin node with supplied RPC credentials: %s", err.Error())
+			return
+		}
 	}
 
 	// Create the p2p server
@@ -77,6 +79,9 @@ func main() {
 		}
 
 		close(idleConnectionsClosed)
+		if err = appConfig.Services.Log.CloseWriter(); err != nil {
+			log.Printf("error closing logger: %s", err)
+		}
 	}(_appConfig)
 
 	// Start the p2p server

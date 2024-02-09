@@ -3,12 +3,12 @@ package model
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/bitcoin-sv/alert-system/app/config"
 	"github.com/mrz1836/go-datastore"
 	customTypes "github.com/mrz1836/go-datastore/custom_types"
-	"github.com/ordishs/gocore"
 )
 
 // Model is the generic model field(s) and interface(s)
@@ -71,7 +71,7 @@ func NewBaseModel(name Name, opts ...Options) (m *Model) {
 	// Set default logger IF NOT SET via options
 	if m.logger == nil {
 		m.logger = &config.ExtendedLogger{
-			Logger: gocore.Log(config.ApplicationName),
+			Logger: &log.Logger{},
 		}
 	}
 

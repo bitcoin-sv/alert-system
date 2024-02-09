@@ -1,7 +1,10 @@
 {
   "alert_webhook_url": "",
   "bitcoin_config_path": "",
+  "log_output_file": "",
+  "disable_rpc_verification": false,
   "request_logging": true,
+  "alert_processing_interval": "5m",
   "web_server": {
     "idle_timeout": "60s",
     "port": "3000",
@@ -55,7 +58,7 @@
   "p2p": {
     "ip": "0.0.0.0",
     "port": "9906",
-    "alert_system_protocol_id": "/bitcoin/alert-system/1.0.1",
+    "alert_system_protocol_id": "/bitcoin/alert-system/1.0.0",
     "bootstrap_peer": "",
     "private_key_path": "",
     "topic_name": "bitcoin_alert_system"

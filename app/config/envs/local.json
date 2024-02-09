@@ -1,8 +1,9 @@
 {
   "alert_webhook_url": "",
   "bitcoin_config_path": "",
+  "disable_rpc_verification": false,
+  "log_output_file": "",
   "request_logging": true,
-  "bitcoin_config_path": "/home/galt/.bitcoin/bitcoin.conf",
   "alert_processing_interval": "5m",
   "web_server": {
     "idle_timeout": "60s",

@@ -18,6 +18,7 @@ require (
 	github.com/libsv/go-p2p v0.1.9
 	github.com/mrz1836/go-api-router v0.7.1
 	github.com/mrz1836/go-datastore v0.5.13
+	github.com/mrz1836/go-logger v0.3.2
 	github.com/multiformats/go-multiaddr v0.12.2
 	github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.0.2
 	github.com/ordishs/gocore v1.0.57
@@ -115,7 +116,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
-	github.com/mrz1836/go-logger v0.3.2 // indirect
 	github.com/mrz1836/go-parameters v0.4.1 // indirect
 	github.com/multiformats/go-base32 v0.1.0 // indirect
 	github.com/multiformats/go-base36 v0.2.0 // indirect

@@ -3,6 +3,8 @@ package config
 import (
 	"context"
 
+	"github.com/mrz1836/go-logger"
+
 	"github.com/mrz1836/go-datastore"
 )
 
@@ -11,7 +13,8 @@ func (c *Config) loadDatastore(ctx context.Context, models []interface{}) error 
 
 	// Sync collecting the options
 	var options []datastore.ClientOps
-
+	//TODO: pass in our own logger, but for now this doesn't work so i'm just going to silently log for now
+	options = append(options, datastore.WithLogger(logger.NewGormLogger(false, 0)))
 	// Select the datastore
 	if c.Datastore.Engine == datastore.SQLite {
 		options = append(options, datastore.WithSQLite(&datastore.SQLiteConfig{
