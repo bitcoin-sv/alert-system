@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"log"
 	"net"
 	"net/http"
 	"os"
@@ -14,7 +15,6 @@ import (
 	"sync"
 
 	"github.com/mrz1836/go-datastore"
-	"github.com/ordishs/gocore"
 	"github.com/spf13/viper"
 )
 
@@ -214,9 +214,19 @@ func LoadConfigFile() (_appConfig *Config, err error) {
 		return nil, err
 	}
 
-	// Load the logger service (gocore.Logger meets the LoggerInterface)
+	// Load the logger service (ExtendedLogger meets the LoggerInterface)
+	writer := os.Stdout
+	if _appConfig.LogOutputFile != "" {
+		writer, err = os.OpenFile(_appConfig.LogOutputFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	logger := log.New(writer, "bitcoin-alert-system: ", log.LstdFlags)
 	_appConfig.Services.Log = &ExtendedLogger{
-		Logger: gocore.Log(ApplicationName),
+		Logger: logger,
+		writer: writer,
 	}
 
 	// Set default alert processing interval if it doesn't exist
