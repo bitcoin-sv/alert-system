@@ -52,13 +52,17 @@ class SSHCall():
 # Representing the Alert System Microservice.
 class ASM():
 
-    def __init__(self, port = None, ssh_args = {}, timeout = 60):
+    def __init__(self, port = None, log = None, ssh_args = {}, timeout = 60):
         self.timeout = timeout
         # TODO: proper binary name not yet defined
         self.command = ["asm"]
         # default port
         if port is None:
             port = 3000
+        self.log = log
+        # default logfile
+        if self.log is None:
+            self.log = "/tmp/asm.log"
         self.ssh = None
         host = "localhost"
         if len(ssh_args) == 3:
@@ -105,19 +109,17 @@ class ASM():
     def run(self):
         process = None
         if self.ssh:
-            # TODO: Microservice is putting its logs to the stderr.
-            #       We are redirecting it to /dev/null to avoid interference with the script's output.
-            #       Do we need to redirect it to predefined log file? Will it be overridden?
-            command = self.command + [">", "/dev/null", "2>&1", "&"]
-            # We want to get the stderr to be able to report SSH issues
+            # Microservice is putting its log entries to the stderr.
+            # Redirecting them to the log file (/tmp/asm.log by default).
+            command = self.command + [">", self.log, "2>&1"]
+            # We want to get the stderr of the SSH process to be able to report any issues.
             self.ssh.run(' '.join(command), blocking=False, stderr=subprocess.PIPE)
             process = self.ssh.process
         else:
             process = Process(self.command)
-            # TODO: Microservice is putting its logs to the stderr.
-            #       We are redirecting it to /dev/null to avoid interference with the script's output.
-            #       Do we need to redirect it to predefined log file? Will it be overridden?
-            process.open(blocking=False, stderr=subprocess.DEVNULL)
+            # Redirecting stderr to a log file (/tmp/asm.log by default).
+            log_file = open(self.log, "w")
+            process.open(blocking=False, stderr=log_file)
         report("Waiting for the ASM to be synced...")
         self.wait_for_synced(process)
         if self.ssh:
@@ -192,7 +194,8 @@ class BSVNode():
     
     def run_node_locally(self):
         process = Process(self.command)
-        process.open(blocking=False)
+        # We want to get the stderr to be able to report bitcoind issues
+        process.open(blocking=False, stderr=subprocess.PIPE)
         self.wait_for_node_ready(process)
     
     def wait_for_node_ready(self, process):
@@ -200,7 +203,6 @@ class BSVNode():
         self.wait_for_rpc_connection(process)
         report("Waiting for node initialization...")
         self.wait_for_initialization()
-
 
     def wait_for_rpc_connection(self, process):
         running = False
@@ -278,9 +280,10 @@ def help(error = None):
     if error:
         print(f"{error}\n")
     print("Usage:\n" \
-          "start_aks_bsv.py [-h[elp]] [-asm_port=PORT] [ASM SSH OPTIONS] [BSV SSH OPTIONS] [BSV OPTIONS] [-v[erbose]]\n\n" \
+          "start_aks_bsv.py [-h[elp]] [-asm_port=PORT] [-asm_log=LOGFILE] [ASM SSH OPTIONS] [BSV SSH OPTIONS] [BSV OPTIONS] [-v[erbose]]\n\n" \
           "-h[elp]           Prints out this help message\n" \
           "-asm_port=PORT    Alert System Microservice HTTP port (3000 by default)\n" \
+          "-asm_log=LOGFILE  Log file containing Alert System Microservice log entries (/tmp/asm.log by default)\n" \
           "ASM SSH OPTIONS   SSH key-based authentication options to access the remote Alert System Microservice:\n" \
           "  -asm_host=HOST  IP or hostname of the remote Alert System Microservice\n" \
           "  -asm_user=USER  Username for the SSH connection\n" \
@@ -315,8 +318,8 @@ def parse_arguments(*args):
         # -h[elp]
         elif key == "h" or key == "help":
             show_help = True
-        # -asm_port
-        elif key == "asm_port":
+        # -asm_port and -asm_log
+        elif key == "asm_port" or key == "asm_log":
             if value is None:
                 help(error=f"Error: {arg} is missing a value")
                 sys.exit(1)
@@ -353,7 +356,7 @@ def main():
     # Parse arguments
     asm_args, bsv_args = parse_arguments(*sys.argv[1:])
     # Start the Alert System Microservice
-    asm = ASM(port=asm_args.get("port"), ssh_args=asm_args.get("ssh"))
+    asm = ASM(port=asm_args.get("port"), log=asm_args.get("log"), ssh_args=asm_args.get("ssh"))
     try:
         asm.start()
         print("Alert System Microservice is up and running")
