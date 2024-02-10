@@ -17,6 +17,10 @@ changelog:
 
 # ---------------------------
 # Builder
+#
+# CGO is enabled and inspiration came from:
+#    https://github.com/goreleaser/goreleaser-cross-example
+#    https://github.com/goreleaser/goreleaser-cross-example-sysroot
 # ---------------------------
 builds:
   - id: darwin-amd64
@@ -27,14 +31,24 @@ builds:
     goarch:
       - amd64
     env:
+      - CGO_ENABLED=1
       - PKG_CONFIG_SYSROOT_DIR=/sysroot/macos/amd64
       - PKG_CONFIG_PATH=/sysroot/macos/amd64/usr/local/lib/pkgconfig
-      - CC=o64-clang
-      - CXX=o64-clang++
+      #- CC=o64-clang
+      #- CXX=o64-clang++
+      - CC=clang  # Changed from o64-clang
+      - CXX=clang++  # Changed from o64-clang++
+    #mod_timestamp: "{{ .CommitTimestamp }}"
     flags:
       - -mod=readonly
     ldflags:
       - -s -w -X main.version={{.Version}}
+      #- -s -w -X github.com/bitcoin-sv/{{ .ProjectName }}/cmd.Version={{ .Version }}
+    overrides:
+      - goos: linux
+        goarch: arm64
+        env:
+          - CC=aarch64-linux-gnu-gcc
 
   - id: linux-armhf
     main: ./cmd/
@@ -46,45 +60,24 @@ builds:
     goarm:
       - 7
     env:
-      - CC=arm-linux-gnueabihf-gcc
+      - CGO_ENABLED=1
+      - CC=arm-linux-gnueabihf-gcc  # Make sure this points to the correct executable
       - CXX=arm-linux-gnueabihf-g++
       - CGO_CFLAGS=--sysroot=/sysroot/linux/armhf
       - CGO_LDFLAGS=--sysroot=/sysroot/linux/armhf
       - PKG_CONFIG_SYSROOT_DIR=/sysroot/linux/armhf
       - PKG_CONFIG_PATH=/sysroot/linux/armhf/opt/vc/lib/pkgconfig:/sysroot/linux/armhf/usr/lib/arm-linux-gnueabihf/pkgconfig:/sysroot/linux/armhf/usr/lib/pkgconfig:/sysroot/linux/armhf/usr/local/lib/pkgconfig
+    #mod_timestamp: "{{ .CommitTimestamp }}"
     flags:
       - -mod=readonly
     ldflags:
       - -s -w -X main.version={{.Version}}
-
-#  - id: "amd64-build"
-#    main: ./cmd/
-#    env:
-#      - CGO_ENABLED=1
-#      - GO111MODULE=on
-#    goarch:
-#      - amd64
-#    goos:
-#      - linux
-#    mod_timestamp: "{{ .CommitTimestamp }}"
-#    ldflags:
-#      - -s -w -X github.com/bitcoin-sv/{{ .ProjectName }}/cmd.Version={{ .Version }}
-
-#  - id: "arm64-build"
-#    main: ./cmd/
-#    env:
-#      - CGO_ENABLED=1
-#      - GO111MODULE=on
-#      - CC=aarch64-linux-gnu-gcc
-#      - CXX=aarch64-linux-gnu-g++
-#    goarch:
-#      - arm64
-#    goos:
-#      - linux
-#    mod_timestamp: "{{ .CommitTimestamp }}"
-#    ldflags:
-#      - -s -w -X github.com/bitcoin-sv/{{ .ProjectName }}/cmd.Version={{ .Version }}
-
+      #- -s -w -X github.com/bitcoin-sv/{{ .ProjectName }}/cmd.Version={{ .Version }}
+    overrides:
+      - goos: linux
+        goarch: arm64
+        env:
+          - CC=aarch64-linux-gnu-gcc
 # ---------------------------
 # Archives + Checksums
 # ---------------------------
