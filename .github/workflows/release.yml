@@ -27,7 +27,7 @@ jobs:
       - name: Install Dependencies
         run: |
             sudo apt-get update
-            sudo apt-get install -y libsqlite3-dev # Replace with the actual dependencies your project needs
+            sudo apt-get install -y libsqlite3-dev
       - name: Install ARM64 cross-compilation tools
         run: |
           sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu

@@ -19,36 +19,88 @@ changelog:
 # Builder
 # ---------------------------
 builds:
-  - env:
-      - CGO_ENABLED=1
-      - GO111MODULE=on
-      - CC=aarch64-linux-gnu-gcc
-      - CXX=aarch64-linux-gnu-g++
+  - id: darwin-amd64
     main: ./cmd/
-    binary: "alert_system"
+    binary: alert_system
+    goos:
+      - darwin
     goarch:
       - amd64
-      #- arm64
-    goos:
-      #- darwin
-      - linux
-    goarm:
-      - "6"
-      - "7"
-    goamd64:
-      - v2
-      - v3
-    mod_timestamp: "{{ .CommitTimestamp }}"
+    env:
+      - PKG_CONFIG_SYSROOT_DIR=/sysroot/macos/amd64
+      - PKG_CONFIG_PATH=/sysroot/macos/amd64/usr/local/lib/pkgconfig
+      - CC=o64-clang
+      - CXX=o64-clang++
+    flags:
+      - -mod=readonly
     ldflags:
-      - -s -w -X github.com/bitcoin-sv/{{ .ProjectName }}/cmd.Version={{ .Version }}
+      - -s -w -X main.version={{.Version}}
+
+  - id: linux-armhf
+    main: ./cmd/
+    binary: alert_system
+    goos:
+      - linux
+    goarch:
+      - arm
+    goarm:
+      - 7
+    env:
+      - CC=arm-linux-gnueabihf-gcc
+      - CXX=arm-linux-gnueabihf-g++
+      - CGO_CFLAGS=--sysroot=/sysroot/linux/armhf
+      - CGO_LDFLAGS=--sysroot=/sysroot/linux/armhf
+      - PKG_CONFIG_SYSROOT_DIR=/sysroot/linux/armhf
+      - PKG_CONFIG_PATH=/sysroot/linux/armhf/opt/vc/lib/pkgconfig:/sysroot/linux/armhf/usr/lib/arm-linux-gnueabihf/pkgconfig:/sysroot/linux/armhf/usr/lib/pkgconfig:/sysroot/linux/armhf/usr/local/lib/pkgconfig
+    flags:
+      - -mod=readonly
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+
+#  - id: "amd64-build"
+#    main: ./cmd/
+#    env:
+#      - CGO_ENABLED=1
+#      - GO111MODULE=on
+#    goarch:
+#      - amd64
+#    goos:
+#      - linux
+#    mod_timestamp: "{{ .CommitTimestamp }}"
+#    ldflags:
+#      - -s -w -X github.com/bitcoin-sv/{{ .ProjectName }}/cmd.Version={{ .Version }}
+
+#  - id: "arm64-build"
+#    main: ./cmd/
+#    env:
+#      - CGO_ENABLED=1
+#      - GO111MODULE=on
+#      - CC=aarch64-linux-gnu-gcc
+#      - CXX=aarch64-linux-gnu-g++
+#    goarch:
+#      - arm64
+#    goos:
+#      - linux
+#    mod_timestamp: "{{ .CommitTimestamp }}"
+#    ldflags:
+#      - -s -w -X github.com/bitcoin-sv/{{ .ProjectName }}/cmd.Version={{ .Version }}
 
 # ---------------------------
 # Archives + Checksums
 # ---------------------------
 archives:
-  - wrap_in_directory: true
-    format: tar.gz
-    name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}_{{ .Version }}'
+  - id: alert_system
+    builds:
+      - darwin-amd64
+      - linux-armhf
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format: zip
+    wrap_in_directory: true
+
+#archives:
+#  - wrap_in_directory: true
+#    format: tar.gz
+#    name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}_{{ .Version }}'
 
 checksum:
   name_template: "{{ .ProjectName }}_checksums.txt"
