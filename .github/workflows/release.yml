@@ -93,7 +93,6 @@ jobs:
             dist/CHANGELOG.md
 
   create-release:
-    #needs: [build-linux-binary, build-darwin-binary, build-windows-binary]
     needs: [build-linux-binary, build-darwin-binary]
     runs-on: ubuntu-latest
     steps:
@@ -116,11 +115,6 @@ jobs:
         with:
           name: alert_system_darwin
           path: ./tmp-build/darwin
-      #- name: Download windows binaries
-      #  uses: actions/download-artifact@v3
-      #  with:
-      #    name: kubectl-eds-windows
-      #    path: ./tmp-build/windows
       - name: Get tag
         uses: little-core-labs/get-git-tag@v3.0.2
         id: tag
@@ -138,7 +132,6 @@ jobs:
           prerelease: ${{ contains(github.ref, '-rc.') }}
           files: |
             dist/*.zip
-            dist/checksums.txt
             dist/CHANGELOG.md
         env:
           COMMIT_TAG: ${{steps.tag.outputs.tag}}
