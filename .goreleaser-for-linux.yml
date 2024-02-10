@@ -60,11 +60,11 @@ archives:
   - id: alert_system
     builds:
       - linux-build
-    name_template: "kubectl-eds_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    name_template: "alert_system_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: false
     format: zip
     files:
       - LICENSE
 checksum:
-  name_template: "{{ .ProjectName }}_checksums.txt"
+  name_template: "checksums.txt"
   algorithm: sha256

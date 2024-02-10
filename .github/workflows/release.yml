@@ -45,17 +45,18 @@ jobs:
         uses: goreleaser/goreleaser-action@v3
         with:
           version: latest
-          args: release --skip-publish --config .goreleaser-for-linux.yml
+          args: release --skip=publish --config .goreleaser-for-linux.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GORELEASER_PREVIOUS_TAG: ${{steps.latest_version.outputs.release}}
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: alert-system-linux
+          name: alert_system_linux
           path: |
-            dist/alert-system_*.zip
+            dist/alert_system_*.zip
             dist/checksums.txt
+            dist/CHANGELOG.md
 
   create-release:
     #needs: [build-linux-binary, build-darwin-binary, build-windows-binary]
@@ -74,7 +75,7 @@ jobs:
       - name: Download linux binaries
         uses: actions/download-artifact@v4
         with:
-          name: alert-system-linux
+          name: alert_system_linux
           path: ./tmp-build/linux
       #- name: Download darwin binaries
       #  uses: actions/download-artifact@v3
