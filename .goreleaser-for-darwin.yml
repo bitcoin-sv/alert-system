@@ -1,0 +1,65 @@
+# Make sure to check the documentation at http://goreleaser.com
+# ---------------------------
+# General
+# ---------------------------
+before:
+  hooks:
+    - make all
+snapshot:
+  name_template: "{{ .Tag }}"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^.github:'
+      - '^.vscode:'
+      - '^docs:'
+      - '^test:'
+
+# ---------------------------
+# Builder
+#
+# CGO is enabled and inspiration came from:
+#    https://github.com/goreleaser/goreleaser-cross-example
+#    https://github.com/goreleaser/goreleaser-cross-example-sysroot
+#    https://github.com/DataDog/extendeddaemonset/blob/main/.goreleaser-for-linux.yaml
+# ---------------------------
+builds:
+  - id: darwin-build
+    main: ./cmd/
+    binary: alert_system
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    env:
+      - CGO_ENABLED=1
+      #- PKG_CONFIG_SYSROOT_DIR=/sysroot/macos/amd64
+      #- PKG_CONFIG_PATH=/sysroot/macos/amd64/usr/local/lib/pkgconfig
+      #- CC=o64-clang # (GitHub action)
+      #- CXX=o64-clang++ # (GitHub action)
+      #- CC=clang  # Changed from o64-clang (works for mac)
+      #- CXX=clang++  # Changed from o64-clang++ (works for mac)
+    #mod_timestamp: "{{ .CommitTimestamp }}"
+    #flags:
+    #  - -mod=readonly
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+      #- -s -w -X github.com/bitcoin-sv/{{ .ProjectName }}/cmd.Version={{ .Version }}
+
+# ---------------------------
+# Archives + Checksums
+# ---------------------------
+archives:
+  - id: alert_system
+    builds:
+      - darwin-build
+    name_template: "alert_system_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: false
+    format: zip
+    files:
+      - LICENSE
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
