@@ -68,4 +68,3 @@ archives:
 checksum:
   name_template: "{{ .ProjectName }}_checksums.txt"
   algorithm: sha256
-
