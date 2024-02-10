@@ -20,9 +20,10 @@ changelog:
 # ---------------------------
 builds:
   - env:
-      - CGO_ENABLED=1 # Required for SQLite
+      - CGO_ENABLED=1
       - GO111MODULE=on
-      #- CGO_CFLAGS=-Wno-error=unused-command-line-argument
+      - CC=aarch64-linux-gnu-gcc
+      - CXX=aarch64-linux-gnu-g++
     main: ./cmd/
     binary: "alert_system"
     goarch:
