@@ -234,7 +234,7 @@ func TestMetadata_GormDBDataType(t *testing.T) {
 		assert.Equal(t, datastore.JSON, m.GormDBDataType(db, nil))
 	})
 
-	t.Run("postgres dialector", func(t *testing.T) {
+	t.Run("postgres dialector", func(_ *testing.T) {
 		/*dsn := "host=localhost user=postgres password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai"
 		db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 		require.NotNil(t, db)

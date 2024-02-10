@@ -12,7 +12,7 @@ import (
 // TestBanPeer tests the BanPeer method
 func TestBanPeer(t *testing.T) {
 	mockNode := &mocks.Node{
-		BanPeerFunc: func(ctx context.Context, peer string) error {
+		BanPeerFunc: func(_ context.Context, peer string) error {
 			// Mock behavior here
 			if peer == "expected_peer_address" {
 				return nil
@@ -29,7 +29,7 @@ func TestBanPeer(t *testing.T) {
 // TestUnBanPeer tests the UnBanPeer method
 func TestUnBanPeer(t *testing.T) {
 	mockNode := &mocks.Node{
-		UnbanPeerFunc: func(ctx context.Context, peer string) error {
+		UnbanPeerFunc: func(_ context.Context, peer string) error {
 			// Mock behavior here
 			if peer == "expected_peer_address" {
 				return nil
@@ -46,7 +46,7 @@ func TestUnBanPeer(t *testing.T) {
 // TestInvalidateBlock tests the InvalidateBlock method
 func TestInvalidateBlock(t *testing.T) {
 	mockNode := &mocks.Node{
-		InvalidateBlockFunc: func(ctx context.Context, hash string) error {
+		InvalidateBlockFunc: func(_ context.Context, hash string) error {
 			// Mock behavior here
 			if hash == "expected_hash" {
 				return nil
