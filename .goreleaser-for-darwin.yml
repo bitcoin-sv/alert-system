@@ -43,7 +43,7 @@ builds:
 # Archives + Checksums
 # ---------------------------
 archives:
-  - id: alert_system
+  - id: alert_system_darwin
     builds:
       - darwin-build
     name_template: "alert_system_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
