@@ -65,34 +65,38 @@ install-go: ## Install the application (Using Native Go)
 
 .PHONY: lint
 lint: ## Run the golangci-lint application (install if not found)
-	@echo "installing golangci-lint..."
 	@# Travis (has sudo)
 	@if [ "$(shell command -v golangci-lint)" = "" ] && [ $(TRAVIS) ]; then \
-        echo "travis-detected"; \
+        echo "travis-detected, installing..."; \
         curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.56.1 && \
         sudo cp ./bin/golangci-lint $(go env GOPATH)/bin/; \
     fi;
 	@# AWS CodePipeline
 	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(CODEBUILD_BUILD_ID)" != "" ]; then \
-        echo "aws-pipeline-detected"; \
+        echo "aws-pipeline-detected, installing..."; \
         curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.56.1; \
     fi;
 	@# GitHub Actions
 	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(GITHUB_WORKFLOW)" != "" ]; then \
 		GOPATH=$$(go env GOPATH); \
 		if [ -z "$$GOPATH" ]; then GOPATH=$$HOME/go; fi; \
-		echo "github-action-detected"; \
+		echo "github-action-detected, installing..."; \
 		echo $$GOPATH/bin; \
 		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$GOPATH/bin v1.56.1; \
 	fi;
 	@# Brew - MacOS
 	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(shell command -v brew)" != "" ]; then \
-        echo "brew-detected"; \
-        brew install golangci-lint --overwrite go; \
+        echo "brew-detected, installing..."; \
+        brew install golangci-lint || true; \
+        if [ "$(brew list --versions golangci-lint)" = "" ]; then \
+            echo "attempting to overwrite conflicting links..."; \
+            brew link --overwrite go; \
+            brew install golangci-lint; \
+        fi; \
     fi;
 	@# MacOS Vanilla
 	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(shell command -v brew)" = "" ]; then \
-        echo "vanilla-mac-detected"; \
+        echo "vanilla-mac-detected, installing..."; \
         curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- v1.56.1; \
     fi;
 	@echo "running golangci-lint..."
