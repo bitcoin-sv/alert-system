@@ -88,7 +88,7 @@ lint: ## Run the golangci-lint application (install if not found)
 	@# Brew - MacOS
 	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(shell command -v brew)" != "" ]; then \
         echo "brew-detected"; \
-        brew install golangci-lint; \
+        brew install golangci-lint --overwrite go; \
     fi;
 	@# MacOS Vanilla
 	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(shell command -v brew)" = "" ]; then \
