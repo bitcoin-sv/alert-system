@@ -24,6 +24,10 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: 1.21
+      - name: Install Dependencies
+        run: |
+            sudo apt-get update
+            sudo apt-get install -y libsqlite3-dev # Replace with the actual dependencies your project needs
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5.0.0
         with:

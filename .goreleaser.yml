@@ -20,7 +20,7 @@ changelog:
 # ---------------------------
 builds:
   - env:
-      - CGO_ENABLED=0 # Required for SQLite
+      - CGO_ENABLED=1 # Required for SQLite
       - GO111MODULE=on
       #- CGO_CFLAGS=-Wno-error=unused-command-line-argument
     main: ./cmd/
@@ -29,11 +29,11 @@ builds:
       - amd64
       - arm64
     goos:
-      - darwin
+      #- darwin
       - linux
     goarm:
-      - 6
-      - 7
+      - "6"
+      - "7"
     goamd64:
       - v2
       - v3
