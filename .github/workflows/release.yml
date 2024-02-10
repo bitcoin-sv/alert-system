@@ -45,7 +45,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v3
         with:
           version: latest
-          args: release --skip-publish --config .goreleaser-for-linux.yaml
+          args: release --skip-publish --config .goreleaser-for-linux.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GORELEASER_PREVIOUS_TAG: ${{steps.latest_version.outputs.release}}
