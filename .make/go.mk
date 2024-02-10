@@ -79,10 +79,12 @@ lint: ## Run the golangci-lint application (install if not found)
     fi;
 	@# GitHub Actions
 	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(GITHUB_WORKFLOW)" != "" ]; then \
-        echo "github-action-detected"; \
-        echo $(go env GOPATH)/bin; \
-        curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.56.1; \
-    fi;
+		GOPATH=$$(go env GOPATH); \
+		if [ -z "$$GOPATH" ]; then GOPATH=$$HOME/go; fi; \
+		echo "github-action-detected"; \
+		echo $$GOPATH/bin; \
+		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$GOPATH/bin v1.56.1; \
+	fi;
 	@# Brew - MacOS
 	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(shell command -v brew)" != "" ]; then \
         echo "brew-detected"; \
