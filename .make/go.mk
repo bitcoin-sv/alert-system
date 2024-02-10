@@ -85,13 +85,20 @@ lint: ## Run the golangci-lint application (install if not found)
 		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$GOPATH/bin v1.56.1; \
 	fi;
 	@# Brew - MacOS
-	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(shell command -v brew)" != "" ]; then \
-        echo "brew detected, installing..."; \
-        brew install golangci-lint || true; \
-        if [ "$(brew list --versions golangci-lint)" = "" ]; then \
-            echo "attempting to overwrite conflicting links..."; \
-            brew link --overwrite go; \
-            brew install golangci-lint; \
+	@if [ "$(shell command -v golangci-lint)" = "" ]; then \
+        if [ "$(shell command -v brew)" != "" ]; then \
+            echo "brew detected, checking golangci-lint installation..."; \
+            if brew list golangci-lint &>/dev/null; then \
+                echo "golangci-lint is already installed."; \
+            else \
+                echo "installing golangci-lint..."; \
+                brew install golangci-lint || true; \
+                if [ "$(brew list --versions golangci-lint)" = "" ]; then \
+                    echo "attempting to overwrite conflicting links..."; \
+                    brew link --overwrite go; \
+                    brew install golangci-lint; \
+                fi; \
+            fi; \
         fi; \
     fi;
 	@# MacOS Vanilla
