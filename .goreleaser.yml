@@ -34,21 +34,16 @@ builds:
       - CGO_ENABLED=1
       - PKG_CONFIG_SYSROOT_DIR=/sysroot/macos/amd64
       - PKG_CONFIG_PATH=/sysroot/macos/amd64/usr/local/lib/pkgconfig
-      #- CC=o64-clang
-      #- CXX=o64-clang++
-      - CC=clang  # Changed from o64-clang
-      - CXX=clang++  # Changed from o64-clang++
+      - CC=o64-clang # (GitHub action)
+      - CXX=o64-clang++ # (GitHub action)
+      #- CC=clang  # Changed from o64-clang (works for mac)
+      #- CXX=clang++  # Changed from o64-clang++ (works for mac)
     #mod_timestamp: "{{ .CommitTimestamp }}"
     flags:
       - -mod=readonly
     ldflags:
       - -s -w -X main.version={{.Version}}
       #- -s -w -X github.com/bitcoin-sv/{{ .ProjectName }}/cmd.Version={{ .Version }}
-    overrides:
-      - goos: linux
-        goarch: arm64
-        env:
-          - CC=aarch64-linux-gnu-gcc
 
   - id: linux-armhf
     main: ./cmd/
@@ -73,11 +68,12 @@ builds:
     ldflags:
       - -s -w -X main.version={{.Version}}
       #- -s -w -X github.com/bitcoin-sv/{{ .ProjectName }}/cmd.Version={{ .Version }}
-    overrides:
-      - goos: linux
-        goarch: arm64
-        env:
-          - CC=aarch64-linux-gnu-gcc
+#    overrides:
+#      - goos: linux
+#        goarch: arm64
+#        env:
+#          - CC=aarch64-linux-gnu-gcc
+
 # ---------------------------
 # Archives + Checksums
 # ---------------------------
