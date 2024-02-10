@@ -66,16 +66,33 @@ install-go: ## Install the application (Using Native Go)
 .PHONY: lint
 lint: ## Run the golangci-lint application (install if not found)
 	@echo "installing golangci-lint..."
-	@#Travis (has sudo)
-	@if [ "$(shell command -v golangci-lint)" = "" ] && [ $(TRAVIS) ]; then curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.56.1 && sudo cp ./bin/golangci-lint $(go env GOPATH)/bin/; fi;
-	@#AWS CodePipeline
-	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(CODEBUILD_BUILD_ID)" != "" ]; then curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.56.1; fi;
-	@#GitHub Actions
-	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(GITHUB_WORKFLOW)" != "" ]; then curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.56.1; fi;
-	@#Brew - MacOS
-	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(shell command -v brew)" != "" ]; then brew install golangci-lint; fi;
-	@#MacOS Vanilla
-	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(shell command -v brew)" != "" ]; then curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- v1.56.1; fi;
+	@# Travis (has sudo)
+	@if [ "$(shell command -v golangci-lint)" = "" ] && [ $(TRAVIS) ]; then \
+        echo "travis-detected"; \
+        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.56.1 && \
+        sudo cp ./bin/golangci-lint $(go env GOPATH)/bin/; \
+    fi;
+	@# AWS CodePipeline
+	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(CODEBUILD_BUILD_ID)" != "" ]; then \
+        echo "aws-pipeline-detected"; \
+        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.56.1; \
+    fi;
+	@# GitHub Actions
+	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(GITHUB_WORKFLOW)" != "" ]; then \
+        echo "github-action-detected"; \
+        echo $(go env GOPATH)/bin; \
+        curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.56.1; \
+    fi;
+	@# Brew - MacOS
+	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(shell command -v brew)" != "" ]; then \
+        echo "brew-detected"; \
+        brew install golangci-lint; \
+    fi;
+	@# MacOS Vanilla
+	@if [ "$(shell command -v golangci-lint)" = "" ] && [ "$(shell command -v brew)" = "" ]; then \
+        echo "vanilla-mac-detected"; \
+        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- v1.56.1; \
+    fi;
 	@echo "running golangci-lint..."
 	@golangci-lint run --verbose
 
