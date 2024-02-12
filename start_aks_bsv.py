@@ -11,6 +11,50 @@ import subprocess
 import sys
 import time
 
+"""
+The script runs two independent applications in the following order:
+- an Alert System Microservice
+- a bitcoind process, an instance of the SV Node Software
+
+It is not a monitoring tool to trace an activity or operability between the micro service and the node (or vice versa).
+It is not used to configure any of the mentioned applications. Configuration must be done prior to execution of the script.
+
+The script allows running the micro service and the node on:
+a. the same machine (a virtual of physical machine)
+b. two separate machines (both environments are accessed via SSH authorized public key)
+
+It can be run on the officially supported platforms by the SV Node Software.
+It reports an error if either the micro service or the node couldn't start well.
+
+Steps of the script:
+- Sends a http GET/health request to the host (localhost or <asm_host>) to check if the Alert System Microservice (ASM) is up and running
+- If ASM is not yet up and running, it starts the alert-system binary (locally or via SSH)
+- Waits up to 60 seconds to receive the "synced": true in the GET/health JSON response
+- Reports any issues with running the ASM
+- If ASM is up and running, runs the bitcoin-cli command to check if the bitcoind process is running
+- Starts a bitcoind process if it is not already running
+- Waits 60 seconds for RPC connection (getblockcount) and for the node to be initialized ("initcomplete" in the getinfo)
+- Reports any issues with running the node
+
+Prerequisites:
+ALERT_SYSTEM_DISABLE_RPC_VERIFICATION=true environment variable must be set. Micro service should not check the RPC connection if it is
+started before the node.
+The following binaries must exist and be found by the system:
+- alert-system
+- bitcoin-cli
+- bitcoind
+This can be done by either setting the PATH environment variable or create symlinks into the /usr/bin for example.
+All required environment variables (ALERT_SYSTEM_* and/or PATH) must be available for SSH sessions if the script needs to run
+applications remotely.
+This can be checked using the following command:
+ssh -i </path/to/the/private_key.pem> <the_user>@<the_host> env
+
+An example to add required environment variables for <the_user>@<the_host> SSH sessions is to configure <the_host> by:
+- adding required environment variables into the ~/.ssh/environment file (in <the_user> home directory)
+- setting "PermitUserEnvironment yes" in the /etc/ssh/sshd_config
+- resetting the SSH server with "sudo systemctl restart ssh"
+"""
+
 # Representing a process we can open.
 class Process():
     def __init__(self, command, path=None):
