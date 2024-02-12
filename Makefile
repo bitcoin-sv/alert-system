@@ -25,7 +25,3 @@ clean: ## Remove previous builds and any cached data
 	@$(MAKE) clean-mods
 	@test $(DISTRIBUTIONS_DIR)
 	@if [ -d $(DISTRIBUTIONS_DIR) ]; then rm -r $(DISTRIBUTIONS_DIR); fi
-
-.PHONY: release
-release:: ## Runs common.release then runs godocs
-	@$(MAKE) godocs

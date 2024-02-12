@@ -1,0 +1,56 @@
+# Make sure to check the documentation at http://goreleaser.com
+# ---------------------------
+# General
+# ---------------------------
+before:
+  hooks:
+    - make all
+snapshot:
+  name_template: "{{ .Tag }}"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^.github:'
+      - '^.vscode:'
+      - '^docs:'
+      - '^test:'
+
+# ---------------------------
+# Builder
+#
+# CGO is enabled and inspiration came from:
+#    https://github.com/goreleaser/goreleaser-cross-example
+#    https://github.com/goreleaser/goreleaser-cross-example-sysroot
+#    https://github.com/DataDog/extendeddaemonset/blob/main/.goreleaser-for-darwin.yaml
+# ---------------------------
+builds:
+  - id: darwin-build
+    main: ./cmd/
+    binary: alert_system
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    env:
+      - CGO_ENABLED=1
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+
+# ---------------------------
+# Archives + Checksums
+# ---------------------------
+archives:
+  - id: alert_system_darwin
+    builds:
+      - darwin-build
+    name_template: "alert_system_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: false
+    format: zip
+    files:
+      - LICENSE
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
