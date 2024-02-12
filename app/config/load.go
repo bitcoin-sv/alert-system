@@ -274,14 +274,21 @@ func (c *Config) loadBitcoinConfiguration() error {
 		}
 		confValues[keyValue[0]] = keyValue[1]
 	}
+	// Get the default host and ports in case they are not set
+	defaultHostPort := c.RPCConnections[0].Host
+	// Trim off http or https
+	defaultHostPortTrimmed := strings.TrimPrefix(defaultHostPort, "http://")
+	defaultHostPortTrimmed = strings.TrimPrefix(defaultHostPortTrimmed, "https://")
+	defaults := strings.Split(defaultHostPortTrimmed, ":")
 	host := confValues["rpcconnect"]
 	if host == "" {
-		host = "127.0.0.1"
+		c.Services.Log.Debugf("rpcconnect value not detected in bitcoin.conf")
+		host = defaults[0]
 	}
 	port := confValues["rpcport"]
 	if port == "" {
-		c.Services.Log.Debugf("rpcport value not detected ")
-		port = "8332"
+		c.Services.Log.Debugf("rpcport value not detected in bitcoin.conf")
+		port = defaults[1]
 	}
 
 	user := confValues["rpcuser"]
