@@ -328,7 +328,9 @@ def help(error = None):
           "  -bsv_pk_path=PK Private key file path\n" \
           "BSV OPTIONS       Any additional bitcoind and bitcoin-cli parameters as -key or -key=value\n" \
           "-v[erbose]        Prints out details during the startup\n\n"
-          "Example:\n" \
+          "Basic example, running Alert System Microservice and BSV node, both local, using a specified bitcoind option -datadir:\n" \
+          "start_aks_bsv.py -datadir=/data/bsv\n\n" \
+          "Example of running a local Alert System Microservice and a remote BSV node, specifying key-based SSH authentication and using -verbose option to print out more details:\n" \
           "start_aks_bsv.py -datadir=/data/bsv -bsv_host=bsvhost.com -bsv_user=bsv_usr1 -bsv_pk_path=/home/bsv_usr1/.ssh/id_ed25519 -verbose")
 
 def parse_arguments(*args):
