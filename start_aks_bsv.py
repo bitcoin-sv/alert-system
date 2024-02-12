@@ -128,7 +128,7 @@ class ASM():
                 print("Alert System Microservice has already started, waiting to be synced...")
                 self.wait_for_synced()
                 return
-        report("Starting the ASM...")
+        print("Starting the Alert System Microservice...")
         self.run()
 
 # Representing the BSV bitcoin-cli.
@@ -245,7 +245,7 @@ class BSVNode():
             # At this point we assume the node is not running yet
             report("BSV node has not started yet")
             report_exception("Exception was", e)
-        report("Starting the node...")
+        print("Starting the BSV node...")
         self.run_node()
 
 verbose = False
