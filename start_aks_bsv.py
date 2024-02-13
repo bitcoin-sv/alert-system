@@ -17,7 +17,8 @@ The script runs two independent applications in the following order:
 - a bitcoind process, an instance of the SV Node Software
 
 It is not a monitoring tool to trace an activity or operability between the micro service and the node (or vice versa).
-It is not used to configure any of the mentioned applications. Configuration must be done prior to execution of the script.
+It is not used to configure any of the mentioned applications. Configuration must be done prior to execution of the
+script.
 
 The script allows running the micro service and the node on:
 a. the same machine (a virtual of physical machine)
@@ -27,25 +28,27 @@ It can be run on the officially supported platforms by the SV Node Software.
 It reports an error if either the micro service or the node couldn't start well.
 
 Steps of the script:
-- Sends a http GET/health request to the host (localhost or <asm_host>) to check if the Alert System Microservice (ASM) is up and running
+- Sends a http GET/health request to the host (localhost or <asm_host>) to check if the Alert System Microservice (ASM)
+  is up and running
 - If ASM is not yet up and running, it starts the alert-system binary (locally or via SSH)
 - Waits up to 60 seconds to receive the "synced": true in the GET/health JSON response
 - Reports any issues with running the ASM
 - If ASM is up and running, runs the bitcoin-cli command to check if the bitcoind process is running
 - Starts a bitcoind process if it is not already running
-- Waits 60 seconds for RPC connection (getblockcount) and for the node to be initialized ("initcomplete" in the getinfo)
+- Waits 60 seconds for RPC connection (getblockcount) and for the node to be initialized ("initcomplete" in the
+  getinfo)
 - Reports any issues with running the node
 
 Prerequisites:
-ALERT_SYSTEM_DISABLE_RPC_VERIFICATION=true environment variable must be set. Micro service should not check the RPC connection if it is
-started before the node.
+ALERT_SYSTEM_DISABLE_RPC_VERIFICATION=true environment variable must be set. Micro service should not check the RPC
+connection if it is started before the node.
 The following binaries must exist and be found by the system:
 - alert-system
 - bitcoin-cli
 - bitcoind
 This can be done by either setting the PATH environment variable or create symlinks into the /usr/bin for example.
-All required environment variables (ALERT_SYSTEM_* and/or PATH) must be available for SSH sessions if the script needs to run
-applications remotely.
+All required environment variables (ALERT_SYSTEM_* and/or PATH) must be available for SSH sessions if the script needs
+to run applications remotely.
 This can be checked using the following command:
 ssh -i </path/to/the/private_key.pem> <the_user>@<the_host> env
 
@@ -55,14 +58,14 @@ An example to add required environment variables for <the_user>@<the_host> SSH s
 - resetting the SSH server with "sudo systemctl restart ssh"
 """
 
-# Representing a process we can open.
-class Process():
+
+class Process():  # Representing a process we can open.
     def __init__(self, command, path=None):
         self.command = command
         self.path = path
         self.process = None
     
-    def open(self, blocking = True, stderr = None):
+    def open(self, blocking=True, stderr=None):
         report(f"Running {self.command}...")
         if blocking:
             # Open the process and wait for it to finish
@@ -81,22 +84,22 @@ class Process():
             # Open the process and return immediately
             self.process = subprocess.Popen(self.command, universal_newlines=True, cwd=self.path, stderr=stderr)
 
-# Representing a call over the SSH with the key-based authentication.
-class SSHCall():
+
+class SSHCall():  # Representing a call over the SSH with the key-based authentication.
 
     def __init__(self, host, user, key):
         self.ssh_command = ["ssh", "-i", key, f"{user}@{host}"]
         self.process = None
     
-    def run(self, command, blocking = True, stderr=None):
+    def run(self, command, blocking=True, stderr=None):
         ssh_call = self.ssh_command + [command]
         self.process = Process(ssh_call)
         return self.process.open(blocking=blocking, stderr=stderr)
 
-# Representing the Alert System Microservice.
-class ASM():
 
-    def __init__(self, port = None, ssh_args = {}, timeout = 60):
+class ASM():  # Representing the Alert System Microservice.
+
+    def __init__(self, port=None, ssh_args={}, timeout=60):
         self.timeout = timeout
         self.command = ["alert-system"]
         # default port
@@ -110,7 +113,7 @@ class ASM():
         self.service = f"{host}:{port}"
         self.process = None
     
-    def wait_for_synced(self, process = None):
+    def wait_for_synced(self, process=None):
         wait_until = time.time() + self.timeout
         while time.time() < wait_until:
             if process is not None:
@@ -126,8 +129,8 @@ class ASM():
                     raise subprocess.CalledProcessError(return_code, command, stderr=stderr)
             if (self.is_synced()):
                 return
-            report(f"Not synced")
-            report(f"Retrying...")
+            report("Not synced")
+            report("Retrying...")
             time.sleep(1.0)
         assert wait_until >= time.time(), "Alert System Microservice not synced, timeout exceeded"
 
@@ -143,7 +146,6 @@ class ASM():
         except Exception as e:
             report_exception("Exception while requesting Alert System Microservice health", e)
             return None
-
 
     def run(self):
         process = None
@@ -175,11 +177,11 @@ class ASM():
         print("Starting the Alert System Microservice...")
         self.run()
 
-# Representing the BSV bitcoin-cli.
-class BSVCLI():
+
+class BSVCLI():  # Representing the BSV bitcoin-cli.
 
     # Provide additional bitcoin-cli parameters if needed for RPC commands
-    def __init__(self, args = [], ssh = None):
+    def __init__(self, args=[], ssh=None):
         self.command = ["bitcoin-cli"] + args
         self.ssh = ssh
 
@@ -193,7 +195,7 @@ class BSVCLI():
         return self.ssh.run(command)
 
     # Sends RPC and returns the result as a JSON object
-    def rpc(self, rpc, rpc_args = []):
+    def rpc(self, rpc, rpc_args=[]):
         command = self.command + [rpc] + rpc_args
         json_output = None
         if self.ssh:
@@ -207,11 +209,11 @@ class BSVCLI():
             report_exception("Not a JSON string", e)
         return None
 
-# Representing the BSV node.
-class BSVNode():
+
+class BSVNode():  # Representing the BSV node.
 
     # Provide additional bitcoind parameters if needed to start the node properly
-    def __init__(self, args = [], ssh_args = {}, timeout = 60):
+    def __init__(self, args=[], ssh_args={}, timeout=60):
         self.timeout = timeout
         self.command = ["bitcoind"] + args
         self.ssh = None
@@ -292,12 +294,16 @@ class BSVNode():
         print("Starting the BSV node...")
         self.run_node()
 
+
 verbose = False
+
+
 def report(message):
     if verbose:
         print(f"[{datetime.now().strftime('%d-%m-%Y %H:%M:%S.%f')}]: {message}")
 
-def report_exception(message, exception, exit = False):
+
+def report_exception(message, exception, exit=False):
     error = None
     if hasattr(exception, 'stderr'):
         error = exception.stderr
@@ -311,27 +317,33 @@ def report_exception(message, exception, exit = False):
         if error is not None:
             report(f"Error: {error}")
 
-def help(error = None):
+
+def help(error=None):
     if error:
         print(f"{error}\n")
-    print("Usage:\n" \
-          "start_aks_bsv.py [-h[elp]] [-asm_port=PORT] [ASM SSH OPTIONS] [BSV SSH OPTIONS] [BSV OPTIONS] [-v[erbose]]\n\n" \
-          "-h[elp]           Prints out this help message\n" \
-          "-asm_port=PORT    Alert System Microservice HTTP port (3000 by default)\n" \
-          "ASM SSH OPTIONS   SSH key-based authentication options to access the remote Alert System Microservice:\n" \
-          "  -asm_host=HOST  IP or hostname of the remote Alert System Microservice\n" \
-          "  -asm_user=USER  Username for the SSH connection\n" \
-          "  -asm_pk_path=PK Private key file path\n" \
-          "BSV SSH OPTIONS   SSH key-based authentication options to access the remote BSV node:\n" \
-          "  -bsv_host=HOST  IP or hostname of the remote BSV node\n" \
-          "  -bsv_user=USER  Username for the SSH connection\n" \
-          "  -bsv_pk_path=PK Private key file path\n" \
-          "BSV OPTIONS       Any additional bitcoind and bitcoin-cli parameters as -key or -key=value\n" \
+    print("Usage:\n"
+          "start_aks_bsv.py [-h[elp]] [-asm_port=PORT] [ASM SSH OPTIONS] [BSV SSH OPTIONS] [BSV OPTIONS] "
+          "[-v[erbose]]\n\n"
+          "-h[elp]           Prints out this help message\n"
+          "-asm_port=PORT    Alert System Microservice HTTP port (3000 by default)\n"
+          "ASM SSH OPTIONS   SSH key-based authentication options to access the remote Alert System Microservice:\n"
+          "  -asm_host=HOST  IP or hostname of the remote Alert System Microservice\n"
+          "  -asm_user=USER  Username for the SSH connection\n"
+          "  -asm_pk_path=PK Private key file path\n"
+          "BSV SSH OPTIONS   SSH key-based authentication options to access the remote BSV node:\n"
+          "  -bsv_host=HOST  IP or hostname of the remote BSV node\n"
+          "  -bsv_user=USER  Username for the SSH connection\n"
+          "  -bsv_pk_path=PK Private key file path\n"
+          "BSV OPTIONS       Any additional bitcoind and bitcoin-cli parameters as -key or -key=value\n"
           "-v[erbose]        Prints out details during the startup\n\n"
-          "Basic example, running Alert System Microservice and BSV node, both local, using a specified bitcoind option -datadir:\n" \
-          "start_aks_bsv.py -datadir=/data/bsv\n\n" \
-          "Example of running a local Alert System Microservice and a remote BSV node, specifying key-based SSH authentication and using -verbose option to print out more details:\n" \
-          "start_aks_bsv.py -datadir=/data/bsv -bsv_host=bsvhost.com -bsv_user=bsv_usr1 -bsv_pk_path=/home/bsv_usr1/.ssh/id_ed25519 -verbose")
+          "Basic example, running Alert System Microservice and BSV node, both local, using a specified bitcoind "
+          "option -datadir:\n"
+          "start_aks_bsv.py -datadir=/data/bsv\n\n"
+          "Example of running a local Alert System Microservice and a remote BSV node, specifying key-based SSH "
+          "authentication and using -verbose option to print out more details:\n"
+          "start_aks_bsv.py -datadir=/data/bsv -bsv_host=bsvhost.com -bsv_user=bsv_usr1 "
+          "-bsv_pk_path=/home/bsv_usr1/.ssh/id_ed25519 -verbose")
+
 
 def parse_arguments(*args):
     global verbose
@@ -374,7 +386,7 @@ def parse_arguments(*args):
             bsv_args["ssh"][key[4:]] = value
         # BSV OPTIONS for everything else
         else:
-           bsv_args["options"].append(arg) 
+            bsv_args["options"].append(arg) 
     report(f"Input parameters: {args}")
     if show_help:
         help()
@@ -387,6 +399,7 @@ def parse_arguments(*args):
         help(error="Error: Not all BSV SSH parameters were provided.")
         sys.exit(1)
     return asm_args, bsv_args
+
 
 def main():
     # Parse arguments
