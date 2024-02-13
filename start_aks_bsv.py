@@ -64,15 +64,15 @@ class Process():  # Representing a process we can open.
         self.command = command
         self.path = path
         self.process = None
-    
+
     def open(self, blocking=True, stderr=None):
         report(f"Running {self.command}...")
         if blocking:
             # Open the process and wait for it to finish
-            self.process = subprocess.Popen(self.command, 
-                                            stdin=subprocess.PIPE, 
-                                            stdout=subprocess.PIPE, 
-                                            stderr=subprocess.PIPE, 
+            self.process = subprocess.Popen(self.command,
+                                            stdin=subprocess.PIPE,
+                                            stdout=subprocess.PIPE,
+                                            stderr=subprocess.PIPE,
                                             universal_newlines=True,
                                             cwd=self.path)
             cli_stdout, cli_stderr = self.process.communicate()
@@ -90,7 +90,7 @@ class SSHCall():  # Representing a call over the SSH with the key-based authenti
     def __init__(self, host, user, key):
         self.ssh_command = ["ssh", "-i", key, f"{user}@{host}"]
         self.process = None
-    
+
     def run(self, command, blocking=True, stderr=None):
         ssh_call = self.ssh_command + [command]
         self.process = Process(ssh_call)
@@ -112,7 +112,7 @@ class ASM():  # Representing the Alert System Microservice.
             host = ssh_args.get("host")
         self.service = f"{host}:{port}"
         self.process = None
-    
+
     def wait_for_synced(self, process=None):
         wait_until = time.time() + self.timeout
         while time.time() < wait_until:
@@ -189,7 +189,7 @@ class BSVCLI():  # Representing the BSV bitcoin-cli.
     def run_command_locally(self, command):
         process = Process(command)
         return process.open()
-    
+
     # Runs bitcoin-cli command remotely (SSH) and returns the result
     def run_command_ssh(self, command):
         return self.ssh.run(command)
@@ -228,13 +228,13 @@ class BSVNode():  # Representing the BSV node.
         self.wait_for_node_ready(self.ssh.process)
         # We can terminate the SSH process
         self.ssh.process.process.terminate()
-    
+
     def run_node_locally(self):
         process = Process(self.command)
         # We want to get the stderr to be able to report bitcoind issues
         process.open(blocking=False, stderr=subprocess.PIPE)
         self.wait_for_node_ready(process)
-    
+
     def wait_for_node_ready(self, process):
         report("Waiting for RPC connection...")
         self.wait_for_rpc_connection(process)
@@ -265,7 +265,7 @@ class BSVNode():  # Representing the BSV node.
                 time.sleep(1.0)
         if not running:
             raise AssertionError("RPC connection timeout exceeded")
-    
+
     def wait_for_initialization(self):
         wait_until = time.time() + self.timeout
         while time.time() < wait_until:
@@ -386,7 +386,7 @@ def parse_arguments(*args):
             bsv_args["ssh"][key[4:]] = value
         # BSV OPTIONS for everything else
         else:
-            bsv_args["options"].append(arg) 
+            bsv_args["options"].append(arg)
     report(f"Input parameters: {args}")
     if show_help:
         help()
