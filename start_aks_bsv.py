@@ -59,7 +59,7 @@ An example to add required environment variables for <the_user>@<the_host> SSH s
 """
 
 
-class Process():  # Representing a process we can open.
+class Process:  # Representing a process we can open.
     def __init__(self, command, path=None):
         self.command = command
         self.path = path
@@ -69,24 +69,29 @@ class Process():  # Representing a process we can open.
         report(f"Running {self.command}...")
         if blocking:
             # Open the process and wait for it to finish
-            self.process = subprocess.Popen(self.command,
-                                            stdin=subprocess.PIPE,
-                                            stdout=subprocess.PIPE,
-                                            stderr=subprocess.PIPE,
-                                            universal_newlines=True,
-                                            cwd=self.path)
+            self.process = subprocess.Popen(
+                self.command,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                universal_newlines=True,
+                cwd=self.path,
+            )
             cli_stdout, cli_stderr = self.process.communicate()
             return_code = self.process.poll()
             if return_code:
-                raise subprocess.CalledProcessError(return_code, self.command, stderr=cli_stderr)
+                raise subprocess.CalledProcessError(
+                    return_code, self.command, stderr=cli_stderr
+                )
             return cli_stdout
         else:
             # Open the process and return immediately
-            self.process = subprocess.Popen(self.command, universal_newlines=True, cwd=self.path, stderr=stderr)
+            self.process = subprocess.Popen(
+                self.command, universal_newlines=True, cwd=self.path, stderr=stderr
+            )
 
 
-class SSHCall():  # Representing a call over the SSH with the key-based authentication.
-
+class SSHCall:  # Representing a call over the SSH with the key-based authentication.
     def __init__(self, host, user, key):
         self.ssh_command = ["ssh", "-i", key, f"{user}@{host}"]
         self.process = None
@@ -97,8 +102,7 @@ class SSHCall():  # Representing a call over the SSH with the key-based authenti
         return self.process.open(blocking=blocking, stderr=stderr)
 
 
-class ASM():  # Representing the Alert System Microservice.
-
+class ASM:  # Representing the Alert System Microservice.
     def __init__(self, port=None, ssh_args={}, timeout=60):
         self.timeout = timeout
         self.command = ["alert-system"]
@@ -108,7 +112,9 @@ class ASM():  # Representing the Alert System Microservice.
         self.ssh = None
         host = "localhost"
         if len(ssh_args) == 3:
-            self.ssh = SSHCall(ssh_args.get("host"), ssh_args.get("user"), ssh_args.get("pk_path"))
+            self.ssh = SSHCall(
+                ssh_args.get("host"), ssh_args.get("user"), ssh_args.get("pk_path")
+            )
             host = ssh_args.get("host")
         self.service = f"{host}:{port}"
         self.process = None
@@ -126,32 +132,40 @@ class ASM():  # Representing the Alert System Microservice.
                     stderr = None
                     if process.process.stderr is not None:
                         stderr = process.process.stderr.read()
-                    raise subprocess.CalledProcessError(return_code, command, stderr=stderr)
-            if (self.is_synced()):
+                    raise subprocess.CalledProcessError(
+                        return_code, command, stderr=stderr
+                    )
+            if self.is_synced():
                 return
             report("Not synced")
             report("Retrying...")
             time.sleep(1.0)
-        assert wait_until >= time.time(), "Alert System Microservice not synced, timeout exceeded"
+        assert (
+            wait_until >= time.time()
+        ), "Alert System Microservice not synced, timeout exceeded"
 
     def is_synced(self):
         try:
             connection = asm.HTTPConnection(self.service)
-            connection.request('GET', "/health")
+            connection.request("GET", "/health")
             health_response = connection.getresponse()
-            assert health_response.status == 200, f"Alert System Microservice response is {health_response.status}"
+            assert (
+                health_response.status == 200
+            ), f"Alert System Microservice response is {health_response.status}"
             health_response = health_response.read()
             health = json.loads(health_response)
             return health["synced"]
         except Exception as e:
-            report_exception("Exception while requesting Alert System Microservice health", e)
+            report_exception(
+                "Exception while requesting Alert System Microservice health", e
+            )
             return None
 
     def run(self):
         process = None
         if self.ssh:
             # We want to get the stderr of the SSH process to be able to report any issues.
-            self.ssh.run(' '.join(self.command), blocking=False, stderr=subprocess.PIPE)
+            self.ssh.run(" ".join(self.command), blocking=False, stderr=subprocess.PIPE)
             process = self.ssh.process
         else:
             process = Process(self.command)
@@ -171,15 +185,16 @@ class ASM():  # Representing the Alert System Microservice.
                 print("Alert System Microservice has already started")
                 return
             else:
-                print("Alert System Microservice has already started, waiting to be synced...")
+                print(
+                    "Alert System Microservice has already started, waiting to be synced..."
+                )
                 self.wait_for_synced()
                 return
         print("Starting the Alert System Microservice...")
         self.run()
 
 
-class BSVCLI():  # Representing the BSV bitcoin-cli.
-
+class BSVCLI:  # Representing the BSV bitcoin-cli.
     # Provide additional bitcoin-cli parameters if needed for RPC commands
     def __init__(self, args=[], ssh=None):
         self.command = ["bitcoin-cli"] + args
@@ -199,7 +214,7 @@ class BSVCLI():  # Representing the BSV bitcoin-cli.
         command = self.command + [rpc] + rpc_args
         json_output = None
         if self.ssh:
-            json_output = self.run_command_ssh(' '.join(command))
+            json_output = self.run_command_ssh(" ".join(command))
         else:
             json_output = self.run_command_locally(command)
         try:
@@ -210,21 +225,22 @@ class BSVCLI():  # Representing the BSV bitcoin-cli.
         return None
 
 
-class BSVNode():  # Representing the BSV node.
-
+class BSVNode:  # Representing the BSV node.
     # Provide additional bitcoind parameters if needed to start the node properly
     def __init__(self, args=[], ssh_args={}, timeout=60):
         self.timeout = timeout
         self.command = ["bitcoind"] + args
         self.ssh = None
         if len(ssh_args) == 3:
-            self.ssh = SSHCall(ssh_args.get("host"), ssh_args.get("user"), ssh_args.get("pk_path"))
+            self.ssh = SSHCall(
+                ssh_args.get("host"), ssh_args.get("user"), ssh_args.get("pk_path")
+            )
         self.cli = BSVCLI(args=args, ssh=self.ssh)
         self.process = None
 
     def run_node_ssh(self):
         # We want to get the stderr to be able to report SSH issues
-        self.ssh.run(' '.join(self.command), blocking=False, stderr=subprocess.PIPE)
+        self.ssh.run(" ".join(self.command), blocking=False, stderr=subprocess.PIPE)
         self.wait_for_node_ready(self.ssh.process)
         # We can terminate the SSH process
         self.ssh.process.process.terminate()
@@ -269,7 +285,7 @@ class BSVNode():  # Representing the BSV node.
     def wait_for_initialization(self):
         wait_until = time.time() + self.timeout
         while time.time() < wait_until:
-            if (self.cli.rpc("getinfo")["initcomplete"]):
+            if self.cli.rpc("getinfo")["initcomplete"]:
                 return
             time.sleep(1.0)
         assert wait_until >= time.time(), "Initialization timeout exceeded"
@@ -305,7 +321,7 @@ def report(message):
 
 def report_exception(message, exception, exit=False):
     error = None
-    if hasattr(exception, 'stderr'):
+    if hasattr(exception, "stderr"):
         error = exception.stderr
     if exit:
         print(f"{message}: {exception}")
@@ -321,28 +337,30 @@ def report_exception(message, exception, exit=False):
 def help(error=None):
     if error:
         print(f"{error}\n")
-    print("Usage:\n"
-          "start_aks_bsv.py [-h[elp]] [-asm_port=PORT] [ASM SSH OPTIONS] [BSV SSH OPTIONS] [BSV OPTIONS] "
-          "[-v[erbose]]\n\n"
-          "-h[elp]           Prints out this help message\n"
-          "-asm_port=PORT    Alert System Microservice HTTP port (3000 by default)\n"
-          "ASM SSH OPTIONS   SSH key-based authentication options to access the remote Alert System Microservice:\n"
-          "  -asm_host=HOST  IP or hostname of the remote Alert System Microservice\n"
-          "  -asm_user=USER  Username for the SSH connection\n"
-          "  -asm_pk_path=PK Private key file path\n"
-          "BSV SSH OPTIONS   SSH key-based authentication options to access the remote BSV node:\n"
-          "  -bsv_host=HOST  IP or hostname of the remote BSV node\n"
-          "  -bsv_user=USER  Username for the SSH connection\n"
-          "  -bsv_pk_path=PK Private key file path\n"
-          "BSV OPTIONS       Any additional bitcoind and bitcoin-cli parameters as -key or -key=value\n"
-          "-v[erbose]        Prints out details during the startup\n\n"
-          "Basic example, running Alert System Microservice and BSV node, both local, using a specified bitcoind "
-          "option -datadir:\n"
-          "start_aks_bsv.py -datadir=/data/bsv\n\n"
-          "Example of running a local Alert System Microservice and a remote BSV node, specifying key-based SSH "
-          "authentication and using -verbose option to print out more details:\n"
-          "start_aks_bsv.py -datadir=/data/bsv -bsv_host=bsvhost.com -bsv_user=bsv_usr1 "
-          "-bsv_pk_path=/home/bsv_usr1/.ssh/id_ed25519 -verbose")
+    print(
+        "Usage:\n"
+        "start_aks_bsv.py [-h[elp]] [-asm_port=PORT] [ASM SSH OPTIONS] [BSV SSH OPTIONS] [BSV OPTIONS] "
+        "[-v[erbose]]\n\n"
+        "-h[elp]           Prints out this help message\n"
+        "-asm_port=PORT    Alert System Microservice HTTP port (3000 by default)\n"
+        "ASM SSH OPTIONS   SSH key-based authentication options to access the remote Alert System Microservice:\n"
+        "  -asm_host=HOST  IP or hostname of the remote Alert System Microservice\n"
+        "  -asm_user=USER  Username for the SSH connection\n"
+        "  -asm_pk_path=PK Private key file path\n"
+        "BSV SSH OPTIONS   SSH key-based authentication options to access the remote BSV node:\n"
+        "  -bsv_host=HOST  IP or hostname of the remote BSV node\n"
+        "  -bsv_user=USER  Username for the SSH connection\n"
+        "  -bsv_pk_path=PK Private key file path\n"
+        "BSV OPTIONS       Any additional bitcoind and bitcoin-cli parameters as -key or -key=value\n"
+        "-v[erbose]        Prints out details during the startup\n\n"
+        "Basic example, running Alert System Microservice and BSV node, both local, using a specified bitcoind "
+        "option -datadir:\n"
+        "start_aks_bsv.py -datadir=/data/bsv\n\n"
+        "Example of running a local Alert System Microservice and a remote BSV node, specifying key-based SSH "
+        "authentication and using -verbose option to print out more details:\n"
+        "start_aks_bsv.py -datadir=/data/bsv -bsv_host=bsvhost.com -bsv_user=bsv_usr1 "
+        "-bsv_pk_path=/home/bsv_usr1/.ssh/id_ed25519 -verbose"
+    )
 
 
 def parse_arguments(*args):
