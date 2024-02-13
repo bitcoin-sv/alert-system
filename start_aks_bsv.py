@@ -2,7 +2,6 @@
 # Copyright (c) 2024 Bitcoin Association
 # Distributed under the Open BSV software license, see the accompanying file LICENSE.
 
-from datetime import datetime
 import decimal
 import http.client as asm
 import json
@@ -10,6 +9,7 @@ import re
 import subprocess
 import sys
 import time
+from datetime import datetime
 
 """
 The script runs two independent applications in the following order:
