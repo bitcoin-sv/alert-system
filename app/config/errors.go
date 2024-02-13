@@ -15,4 +15,5 @@ var (
 	ErrNoRPCPassword        = errors.New("no rpc_password defined")
 	ErrNoRPCUser            = errors.New("no rpc_user defined")
 	ErrNoRPCConnections     = errors.New("no rpc connections configured")
+	ErrNoGenesisKeys        = errors.New("no genesis keys configured")
 )

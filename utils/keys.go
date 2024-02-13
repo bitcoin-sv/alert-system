@@ -16,6 +16,15 @@ const (
 	Key5 = "161a9d680f1952fef2f2572bfae30e7eda047908a180cbb00a16a4ee270abf62"
 )
 
+// Mainnet Keys for the Genesis keys
+const (
+	MainKey1 = "02a1589f2c8e1a4e7cbf28d4d6b676aa2f30811277883211027950e82a83eb2768"
+	MainKey2 = "03aec1d40f02ac7f6df701ef8f629515812f1bcd949b6aa6c7a8dd778b748b2433"
+	MainKey3 = "03ddb2806f3cc48aa36bd4aea6b9f1c7ed3ffc8b9302b198ca963f15beff123678"
+	MainKey4 = "036846e3e8f4f944af644b6a6c6243889dd90d7b6c3593abb9ccf2acb8c9e606e2"
+	MainKey5 = "03e45c9dd2b34829c1d27c8b5d16917dd0dc2c88fa0d7bad7bffb9b542229a9304"
+)
+
 // SignWithGenesis will sign the data with the genesis keys
 func SignWithGenesis(data []byte) ([][]byte, error) {
 	return SignWithKeys(data, []string{Key1, Key2, Key3})

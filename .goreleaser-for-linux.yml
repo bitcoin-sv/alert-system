@@ -27,7 +27,7 @@ changelog:
 builds:
   - id: linux-build
     main: ./cmd/
-    binary: alert_system
+    binary: alert-system
     goos:
       - linux
     goarch:
