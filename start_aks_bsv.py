@@ -262,7 +262,7 @@ class BSVNode:  # Representing the BSV node.
         for _ in range(self.timeout):
             # Check if process (either ssh or bitcoind) already terminated while waiting for the RPC connection
             return_code = process.process.poll()
-            if return_code is not None:
+            if return_code is not None and return_code != 0:
                 command = self.command
                 if self.ssh:
                     command = self.ssh.ssh_command + command
