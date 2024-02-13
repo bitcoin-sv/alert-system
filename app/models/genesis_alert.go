@@ -2,19 +2,16 @@ package models
 
 import (
 	"context"
-	"encoding/hex"
 	"time"
 
 	"github.com/bitcoin-sv/alert-system/app/models/model"
 	"github.com/bitcoin-sv/alert-system/utils"
-	"github.com/bitcoinschema/go-bitcoin"
-	"github.com/bitcoinsv/bsvd/bsvec"
 )
 
 // CreateGenesisAlert will create the genesis alert if it is not in the database
 // If it is in the database, it will do nothing
 func CreateGenesisAlert(ctx context.Context, opts ...model.Options) error {
-
+	newAlert := NewAlertMessage(opts...)
 	// Get the alert message by sequence number
 	m, err := GetAlertMessageBySequenceNumber(ctx, 0, opts...)
 	if err != nil {
@@ -24,7 +21,7 @@ func CreateGenesisAlert(ctx context.Context, opts ...model.Options) error {
 	}
 
 	// Create the array of keys
-	keys := []string{utils.Key1, utils.Key2, utils.Key3, utils.Key4, utils.Key5}
+	keys := newAlert.Config().GenesisKeys
 	var msg []byte
 
 	// Create the array of keys to save
@@ -35,25 +32,15 @@ func CreateGenesisAlert(ctx context.Context, opts ...model.Options) error {
 
 	// Loop through the keys
 	for _, key := range keys {
-
-		// Convert the key to a private key
-		var privateKey *bsvec.PrivateKey
-		if privateKey, err = bitcoin.PrivateKeyFromString(key); err != nil {
-			return err
-		}
-		pub := privateKey.PubKey()
-
-		msg = append(msg, pub.SerializeCompressed()...)
-
 		// Create the public key
 		k := NewPublicKey(opts...)
-		k.Key = hex.EncodeToString(pub.SerializeCompressed())
+		k.Key = key
 		k.Active = true
 		keysToSave = append(keysToSave, k)
 	}
 
 	// Sync creating a new alert
-	newAlert := NewAlertMessage(opts...)
+
 	newAlert.SetAlertType(AlertTypeSetKeys)
 	newAlert.message = msg
 	newAlert.SequenceNumber = 0

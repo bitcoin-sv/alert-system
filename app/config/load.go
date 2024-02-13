@@ -48,6 +48,11 @@ func LoadDependencies(ctx context.Context, models []interface{}, isTesting bool)
 		return nil, ErrNoRPCConnections
 	}
 
+	// Require list of genesis keys
+	if len(_appConfig.GenesisKeys) == 0 {
+		return nil, ErrNoGenesisKeys
+	}
+
 	// Ensure the P2P configuration is valid
 	if err = requireP2P(_appConfig); err != nil {
 		return nil, err

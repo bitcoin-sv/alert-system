@@ -56,6 +56,7 @@ type (
 	// Config is the global configuration settings
 	Config struct {
 		AlertWebhookURL         string          `json:"alert_webhook_url" mapstructure:"alert_webhook_url"`                 // AlertWebhookURL is the URL for the alert webhook
+		GenesisKeys             []string        `json:"genesis_keys" mapstructure:"genesis_keys"`                           // GenesisKeys is list of public keys to use for the genesis alert
 		Datastore               DatastoreConfig `json:"datastore" mapstructure:"datastore"`                                 // Datastore's configuration
 		DisableRPCVerification  bool            `json:"disable_rpc_verification" mapstructure:"disable_rpc_verification"`   // DisableRPCVerification will disable the rpc verification check on startup. Useful if bitcoind isn't running yet
 		LogOutputFile           string          `json:"log_output_file" mapstructure:"log_output_file"`                     // LogOutputFile will set an output file for the logger to write to as opposed to stdout
