@@ -369,15 +369,15 @@ def parse_arguments(*args):
     bsv_args = {"ssh": {}, "options": []}
     show_help = False
     # Argument can be either a -key or -key=value
-    arg_pattern = re.compile(r'^-([a-z]+[a-z0-9_]*|[a-z]+[a-z0-9_]*=.+)$')
+    arg_pattern = re.compile(r"^-([a-z]+[a-z0-9_]*|[a-z]+[a-z0-9_]*=.+)$")
     for arg in args:
-        if not bool(arg_pattern.match(arg))  :
+        if not bool(arg_pattern.match(arg)):
             help(error=f"Error: Wrong argument {arg}")
             sys.exit(1)
         key = arg[1:]
         value = None
         if "=" in key:
-            key, value = key.split('=', 1)
+            key, value = key.split("=", 1)
         # -v[erbose]
         if key == "v" or key == "verbose":
             verbose = True
@@ -411,7 +411,9 @@ def parse_arguments(*args):
         sys.exit(0)
     # With SSH, all options must be provided
     if len(asm_args.get("ssh")) > 0 and len(asm_args.get("ssh")) != 3:
-        help(error="Error: Not all Alert System Microservice SSH parameters were provided.")
+        help(
+            error="Error: Not all Alert System Microservice SSH parameters were provided."
+        )
         sys.exit(1)
     if len(bsv_args.get("ssh")) > 0 and len(bsv_args.get("ssh")) != 3:
         help(error="Error: Not all BSV SSH parameters were provided.")
