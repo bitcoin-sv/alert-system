@@ -2,11 +2,11 @@
   "alert_webhook_url": "",
   "bitcoin_config_path": "",
   "genesis_keys": [
-    "027276d234a138415c7d8d61e33ea9c625f0d043fd06f1c863464a58ed7939afe1",
-    "0254b81f2e1bed83e414970ae7f7e3373014706251efb6990b5292a020e3a1585c",
-    "03801e7b4077edad7ebb3fa87ced7b126ae8eb2fbcb75821001f84a0374eea4a21",
-    "03df30507f71d1880888e9e7137280397a4235c2904d4c4e995d4292f00a9257b0",
-    "03ec55b29332500401336f6e1648d367f4619bedb561fd817d2247d80c4bad236c"
+    "0203aa8ca16b6b247b109b65e9d7a0f3a23ccae8f093f792e63bf5ce2567f572bc",
+    "0289d3a1c6dacd0ee3de7e5a960d8d226ffbdb82b3af41b4c6a01b0230cc6e0dce",
+    "0396d8808641463b41fe31b11717294e2e14941454ba6b27967ed571b9848ae768",
+    "02aaf9583bd5aa8e5993666e11785ff3b1b0a97694003b22cbd8a2b7150ff27736",
+    "02dfb76a88100c2b6cd7ad9c051bc9ef9daf74c9fa13a99cb870865a046a9772f1"
   ],
   "log_output_file": "",
   "disable_rpc_verification": false,
@@ -24,9 +24,9 @@
     "debug": true,
     "engine": "sqlite",
     "password": "",
-    "table_prefix": "alert_system",
+    "table_prefix": "alert_system_testnet",
     "sqlite": {
-      "database_path": "alert_system_datastore.db",
+      "database_path": "alert_system_testnet_datastore.db",
       "shared": false
     },
     "sql_read": {
@@ -68,7 +68,7 @@
     "alert_system_protocol_id": "/bitcoin-testnet/alert-system/0.0.1",
     "bootstrap_peer": "",
     "private_key_path": "",
-    "topic_name": "alert_system_testnet"
+    "topic_name": "bitcoin_alert_system_testnet"
   },
   "rpc_connections": [
     {
