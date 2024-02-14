@@ -30,7 +30,7 @@ It reports an error if either the micro service or the node couldn't start well.
 Steps of the script:
 - Sends a http GET/health request to the host (localhost or <asm_host>) to check if the Alert System Microservice (ASM)
   is up and running
-- If ASM is not yet up and running, it starts the alert_system binary (locally or via SSH)
+- If ASM is not yet up and running, it starts the alert-system binary (locally or via SSH)
 - Waits up to 60 seconds to receive the "synced": true in the GET/health JSON response
 - Reports any issues with running the ASM
 - If ASM is up and running, runs the bitcoin-cli command to check if the bitcoind process is running
@@ -43,7 +43,7 @@ Prerequisites:
 ALERT_SYSTEM_DISABLE_RPC_VERIFICATION=true environment variable must be set. Micro service should not check the RPC
 connection if it is started before the node.
 The following binaries must exist and be found by the system:
-- alert_system
+- alert-system
 - bitcoin-cli
 - bitcoind
 This can be done by either setting the PATH environment variable or create symlinks into the /usr/bin for example.
@@ -105,7 +105,7 @@ class SSHCall:  # Representing a call over the SSH with the key-based authentica
 class ASM:  # Representing the Alert System Microservice.
     def __init__(self, port=None, ssh_args={}, timeout=60):
         self.timeout = timeout
-        self.command = ["alert_system"]
+        self.command = ["alert-system"]
         # default port
         if port is None:
             port = 3000
@@ -123,7 +123,7 @@ class ASM:  # Representing the Alert System Microservice.
         wait_until = time.time() + self.timeout
         while time.time() < wait_until:
             if process is not None:
-                # Check if process (either ssh or alert_system) already terminated while waiting for health status
+                # Check if process (either ssh or alert-system) already terminated while waiting for health status
                 return_code = process.process.poll()
                 if return_code is not None:
                     command = self.command
@@ -169,7 +169,7 @@ class ASM:  # Representing the Alert System Microservice.
             process = self.ssh.process
         else:
             process = Process(self.command)
-            # We want to get the stderr to be able to report any alert_system issues
+            # We want to get the stderr to be able to report any alert-system issues
             process.open(blocking=False, stderr=subprocess.PIPE)
         report("Waiting for the ASM to be synced...")
         self.wait_for_synced(process)
