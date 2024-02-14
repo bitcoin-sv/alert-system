@@ -24,9 +24,9 @@
     "debug": true,
     "engine": "sqlite",
     "password": "",
-    "table_prefix": "alert_system",
+    "table_prefix": "alert_system_mainnet",
     "sqlite": {
-      "database_path": "alert_system_datastore.db",
+      "database_path": "alert_system_mainnet_datastore.db",
       "shared": false
     },
     "sql_read": {
