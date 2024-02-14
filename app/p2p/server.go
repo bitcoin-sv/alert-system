@@ -8,6 +8,8 @@ import (
 	"os"
 	"time"
 
+	maddr "github.com/multiformats/go-multiaddr"
+
 	"github.com/libp2p/go-libp2p/core/discovery"
 
 	dht "github.com/libp2p/go-libp2p-kad-dht"
@@ -73,12 +75,29 @@ func NewServer(o ServerOptions) (*Server, error) {
 		}
 	}
 
+	var extMultiAddr maddr.Multiaddr
+	if o.Config.P2P.BroadcastIP != "" {
+		extMultiAddr, err = maddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s", o.Config.P2P.BroadcastIP, o.Config.P2P.Port))
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	addressFactory := func(addrs []maddr.Multiaddr) []maddr.Multiaddr {
+		if extMultiAddr != nil {
+			// here we're appending the external facing multiaddr we created above to the addressFactory so it will be broadcast out when I connect to a bootstrap node.
+			addrs = append(addrs, extMultiAddr)
+		}
+		return addrs
+	}
+
 	// Create a new host
 	var h host.Host
 	if h, err = libp2p.New(
 		libp2p.ListenAddrStrings(fmt.Sprintf("/ip4/%s/tcp/%s", o.Config.P2P.IP, o.Config.P2P.Port)),
 		libp2p.Identity(*pk),
 		libp2p.EnableHolePunching(),
+		libp2p.AddrsFactory(addressFactory),
 	); err != nil {
 		return nil, err
 	}

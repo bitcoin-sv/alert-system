@@ -97,6 +97,7 @@ type (
 	P2PConfig struct {
 		AlertSystemProtocolID string        `json:"alert_system_protocol_id" mapstructure:"alert_system_protocol_id"` // AlertSystemProtocolID is the protocol ID to use on the libp2p network for alert system communication
 		BootstrapPeer         string        `json:"bootstrap_peer" mapstructure:"bootstrap_peer"`                     // BootstrapPeer is the bootstrap peer for the libp2p network
+		BroadcastIP           string        `json:"broadcast_ip" mapstructure:"broadcast_ip"`                         // BroadcastIP is the public facing IP address to broadcast to other peers
 		IP                    string        `json:"ip" mapstructure:"ip"`                                             // IP is the IP address for the P2P server
 		Port                  string        `json:"port" mapstructure:"port"`                                         // Port is the port for the P2P server
 		PrivateKeyPath        string        `json:"private_key_path" mapstructure:"private_key_path"`                 // PrivateKeyPath is the path to the private key
