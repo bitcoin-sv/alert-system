@@ -21,23 +21,24 @@ jobs:
         uses: actions/checkout@v4
       - name: Run yaml linter
         uses: ibiqlik/action-yamllint@v3.1
-  asknancy:
-    name: Ask Nancy (check dependencies)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Write go list
-        run: go list -json -m all > go.list
-      - name: Ask Nancy
-        uses: sonatype-nexus-community/nancy-github-action@v1.0.3
-        continue-on-error: true
-        with:
-          nancyCommand: sleuth --loud --exclude-vulnerability sonatype-2021-0853,CVE-2022-32149
+  # This does not work on >= 1.21 go versions
+  #asknancy:
+  #  name: Ask Nancy (check dependencies)
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Checkout code
+  #      uses: actions/checkout@v4
+  #    - name: Write go list
+  #      run: go list -json -m all > go.list
+  #    - name: Ask Nancy
+  #      uses: sonatype-nexus-community/nancy-github-action@v1.0.3
+  #      continue-on-error: true
+  #      with:
+  #        nancyCommand: sleuth --loud --exclude-vulnerability sonatype-2021-0853,CVE-2022-32149
 
   test:
-    needs: [yamllint, asknancy]
-    #needs: [yamllint]
+    #needs: [yamllint, asknancy]
+    needs: [yamllint]
     strategy:
       matrix:
         go-version: [1.21.x]
