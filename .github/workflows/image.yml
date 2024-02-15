@@ -27,7 +27,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: bsvb/alert-key
+          images: bsvb/alert-system
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
