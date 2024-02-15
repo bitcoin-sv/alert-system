@@ -22,13 +22,13 @@
 
 <br/>
 
-## Installation
+## Run from source
 
 **alert-system** requires a [supported release of Go](https://golang.org/doc/devel/release.html#policy).
 
 To run the application, clone this repository locally and run:
 ```shell script
-export ALERT_SYSTEM_ENVIRONMENT=local && go run cmd/main.go
+export ALERT_SYSTEM_ENVIRONMENT=testnet && go run cmd/main.go
 ```
 
 To run this application with a custom configuration file, run:
@@ -44,13 +44,11 @@ Configuration files can be found in the [config](app/config/envs) directory.
 **Note:** to use a custom settings file, it needs to be mounted and the appropriate environment variables set. Running it as below will run an ephemeral database but the container should sync up from the peers on the network on startup.
 ### podman
 ```
-$ podman run -u root -e P2P_PORT=9908 -e P2P_IP=0.0.0.0  --expose 9908 docker.io/bsvb/alert-system:0.0.2
+$ podman run -u root -e ALERT_SYSTEM_ENVIRONMENT=testnet  --expose 9906 docker.io/bsvb/alert-key:latest
 ```
 
 ## Documentation
-View the generated [documentation](https://pkg.go.dev/github.com/bitcoin-sv/alert-system)
-
-[![GoDoc](https://godoc.org/github.com/bitcoin-sv/alert-system?status.svg&style=flat&v=2)](https://pkg.go.dev/github.com/bitcoin-sv/alert-system)
+View the [official documentation](https://node.bitcoinsv.io/sv-node/alert-system)
 
 <br/>
 
