@@ -136,3 +136,5 @@ jobs:
         env:
           COMMIT_TAG: ${{steps.tag.outputs.tag}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Syndicate to GoDocs
+        run: make godocs

@@ -21,6 +21,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Run yaml linter
         uses: ibiqlik/action-yamllint@v3.1
+  # This does not work on >= 1.21 go versions
   #asknancy:
   #  name: Ask Nancy (check dependencies)
   #  runs-on: ubuntu-latest
