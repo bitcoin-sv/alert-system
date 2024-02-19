@@ -9,6 +9,7 @@
     "03e45c9dd2b34829c1d27c8b5d16917dd0dc2c88fa0d7bad7bffb9b542229a9304"
   ],
   "log_output_file": "",
+  "log_level": "info",
   "disable_rpc_verification": false,
   "request_logging": true,
   "alert_processing_interval": "5m",

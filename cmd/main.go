@@ -53,6 +53,11 @@ func main() {
 	// Create a new (web) server
 	webServer := webserver.NewServer(_appConfig)
 
+	ctx, cancelFunc := context.WithCancel(context.Background())
+	// Start the p2p server
+	if err = p2pServer.Start(ctx); err != nil {
+		_appConfig.Services.Log.Fatalf("error starting p2p server: %s", err.Error())
+	}
 	// Sync a channel to listen for interrupts
 	idleConnectionsClosed := make(chan struct{})
 	go func(appConfig *config.Config) {
@@ -60,11 +65,11 @@ func main() {
 		signal.Notify(sigint, os.Interrupt)
 
 		// Log when a signal is received
-		appConfig.Services.Log.Info("waiting for interrupt signal")
+		appConfig.Services.Log.Debugf("waiting for interrupt signal")
 		<-sigint
 
 		// Log that we are starting the shutdown process
-		appConfig.Services.Log.Info("interrupt signal received, starting shutdown process")
+		appConfig.Services.Log.Infof("interrupt signal received, starting shutdown process")
 
 		// We received an interrupt signal, shut down the server
 		ctxTimeout, cancel := context.WithTimeout(context.Background(), config.DefaultServerShutdown)
@@ -77,17 +82,13 @@ func main() {
 		if err = p2pServer.Stop(ctxTimeout); err != nil {
 			appConfig.Services.Log.Infof("error shutting down p2p server: %s", err.Error())
 		}
-
+		cancelFunc()
+		appConfig.Services.Log.Infof("successfully shut down server")
 		close(idleConnectionsClosed)
 		if err = appConfig.Services.Log.CloseWriter(); err != nil {
 			log.Printf("error closing logger: %s", err)
 		}
 	}(_appConfig)
-
-	// Start the p2p server
-	if err = p2pServer.Start(context.Background()); err != nil {
-		_appConfig.Services.Log.Fatalf("error starting p2p server: %s", err.Error())
-	}
 
 	// Serve the web server and then wait endlessly
 	webServer.Serve()

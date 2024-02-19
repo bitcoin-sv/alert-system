@@ -19,7 +19,7 @@ type LoggerInterface interface {
 	Fatalf(msg string, args ...interface{})
 	Info(args ...interface{})
 	Infof(msg string, args ...interface{})
-	LogLevel() int
+	LogLevel() string
 	Panic(args ...interface{})
 	Panicf(msg string, args ...interface{})
 	Warn(args ...interface{})
@@ -32,7 +32,7 @@ type LoggerInterface interface {
 // ExtendedLogger is the extended logger to satisfy the LoggerInterface
 type ExtendedLogger struct {
 	*log.Logger
-	logLevel int
+	logLevel string
 	writer   *os.File
 }
 
@@ -48,11 +48,17 @@ func (es *ExtendedLogger) Printf(format string, v ...interface{}) {
 
 // Debugf will print debug messages to the console
 func (es *ExtendedLogger) Debugf(format string, v ...interface{}) {
+	if es.logLevel != "debug" {
+		return
+	}
 	es.Logger.Printf(fmt.Sprintf("\033[1;34m| DEBUG | %s\033[0m", format), v...)
 }
 
 // Debug will print debug messages to the console
 func (es *ExtendedLogger) Debug(v ...interface{}) {
+	if es.logLevel != "debug" {
+		return
+	}
 	es.Logger.Printf("%v", v...)
 }
 
@@ -82,7 +88,7 @@ func (es *ExtendedLogger) Infof(format string, v ...interface{}) {
 }
 
 // LogLevel returns the logging level
-func (es *ExtendedLogger) LogLevel() int {
+func (es *ExtendedLogger) LogLevel() string {
 	return es.logLevel
 }
 

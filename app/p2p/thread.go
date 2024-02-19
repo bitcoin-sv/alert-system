@@ -147,6 +147,7 @@ func (s *StreamThread) ProcessSyncMessage(ctx context.Context) error {
 	}()
 	select {
 	case <-s.quitChannel:
+		s.config.Services.Log.Infof("quitting sync process")
 		return nil
 	case err := <-done:
 		return err
