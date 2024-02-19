@@ -60,6 +60,7 @@ type (
 		Datastore               DatastoreConfig `json:"datastore" mapstructure:"datastore"`                                 // Datastore's configuration
 		DisableRPCVerification  bool            `json:"disable_rpc_verification" mapstructure:"disable_rpc_verification"`   // DisableRPCVerification will disable the rpc verification check on startup. Useful if bitcoind isn't running yet
 		LogOutputFile           string          `json:"log_output_file" mapstructure:"log_output_file"`                     // LogOutputFile will set an output file for the logger to write to as opposed to stdout
+		LogLevel                string          `json:"log_level" mapstructure:"log_level"`                                 // LogLevel sets the logging level
 		BitcoinConfigPath       string          `json:"bitcoin_config_path" mapstructure:"bitcoin_config_path"`             // BitcoinConfigPath is the path to the bitcoin.conf file
 		P2P                     P2PConfig       `json:"p2p" mapstructure:"p2p"`                                             // P2P is the configuration for the P2P server
 		RPCConnections          []RPCConfig     `json:"rpc_connections" mapstructure:"rpc_connections"`                     // RPCConnections is a list of RPC connections

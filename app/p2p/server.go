@@ -104,7 +104,7 @@ func NewServer(o ServerOptions) (*Server, error) {
 
 	// Print out the peer ID and addresses
 	o.Config.Services.Log.Debugf("peer ID: %s", h.ID().String())
-	o.Config.Services.Log.Info("connect to me on:")
+	o.Config.Services.Log.Infof("connect to me on:")
 	for _, addr := range h.Addrs() {
 		o.Config.Services.Log.Infof(" %s/p2p/%s", addr, h.ID().String())
 	}
@@ -115,14 +115,13 @@ func NewServer(o ServerOptions) (*Server, error) {
 		topicNames:                    o.TopicNames,
 		privateKey:                    pk,
 		config:                        o.Config,
-		quitPeerInitializationChannel: make(chan bool),
+		quitPeerInitializationChannel: make(chan bool, 1),
 	}, nil
 }
 
 // Start the server and subscribe to all topics
 func (s *Server) Start(ctx context.Context) error {
-	s.config.Services.Log.Info("p2p service initializing & starting")
-
+	s.config.Services.Log.Infof("p2p service initializing & starting")
 	// Initialize the DHT
 	kademliaDHT, err := s.initDHT(ctx)
 	if err != nil {
@@ -147,6 +146,7 @@ func (s *Server) Start(ctx context.Context) error {
 	subscriptions := map[string]*pubsub.Subscription{}
 
 	s.host.SetStreamHandler(protocol.ID(s.config.P2P.AlertSystemProtocolID), func(stream network.Stream) {
+		s.config.Services.Log.Infof("received stream %v", stream.ID())
 		t := StreamThread{
 			stream: stream,
 			config: s.config,
@@ -161,7 +161,7 @@ func (s *Server) Start(ctx context.Context) error {
 			s.config.Services.Log.Debugf("closing stream %v for peer %v", stream.ID(), t.peer.String())
 			//_ = stream.Close()
 		}
-		//_ = stream.Close()
+		_ = stream.Close()
 	})
 
 	s.config.Services.Log.Debugf("stream handler set")
@@ -186,10 +186,12 @@ func (s *Server) Start(ctx context.Context) error {
 	}
 	s.topics = topics
 	s.subscriptions = subscriptions
-	s.config.Services.Log.Infof("P2P successfully started")
+	s.config.Services.Log.Infof("P2P server successfully started")
 	go func() {
 		for { //nolint:gosimple // This is the only way to perform this loop at the moment
 			select {
+			case <-s.quitPeerDiscoveryChannel:
+				s.config.Services.Log.Infof("p2p service force shut down")
 			case <-ctx.Done():
 				s.config.Services.Log.Info("p2p service shutting down")
 				return
@@ -207,11 +209,21 @@ func (s *Server) Connected() bool {
 // Stop the server
 func (s *Server) Stop(_ context.Context) error {
 	// todo there needs to be a way to stop the server
-	s.config.Services.Log.Info("stopping P2P service")
+	s.config.Services.Log.Infof("stopping the p2p server")
+	s.config.Services.Log.Debugf("sending signals to persistent processes...")
 	s.quitPeerDiscoveryChannel <- true
 	s.quitAlertProcessingChannel <- true
 	s.quitPeerInitializationChannel <- true
-	return nil
+
+	s.config.Services.Log.Debugf("removing stream handler to stop allowing connections")
+	s.host.RemoveStreamHandler(protocol.ID(s.config.P2P.AlertSystemProtocolID))
+	s.config.Services.Log.Debugf("shutting down libp2p host")
+	err := s.host.Close()
+	if err != nil {
+		return err
+	}
+	s.config.Services.Log.Debugf("shutting down dht") // this is maybe redundant
+	return s.dht.Close()
 }
 
 // RunAlertProcessingCron starts a cron job to attempt to retry unprocessed alerts
@@ -227,6 +239,7 @@ func (s *Server) RunAlertProcessingCron(ctx context.Context) chan bool {
 					s.config.Services.Log.Errorf("error processing alerts: %v", err.Error())
 				}
 			case <-quit:
+				s.config.Services.Log.Infof("stopping alert processing process")
 				ticker.Stop()
 				return
 			}
@@ -295,6 +308,7 @@ func (s *Server) RunPeerDiscovery(ctx context.Context, routingDiscovery *droutin
 					s.config.Services.Log.Errorf("error discovering peers: %v", err.Error())
 				}
 			case <-quit:
+				s.config.Services.Log.Infof("stopping peer discovery process")
 				ticker.Stop()
 				return
 			}
@@ -430,7 +444,7 @@ func (s *Server) discoverPeers(ctx context.Context, routingDiscovery *drouting.R
 
 // Subscribe will subscribe to the alert system
 func (s *Server) Subscribe(ctx context.Context, subscriber *pubsub.Subscription, hostID peer.ID) {
-	s.config.Services.Log.Infof("subscribing to %s topic", subscriber.Topic())
+	s.config.Services.Log.Infof("subscribed to %s topic", subscriber.Topic())
 	for {
 
 		msg, err := subscriber.Next(ctx)

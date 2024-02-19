@@ -230,8 +230,9 @@ func LoadConfigFile() (_appConfig *Config, err error) {
 
 	logger := log.New(writer, "bitcoin-alert-system: ", log.LstdFlags)
 	_appConfig.Services.Log = &ExtendedLogger{
-		Logger: logger,
-		writer: writer,
+		Logger:   logger,
+		writer:   writer,
+		logLevel: _appConfig.LogLevel,
 	}
 
 	// Set default alert processing interval if it doesn't exist
