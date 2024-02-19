@@ -107,10 +107,10 @@ func NewServer(o ServerOptions) (*Server, error) {
 		if len(publicAddrs) == 0 {
 			// If no public addresses are set, let's attempt to grab it publicly
 			// Ignore errors because we don't care if we can't find it
-			ifconfig, _ := GetPublicIP()
+			ifconfig, _ := GetPublicIP(context.Background())
 			if len(ifconfig) > 0 {
-				addr, err := maddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s", ifconfig, o.Config.P2P.Port))
-				if err == nil {
+				addr, _ := maddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s", ifconfig, o.Config.P2P.Port))
+				if addr != nil {
 					publicAddrs = append(publicAddrs, addr)
 				}
 			}
@@ -135,11 +135,15 @@ func NewServer(o ServerOptions) (*Server, error) {
 			"100.64.0.0/10",  // Shared Address Space
 			"169.254.0.0/16", // Link-local addresses
 		} {
-			_, ipnet, err := net.ParseCIDR(cidr)
+			var ipnet *net.IPNet
+			_, ipnet, err = net.ParseCIDR(cidr)
 			if err != nil {
 				return nil, err
 			}
-			ipFilter.BlockSubnet(ipnet)
+			err = ipFilter.BlockSubnet(ipnet)
+			if err != nil {
+				continue
+			}
 		}
 	}
 
@@ -173,19 +177,25 @@ func NewServer(o ServerOptions) (*Server, error) {
 }
 
 // GetPublicIP fetches the public IP address from ifconfig.me
-func GetPublicIP() (string, error) {
-	resp, err := http.Get("https://ifconfig.me/ip")
+func GetPublicIP(ctx context.Context) (string, error) {
+	client := &http.Client{}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", "https://ifconfig.me/ip", nil)
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
 
-	return string(body), nil
+	return string(body), resp.Body.Close()
 }
 
 // Function to check if an IP address is private
