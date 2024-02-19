@@ -70,6 +70,7 @@
     "bootstrap_peer": "",
     "broadcast_ip": "",
     "private_key_path": "",
+    "allow_private_ip_addresses": false,
     "topic_name": "bitcoin_alert_system_testnet"
   },
   "rpc_connections": [

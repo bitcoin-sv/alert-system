@@ -5,8 +5,13 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
+	"io"
+	"net"
+	"net/http"
 	"os"
 	"time"
+
+	"github.com/libp2p/go-libp2p/p2p/net/conngater"
 
 	maddr "github.com/multiformats/go-multiaddr"
 
@@ -83,12 +88,63 @@ func NewServer(o ServerOptions) (*Server, error) {
 		}
 	}
 
+	// define address factory to remove all private IPs from being broadcasted
 	addressFactory := func(addrs []maddr.Multiaddr) []maddr.Multiaddr {
+		var publicAddrs []maddr.Multiaddr
+		for _, addr := range addrs {
+			// if IP is not private add it to the list
+			if !isPrivateIP(addr) || o.Config.P2P.AllowPrivateIPs {
+				publicAddrs = append(publicAddrs, addr)
+			}
+		}
+		// If user specified a broadcast IP append it here
 		if extMultiAddr != nil {
 			// here we're appending the external facing multiaddr we created above to the addressFactory so it will be broadcast out when I connect to a bootstrap node.
-			addrs = append(addrs, extMultiAddr)
+			publicAddrs = append(publicAddrs, extMultiAddr)
 		}
-		return addrs
+
+		// If we still dont have any advertisable addresses then attempt to grab it from `https://ifconfig.me/ip`
+		if len(publicAddrs) == 0 {
+			// If no public addresses are set, let's attempt to grab it publicly
+			// Ignore errors because we don't care if we can't find it
+			ifconfig, _ := GetPublicIP(context.Background())
+			if len(ifconfig) > 0 {
+				addr, _ := maddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%s", ifconfig, o.Config.P2P.Port))
+				if addr != nil {
+					publicAddrs = append(publicAddrs, addr)
+				}
+			}
+		}
+		return publicAddrs
+	}
+
+	// Create an IP filter to block private network ranges from being dialed
+	ipFilter, err := conngater.NewBasicConnectionGater(nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// By default, filter private IPs
+	if !o.Config.P2P.AllowPrivateIPs {
+		// Add private IP blocks to be filtered out
+		for _, cidr := range []string{
+			"10.0.0.0/8",     // Private network 10.0.0.0 to 10.255.255.255
+			"172.16.0.0/12",  // Private network 172.16.0.0 to 172.31.255.255
+			"192.168.0.0/16", // Private network 192.168.0.0 to 192.168.255.255
+			"127.0.0.0/16",   // Local network
+			"100.64.0.0/10",  // Shared Address Space
+			"169.254.0.0/16", // Link-local addresses
+		} {
+			var ipnet *net.IPNet
+			_, ipnet, err = net.ParseCIDR(cidr)
+			if err != nil {
+				return nil, err
+			}
+			err = ipFilter.BlockSubnet(ipnet)
+			if err != nil {
+				continue
+			}
+		}
 	}
 
 	// Create a new host
@@ -98,6 +154,7 @@ func NewServer(o ServerOptions) (*Server, error) {
 		libp2p.Identity(*pk),
 		libp2p.EnableHolePunching(),
 		libp2p.AddrsFactory(addressFactory),
+		libp2p.ConnectionGater(ipFilter),
 	); err != nil {
 		return nil, err
 	}
@@ -117,6 +174,61 @@ func NewServer(o ServerOptions) (*Server, error) {
 		config:                        o.Config,
 		quitPeerInitializationChannel: make(chan bool, 1),
 	}, nil
+}
+
+// GetPublicIP fetches the public IP address from ifconfig.me
+func GetPublicIP(ctx context.Context) (string, error) {
+	client := &http.Client{}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", "https://ifconfig.me/ip", nil)
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return string(body), resp.Body.Close()
+}
+
+// Function to check if an IP address is private
+func isPrivateIP(addr maddr.Multiaddr) bool {
+	ipStr, err := extractIPFromMultiaddr(addr)
+	if err != nil {
+		return false
+	}
+	ip := net.ParseIP(ipStr)
+	if ip == nil || ip.To4() == nil {
+		return false
+	}
+
+	// Define private IPv4 ranges
+	privateRanges := []*net.IPNet{
+		{IP: net.ParseIP("10.0.0.0"), Mask: net.CIDRMask(8, 32)},
+		{IP: net.ParseIP("172.16.0.0"), Mask: net.CIDRMask(12, 32)},
+		{IP: net.ParseIP("192.168.0.0"), Mask: net.CIDRMask(16, 32)},
+		{IP: net.ParseIP("127.0.0.0"), Mask: net.CIDRMask(8, 32)},
+	}
+
+	// Check if the IP falls into any of the private ranges
+	for _, r := range privateRanges {
+		if r.Contains(ip) {
+			return true
+		}
+	}
+	return false
+}
+
+// Function to extract IP information from a Multiaddr
+func extractIPFromMultiaddr(addr maddr.Multiaddr) (string, error) {
+	return addr.ValueForProtocol(maddr.P_IP4)
 }
 
 // Start the server and subscribe to all topics
