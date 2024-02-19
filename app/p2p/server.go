@@ -188,7 +188,7 @@ func (s *Server) Start(ctx context.Context) error {
 	s.subscriptions = subscriptions
 	s.config.Services.Log.Infof("P2P server successfully started")
 	go func() {
-		for { //nolint:gosimple // This is the only way to perform this loop at the moment
+		for {
 			select {
 			case <-s.quitPeerDiscoveryChannel:
 				s.config.Services.Log.Infof("p2p service force shut down")
