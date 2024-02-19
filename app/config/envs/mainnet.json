@@ -70,6 +70,7 @@
     "alert_system_protocol_id": "/bitcoin/alert-system/1.0.0",
     "bootstrap_peer": "",
     "private_key_path": "",
+    "allow_private_ip_addresses": false,
     "topic_name": "bitcoin_alert_system"
   },
   "rpc_connections": [

@@ -96,14 +96,15 @@ type (
 
 	// P2PConfig is the configuration for the P2P server and connection
 	P2PConfig struct {
-		AlertSystemProtocolID string        `json:"alert_system_protocol_id" mapstructure:"alert_system_protocol_id"` // AlertSystemProtocolID is the protocol ID to use on the libp2p network for alert system communication
-		BootstrapPeer         string        `json:"bootstrap_peer" mapstructure:"bootstrap_peer"`                     // BootstrapPeer is the bootstrap peer for the libp2p network
-		BroadcastIP           string        `json:"broadcast_ip" mapstructure:"broadcast_ip"`                         // BroadcastIP is the public facing IP address to broadcast to other peers
-		IP                    string        `json:"ip" mapstructure:"ip"`                                             // IP is the IP address for the P2P server
-		Port                  string        `json:"port" mapstructure:"port"`                                         // Port is the port for the P2P server
-		PrivateKeyPath        string        `json:"private_key_path" mapstructure:"private_key_path"`                 // PrivateKeyPath is the path to the private key
-		TopicName             string        `json:"topic_name" mapstructure:"topic_name"`                             // TopicName is the name of the topic to subscribe to
-		PeerDiscoveryInterval time.Duration `json:"peer_discovery_interval" mapstructure:"peer_discovery_interval"`   // PeerDiscoveryInterval is the interval in which we will refresh the peer table and check peers for missing messages
+		AlertSystemProtocolID string        `json:"alert_system_protocol_id" mapstructure:"alert_system_protocol_id"`     // AlertSystemProtocolID is the protocol ID to use on the libp2p network for alert system communication
+		BootstrapPeer         string        `json:"bootstrap_peer" mapstructure:"bootstrap_peer"`                         // BootstrapPeer is the bootstrap peer for the libp2p network
+		BroadcastIP           string        `json:"broadcast_ip" mapstructure:"broadcast_ip"`                             // BroadcastIP is the public facing IP address to broadcast to other peers
+		IP                    string        `json:"ip" mapstructure:"ip"`                                                 // IP is the IP address for the P2P server
+		Port                  string        `json:"port" mapstructure:"port"`                                             // Port is the port for the P2P server
+		AllowPrivateIPs       bool          `json:"allow_private_ip_addresses" mapstructure:"allow_private_ip_addresses"` // AllowPrivateIPs will disable the default behavior of filtering out private IP addresses
+		PrivateKeyPath        string        `json:"private_key_path" mapstructure:"private_key_path"`                     // PrivateKeyPath is the path to the private key
+		TopicName             string        `json:"topic_name" mapstructure:"topic_name"`                                 // TopicName is the name of the topic to subscribe to
+		PeerDiscoveryInterval time.Duration `json:"peer_discovery_interval" mapstructure:"peer_discovery_interval"`       // PeerDiscoveryInterval is the interval in which we will refresh the peer table and check peers for missing messages
 	}
 
 	// RPCConfig is the configuration for the RPC client
