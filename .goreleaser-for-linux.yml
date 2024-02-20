@@ -18,6 +18,7 @@ changelog:
 
 # ---------------------------
 # Builder
+# TESTING disabling CGO since we have moved to a pure go version of sqlite
 #
 # CGO is enabled and inspiration came from:
 #    https://github.com/goreleaser/goreleaser-cross-example
@@ -34,7 +35,7 @@ builds:
       - amd64
       - arm64
     env:
-      - CGO_ENABLED=1
+      - CGO_ENABLED=0
     mod_timestamp: "{{ .CommitTimestamp }}"
     ldflags:
       - -s -w -X main.version={{.Version}}
