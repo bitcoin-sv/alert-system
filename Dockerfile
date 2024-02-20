@@ -7,10 +7,10 @@ COPY cmd/    cmd/
 COPY utils/ utils/
 COPY go.mod go.mod
 COPY go.sum go.sum
-RUN CGO_ENABLED=1 go build -a -o $APP_ROOT/src/alert-system github.com/bitcoin-sv/alert-system/cmd
+RUN CGO_ENABLED=0 go build -a -o $APP_ROOT/src/alert-system github.com/bitcoin-sv/alert-system/cmd
 
 # Copy the controller-manager into a thin image
-FROM registry.access.redhat.com/ubi9-minimal
+FROM registry.access.redhat.com/ubi9-minimal:9.3
 WORKDIR /
 RUN mkdir /.bitcoin
 RUN touch /.bitcoin/alert_system_private_key
