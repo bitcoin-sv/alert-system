@@ -22,6 +22,7 @@ func (s *Server) initDHT(ctx context.Context) (*dht.IpfsDHT, error) {
 	logger := s.config.Services.Log
 	var options []dht.Option
 	options = append(options, dht.Mode(dht.ModeAutoServer))
+	options = append(options, dht.QueryFilter(dht.PublicQueryFilter))
 
 	// Sync a DHT, for use in peer discovery. We can't just make a new DHT
 	kademliaDHT, err := dht.New(ctx, s.host, options...)
