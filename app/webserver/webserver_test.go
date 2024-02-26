@@ -5,6 +5,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/bitcoin-sv/alert-system/app/p2p"
+
 	"github.com/bitcoin-sv/alert-system/app/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -15,7 +17,7 @@ func TestNewServer(t *testing.T) {
 	t.Parallel()
 
 	t.Run("empty values", func(t *testing.T) {
-		s := NewServer(nil)
+		s := NewServer(nil, nil)
 		require.NotNil(t, s)
 		assert.Nil(t, s.Config)
 		assert.Nil(t, s.Router)
@@ -24,7 +26,7 @@ func TestNewServer(t *testing.T) {
 
 	t.Run("set values", func(t *testing.T) {
 		dependencies := &config.Config{}
-		s := NewServer(dependencies)
+		s := NewServer(dependencies, &p2p.Server{})
 		require.NotNil(t, s)
 		assert.Equal(t, dependencies, s.Config)
 		assert.Equal(t, dependencies, s.Config)
@@ -38,7 +40,7 @@ func TestServer_Shutdown(t *testing.T) {
 	t.Parallel()
 
 	t.Run("no server, services", func(t *testing.T) {
-		s := NewServer(nil)
+		s := NewServer(nil, nil)
 		require.NotNil(t, s)
 
 		err := s.Shutdown(context.Background())
@@ -48,7 +50,7 @@ func TestServer_Shutdown(t *testing.T) {
 	t.Run("basic app config and services", func(t *testing.T) {
 		dependencies := &config.Config{}
 
-		s := NewServer(dependencies)
+		s := NewServer(dependencies, &p2p.Server{})
 		require.NotNil(t, s)
 
 		err := s.Shutdown(context.Background())
@@ -74,7 +76,7 @@ func TestServer_Shutdown(t *testing.T) {
 		require.NotNil(t, appConfig)
 
 		// Sync a new server
-		s := NewServer(appConfig)
+		s := NewServer(appConfig, &p2p.Server{})
 		require.NotNil(t, s)
 
 		// Shutdown the server
