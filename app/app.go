@@ -4,13 +4,16 @@ package app
 import (
 	"net/http"
 
+	"github.com/bitcoin-sv/alert-system/app/p2p"
+
 	"github.com/bitcoin-sv/alert-system/app/config"
 	apirouter "github.com/mrz1836/go-api-router"
 )
 
 // Action is the configuration for the actions and related services
 type Action struct {
-	Config *config.Config // Combination of configuration and services, being passed down into the handlers
+	Config    *config.Config // Combination of configuration and services, being passed down into the handlers
+	P2pServer *p2p.Server    // p2p server
 }
 
 // APIError is the enriched error message for API related errors

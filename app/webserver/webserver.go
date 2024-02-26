@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/bitcoin-sv/alert-system/app/p2p"
+
 	"github.com/bitcoin-sv/alert-system/app/api/base"
 	"github.com/bitcoin-sv/alert-system/app/config"
 	apirouter "github.com/mrz1836/go-api-router"
@@ -23,11 +25,15 @@ type Server struct {
 	Config    *config.Config
 	Router    *apirouter.Router
 	WebServer *http.Server
+	P2pServer *p2p.Server
 }
 
 // NewServer will return a new server service
-func NewServer(conf *config.Config) *Server {
-	return &Server{Config: conf}
+func NewServer(conf *config.Config, serv *p2p.Server) *Server {
+	return &Server{
+		Config:    conf,
+		P2pServer: serv,
+	}
 }
 
 // Serve will load a server and start serving
@@ -100,7 +106,7 @@ func (s *Server) Handlers() *nrhttprouter.Router {
 	}, ",")
 
 	// Register all actions (routes / handlers)
-	base.RegisterRoutes(s.Router, s.Config)
+	base.RegisterRoutes(s.Router, s.Config, s.P2pServer)
 
 	// Return the router
 	return s.Router.HTTPRouter

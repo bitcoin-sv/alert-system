@@ -96,7 +96,8 @@ type (
 
 	// P2PConfig is the configuration for the P2P server and connection
 	P2PConfig struct {
-		AlertSystemProtocolID string        `json:"alert_system_protocol_id" mapstructure:"alert_system_protocol_id"`     // AlertSystemProtocolID is the protocol ID to use on the libp2p network for alert system communication
+		AlertSystemProtocolID string        `json:"alert_system_protocol_id" mapstructure:"alert_system_protocol_id"` // AlertSystemProtocolID is the protocol ID to use on the libp2p network for alert system communication
+		DHTMode               string        `json:"dht_mode"`
 		BootstrapPeer         string        `json:"bootstrap_peer" mapstructure:"bootstrap_peer"`                         // BootstrapPeer is the bootstrap peer for the libp2p network
 		BroadcastIP           string        `json:"broadcast_ip" mapstructure:"broadcast_ip"`                             // BroadcastIP is the public facing IP address to broadcast to other peers
 		IP                    string        `json:"ip" mapstructure:"ip"`                                                 // IP is the IP address for the P2P server

@@ -60,6 +60,7 @@ type Server struct {
 	quitAlertProcessingChannel    chan bool
 	quitPeerDiscoveryChannel      chan bool
 	quitPeerInitializationChannel chan bool
+	activePeers                   int
 	//peers         []peer.AddrInfo
 }
 
@@ -338,6 +339,11 @@ func (s *Server) Stop(_ context.Context) error {
 	return s.dht.Close()
 }
 
+// ActivePeers returns the number of active peers
+func (s *Server) ActivePeers() int {
+	return s.activePeers
+}
+
 // RunAlertProcessingCron starts a cron job to attempt to retry unprocessed alerts
 func (s *Server) RunAlertProcessingCron(ctx context.Context) chan bool {
 	ticker := time.NewTicker(s.config.AlertProcessingInterval)
@@ -550,6 +556,7 @@ func (s *Server) discoverPeers(ctx context.Context, routingDiscovery *drouting.R
 	s.config.Services.Log.Debugf("connected to %d peers\n", len(s.host.Network().Peers()))
 	s.config.Services.Log.Debugf("peerstore has %d peers\n", len(s.host.Peerstore().Peers()))
 	s.config.Services.Log.Infof("Successfully discovered %d active peers at %s", connected, time.Now().String())
+	s.activePeers = connected
 	s.connected = true
 	return nil
 }
