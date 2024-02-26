@@ -21,7 +21,7 @@ require (
 	github.com/mrz1836/go-logger v0.3.3
 	github.com/multiformats/go-multiaddr v0.12.2
 	github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.0.2
-	github.com/ordishs/gocore v1.0.57
+	github.com/ordishs/gocore v1.0.58
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.8.4
