@@ -66,6 +66,7 @@
   "p2p": {
     "ip": "0.0.0.0",
     "port": "9906",
+    "dht_mode": "client",
     "alert_system_protocol_id": "/bitcoin-stn/alert-system/0.0.1",
     "bootstrap_peer": "",
     "broadcast_ip": "",

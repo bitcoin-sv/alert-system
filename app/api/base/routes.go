@@ -3,6 +3,8 @@ package base
 import (
 	"net/http"
 
+	"github.com/bitcoin-sv/alert-system/app/p2p"
+
 	"github.com/bitcoin-sv/alert-system/app"
 	"github.com/bitcoin-sv/alert-system/app/config"
 	apirouter "github.com/mrz1836/go-api-router"
@@ -14,10 +16,10 @@ type Action struct {
 }
 
 // RegisterRoutes register all the package specific routes
-func RegisterRoutes(router *apirouter.Router, conf *config.Config) {
+func RegisterRoutes(router *apirouter.Router, conf *config.Config, p2pServ *p2p.Server) {
 
 	// Load the actions and set the services
-	action := &Action{app.Action{Config: conf}}
+	action := &Action{app.Action{Config: conf, P2pServer: p2pServ}}
 
 	// Set the main index page (navigating to slash or the root of the major version)
 	router.HTTPRouter.GET("/", action.Request(router, action.index))

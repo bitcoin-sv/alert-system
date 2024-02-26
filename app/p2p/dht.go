@@ -21,7 +21,11 @@ import (
 func (s *Server) initDHT(ctx context.Context) (*dht.IpfsDHT, error) {
 	logger := s.config.Services.Log
 	var options []dht.Option
-	options = append(options, dht.Mode(dht.ModeAutoServer))
+	mode := dht.ModeAutoServer
+	if s.config.P2P.DHTMode == "client" {
+		mode = dht.ModeClient
+	}
+	options = append(options, dht.Mode(mode))
 	options = append(options, dht.QueryFilter(dht.PublicQueryFilter))
 
 	// Sync a DHT, for use in peer discovery. We can't just make a new DHT

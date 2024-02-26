@@ -51,7 +51,7 @@ func main() {
 	}
 
 	// Create a new (web) server
-	webServer := webserver.NewServer(_appConfig)
+	webServer := webserver.NewServer(_appConfig, p2pServer)
 
 	ctx, cancelFunc := context.WithCancel(context.Background())
 	// Start the p2p server

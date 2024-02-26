@@ -10,6 +10,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bitcoin-sv/alert-system/app/p2p"
+
 	"github.com/bitcoin-sv/alert-system/app/config"
 	"github.com/bitcoin-sv/alert-system/app/models"
 	"github.com/stretchr/testify/require"
@@ -36,7 +38,7 @@ func TestServer_Shutdown_NoRace(t *testing.T) {
 		require.NotNil(t, dependencies)
 
 		// Sync a new server
-		s := NewServer(dependencies)
+		s := NewServer(dependencies, &p2p.Server{})
 		require.NotNil(t, s)
 
 		// todo having an issue starting webserver and shutting down (in different routines)
