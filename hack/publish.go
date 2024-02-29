@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -20,7 +21,6 @@ import (
 
 	"github.com/bitcoin-sv/alert-system/app/p2p"
 	"github.com/bitcoin-sv/alert-system/utils"
-	"github.com/ordishs/gocore"
 )
 
 func main() {
@@ -34,7 +34,6 @@ func main() {
 	flag.Parse()
 
 	ctx := context.Background()
-	log := gocore.Log("sig-test")
 
 	// Load the configuration and services
 	_appConfig, err := config.LoadDependencies(context.Background(), models.BaseModels, false)
@@ -120,12 +119,12 @@ func main() {
 		panic(err)
 	}
 	if !v {
-		log.Errorf("signature is not valid")
+		_appConfig.Services.Log.Errorf("signature is not valid")
 		return
 	}
-	log.Infof("bytes: %x", a.Serialize())
+	_appConfig.Services.Log.Infof("bytes: %x", a.Serialize())
 	publish(ctx, topics[_appConfig.P2P.TopicName], a.Serialize())
-	log.Infof("successfully published alert to topic %s", _appConfig.P2P.TopicName)
+	_appConfig.Services.Log.Infof("successfully published alert to topic %s", _appConfig.P2P.TopicName)
 }
 
 // InfoAlert creates an informational alert
