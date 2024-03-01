@@ -23,7 +23,7 @@ require (
 	github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.0.2
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.18.2
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/tokenized/pkg v0.7.0
 	go.mongodb.org/mongo-driver v1.14.0
 	gorm.io/driver/sqlite v1.5.5
