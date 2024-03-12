@@ -126,7 +126,7 @@ jobs:
           cat ./tmp-build/linux/checksums.txt >> ./dist/checksums.txt
           cat ./tmp-build/linux/CHANGELOG.md >> ./dist/CHANGELOG.md
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           body_path: dist/CHANGELOG.md
           prerelease: ${{ contains(github.ref, '-rc.') }}
