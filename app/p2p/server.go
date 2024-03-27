@@ -180,7 +180,7 @@ func NewServer(o ServerOptions) (*Server, error) {
 // GetPublicIP fetches the public IP address from ifconfig.me
 func GetPublicIP(ctx context.Context) (string, error) {
 	transport := &http.Transport{
-		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+		DialContext: func(ctx context.Context, _, addr string) (net.Conn, error) {
 			// Force the use of IPv4 by specifying 'tcp4' as the network
 			return (&net.Dialer{}).DialContext(ctx, "tcp4", addr)
 		},
