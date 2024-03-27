@@ -179,8 +179,16 @@ func NewServer(o ServerOptions) (*Server, error) {
 
 // GetPublicIP fetches the public IP address from ifconfig.me
 func GetPublicIP(ctx context.Context) (string, error) {
-	client := &http.Client{}
-
+	transport := &http.Transport{
+		DialContext: func(ctx context.Context, _, addr string) (net.Conn, error) {
+			// Force the use of IPv4 by specifying 'tcp4' as the network
+			return (&net.Dialer{}).DialContext(ctx, "tcp4", addr)
+		},
+		TLSHandshakeTimeout: 10 * time.Second,
+	}
+	client := &http.Client{
+		Transport: transport,
+	}
 	req, err := http.NewRequestWithContext(ctx, "GET", "https://ifconfig.me/ip", nil)
 	if err != nil {
 		return "", err
