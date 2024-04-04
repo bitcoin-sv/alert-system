@@ -15,7 +15,7 @@ require (
 	github.com/libp2p/go-libp2p-pubsub v0.10.0
 	github.com/libsv/go-bn v0.0.2
 	github.com/libsv/go-bt/v2 v2.2.5
-	github.com/libsv/go-p2p v0.2.1
+	github.com/libsv/go-p2p v0.2.2
 	github.com/mrz1836/go-api-router v0.7.3
 	github.com/mrz1836/go-datastore v0.5.21
 	github.com/mrz1836/go-logger v0.3.3
@@ -164,7 +164,6 @@ require (
 	go.opentelemetry.io/otel/trace v1.23.1 // indirect
 	go.uber.org/dig v1.17.1 // indirect
 	go.uber.org/fx v1.21.0 // indirect
-	go.uber.org/goleak v1.3.0 // indirect
 	go.uber.org/mock v0.4.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
