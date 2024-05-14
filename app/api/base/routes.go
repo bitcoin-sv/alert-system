@@ -42,6 +42,9 @@ func RegisterRoutes(router *apirouter.Router, conf *config.Config, p2pServ *p2p.
 	// Set the get alerts request
 	router.HTTPRouter.GET("/alerts", action.Request(router, action.alerts))
 
+	// Set the get peers request
+	router.HTTPRouter.GET("/peers", action.Request(router, action.peers))
+
 	// Set the get alert request
 	router.HTTPRouter.GET("/alert/:sequence", action.Request(router, action.alert))
 }

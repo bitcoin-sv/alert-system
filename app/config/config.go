@@ -34,6 +34,7 @@ var (
 		EnvironmentTest,
 		EnvironmentTestnet,
 		EnvironmentStn,
+		"regtest",
 	}
 )
 

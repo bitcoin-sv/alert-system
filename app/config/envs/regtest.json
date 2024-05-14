@@ -1,0 +1,84 @@
+{
+  "alert_webhook_url": "",
+  "bitcoin_config_path": "",
+  "genesis_keys": [
+    "0203aa8ca16b6b247b109b65e9d7a0f3a23ccae8f093f792e63bf5ce2567f572bc",
+    "0289d3a1c6dacd0ee3de7e5a960d8d226ffbdb82b3af41b4c6a01b0230cc6e0dce",
+    "0396d8808641463b41fe31b11717294e2e14941454ba6b27967ed571b9848ae768",
+    "02aaf9583bd5aa8e5993666e11785ff3b1b0a97694003b22cbd8a2b7150ff27736",
+    "02dfb76a88100c2b6cd7ad9c051bc9ef9daf74c9fa13a99cb870865a046a9772f1"
+  ],
+  "log_output_file": "",
+  "log_level": "debug",
+  "disable_rpc_verification": false,
+  "request_logging": true,
+  "alert_processing_interval": "5m",
+  "web_server": {
+    "idle_timeout": "60s",
+    "port": "3000",
+    "read_timeout": "15s",
+    "write_timeout": "15s"
+  },
+  "environment": "testnet",
+  "datastore": {
+    "auto_migrate": true,
+    "debug": true,
+    "engine": "sqlite",
+    "password": "",
+    "table_prefix": "alert_system_regtest_agen",
+    "sqlite": {
+      "database_path": "alert_system_regtest_datastore.db",
+      "shared": false
+    },
+    "sql_read": {
+      "driver": "postgresql",
+      "host": "localhost",
+      "max_connection_idle_time": "20s",
+      "max_connection_time": "20s",
+      "max_idle_connections": 2,
+      "max_open_connections": 5,
+      "name": "alert_system_db",
+      "password": "postgres",
+      "port": "5432",
+      "replica": true,
+      "skip_initialize_with_version": true,
+      "time_zone": "UTC",
+      "tx_timeout": "20s",
+      "user": "postgres"
+    },
+    "sql_write": {
+      "driver": "postgresql",
+      "host": "localhost",
+      "max_connection_idle_time": "20s",
+      "max_connection_time": "20s",
+      "max_idle_connections": 2,
+      "max_open_connections": 5,
+      "name": "alert_system_db",
+      "password": "postgres",
+      "port": "5432",
+      "replica": false,
+      "skip_initialize_with_version": true,
+      "time_zone": "UTC",
+      "tx_timeout": "20s",
+      "user": "postgres"
+    }
+  },
+  "p2p": {
+    "ip": "0.0.0.0",
+    "port": "9906",
+    "alert_system_protocol_id": "/bitcoin-regtest/alert-system/0.0.1",
+    "bootstrap_peer": "",
+    "broadcast_ip": "",
+    "private_key_path": "",
+    "dht_mode": "client",
+    "allow_private_ip_addresses": false,
+    "topic_name": "bitcoin_alert_system_regtest_agen"
+  },
+  "rpc_connections": [
+    {
+      "user": "galt",
+      "password": "galt",
+      "host": "http://localhost:18332"
+    }
+  ]
+}

@@ -61,7 +61,7 @@ type Server struct {
 	quitPeerDiscoveryChannel      chan bool
 	quitPeerInitializationChannel chan bool
 	activePeers                   int
-	//peers         []peer.AddrInfo
+	peers                         map[peer.ID]peer.AddrInfo
 }
 
 // NewServer will create a new server
@@ -174,6 +174,7 @@ func NewServer(o ServerOptions) (*Server, error) {
 		privateKey:                    pk,
 		config:                        o.Config,
 		quitPeerInitializationChannel: make(chan bool, 1),
+		peers:                         make(map[peer.ID]peer.AddrInfo),
 	}, nil
 }
 
@@ -347,9 +348,20 @@ func (s *Server) Stop(_ context.Context) error {
 	return s.dht.Close()
 }
 
-// ActivePeers returns the number of active peers
-func (s *Server) ActivePeers() int {
+// NumberOfActivePeers returns the number of active peers
+func (s *Server) NumberOfActivePeers() int {
 	return s.activePeers
+}
+
+// Peers returns the number of active peers
+func (s *Server) Peers() []string {
+	ps := s.host.Peerstore()
+	peers := []string{}
+	for id, _ := range s.peers {
+		info := ps.PeerInfo(id)
+		peers = append(peers, info.String())
+	}
+	return peers
 }
 
 // RunAlertProcessingCron starts a cron job to attempt to retry unprocessed alerts
@@ -554,6 +566,7 @@ func (s *Server) discoverPeers(ctx context.Context, routingDiscovery *drouting.R
 
 				// Set the flag
 				connected++
+				s.peers[foundPeer.ID] = foundPeer
 			}
 			time.Sleep(1 * time.Second)
 		}

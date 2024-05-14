@@ -3,7 +3,6 @@ package models
 import (
 	"context"
 
-	"github.com/bitcoin-sv/alert-system/app/config"
 	"github.com/bitcoin-sv/alert-system/app/models/model"
 	"github.com/bitcoin-sv/alert-system/utils"
 	"github.com/mrz1836/go-datastore"
@@ -98,7 +97,7 @@ func GetActivePublicKey(ctx context.Context, metadata *model.Metadata, opts ...m
 func ClearActivePublicKeys(_ context.Context, ds datastore.ClientInterface) error {
 	// Execute the query
 	tx := ds.Execute("").Exec(
-		"UPDATE "+config.DatabasePrefix+"_"+model.TablePublicKeys+" SET "+utils.FieldActive+" = ?",
+		"UPDATE "+ds.GetDatabaseName()+"_"+model.TablePublicKeys+" SET "+utils.FieldActive+" = ?",
 		false,
 	).Begin()
 

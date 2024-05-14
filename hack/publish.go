@@ -26,7 +26,7 @@ import (
 func main() {
 	alertTypeFlag := flag.Uint("type", uint(1), "type of alert to publish")
 	sequenceNumber := flag.Uint("sequence", uint(1), "sequence number to publish")
-	//pubKeys := flag.String("pub-keys", "", "public keys to be used for set keys")
+	pubKeys := flag.String("pub-keys", "", "public keys to be used for set keys")
 	blockHash := flag.String("block-hash", "", "block hash to invalidate")
 	//peer := flag.String("peer", "", "peer to ban/unban")
 	keys := flag.String("signing-keys", "", "signing keys")
@@ -71,11 +71,11 @@ func main() {
 	case models.AlertTypeUnfreezeUtxo:
 		panic(fmt.Errorf("not implemented"))
 	case models.AlertTypeSetKeys:
-		//publicKeys := strings.Split(*pubKeys, ",")
-		//if len(publicKeys) != 5 {
-		//	panic(fmt.Errorf("did not get 5 public keys to set"))
-		//}
-		//a = SetKeys(*sequenceNumber, publicKeys)
+		publicKeys := strings.Split(*pubKeys, ",")
+		if len(publicKeys) != 5 {
+			panic(fmt.Errorf("did not get 5 public keys to set"))
+		}
+		a = SetKeys(*sequenceNumber, publicKeys, model.WithAllDependencies(_appConfig))
 	}
 
 	var sigs [][]byte
@@ -265,28 +265,23 @@ func invalidateBlockAlert(seq uint, blockHash string, opts ...model.Options) *mo
 	return newAlert
 }
 
-/*
 // SetKeys creates a set keys alert
-func SetKeys(seq uint, keys []string) alert.Alert {
-	a := alert.Alert{
-		Version:        0x01,
-		SequenceNumber: uint32(seq),
-		Timestamp:      uint64(time.Now().Second()),
-		AlertType:      alert.AlertTypeSetKeys,
-	}
+func SetKeys(seq uint, keys []string, opts ...model.Options) *models.AlertMessage {
+	opts = append(opts, model.New())
+	newAlert := models.NewAlertMessage(opts...)
+	newAlert.SetAlertType(models.AlertTypeSetKeys)
+	newAlert.SetVersion(0x01)
+	newAlert.SetTimestamp(uint64(time.Now().Unix()))
+	newAlert.SequenceNumber = uint32(seq)
 	var msg []byte
 	for _, key := range keys {
 		b, _ := hex.DecodeString(key)
 		msg = append(msg, b...)
 	}
-	a.AlertMessage = msg
-	data, err := a.SerializeData()
-	if err != nil {
-		panic(err)
-	}
-	a.Data = data
-	return a
-}*/
+	newAlert.SetRawMessage(msg)
+	newAlert.SerializeData()
+	return newAlert
+}
 
 // publish will publish the data to the topic
 func publish(ctx context.Context, topic *pubsub.Topic, data []byte) {

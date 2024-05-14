@@ -44,7 +44,7 @@ func (a *Action) health(w http.ResponseWriter, req *http.Request, _ httprouter.P
 		HealthResponse{
 			Alert:             *alert,
 			Sequence:          alert.SequenceNumber,
-			ActivePeers:       a.P2pServer.ActivePeers(),
+			ActivePeers:       a.P2pServer.NumberOfActivePeers(),
 			UnprocessedAlerts: len(failed),
 			Synced:            true, // TODO actually fetch this state from the DB somehow, or from the server struct
 		}, []string{"alert", "synced", "sequence", "active_peers", "unprocessed_alerts"})
