@@ -97,7 +97,7 @@ func GetActivePublicKey(ctx context.Context, metadata *model.Metadata, opts ...m
 func ClearActivePublicKeys(_ context.Context, ds datastore.ClientInterface) error {
 	// Execute the query
 	tx := ds.Execute("").Exec(
-		"UPDATE "+ds.GetDatabaseName()+"_"+model.TablePublicKeys+" SET "+utils.FieldActive+" = ?",
+		"UPDATE "+ds.GetTableName(model.TablePublicKeys)+" SET "+utils.FieldActive+" = ?",
 		false,
 	).Begin()
 
