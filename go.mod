@@ -19,7 +19,7 @@ require (
 	github.com/mrz1836/go-api-router v0.7.3
 	github.com/mrz1836/go-datastore v0.5.22
 	github.com/mrz1836/go-logger v0.3.3
-	github.com/multiformats/go-multiaddr v0.12.3
+	github.com/multiformats/go-multiaddr v0.12.4
 	github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.18.2
