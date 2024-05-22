@@ -1,8 +1,7 @@
 module github.com/bitcoin-sv/alert-system
 
 go 1.21.3
-
-toolchain go1.21.4
+toolchain go1.22.2
 
 require (
 	github.com/99designs/gqlgen v0.17.47
@@ -17,7 +16,7 @@ require (
 	github.com/libsv/go-bt/v2 v2.2.5
 	github.com/libsv/go-p2p v0.2.3
 	github.com/mrz1836/go-api-router v0.7.3
-	github.com/mrz1836/go-datastore v0.5.22
+	github.com/mrz1836/go-datastore v0.5.23
 	github.com/mrz1836/go-logger v0.3.3
 	github.com/multiformats/go-multiaddr v0.12.4
 	github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.1.0
@@ -124,7 +123,7 @@ require (
 	github.com/multiformats/go-multihash v0.2.3 // indirect
 	github.com/multiformats/go-multistream v0.5.0 // indirect
 	github.com/multiformats/go-varint v0.0.7 // indirect
-	github.com/newrelic/go-agent/v3 v3.32.0 // indirect
+	github.com/newrelic/go-agent/v3 v3.33.0 // indirect
 	github.com/newrelic/go-agent/v3/integrations/nrmongo v1.1.3 // indirect
 	github.com/onsi/ginkgo/v2 v2.17.1 // indirect
 	github.com/opencontainers/runtime-spec v1.2.0 // indirect
@@ -157,7 +156,7 @@ require (
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
-	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
+	github.com/youmark/pkcs8 v0.0.0-20240424034433-3c2c7870ae76 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/otel v1.23.1 // indirect
 	go.opentelemetry.io/otel/metric v1.23.1 // indirect
@@ -176,8 +175,8 @@ require (
 	golang.org/x/text v0.15.0 // indirect
 	golang.org/x/tools v0.21.0 // indirect
 	gonum.org/v1/gonum v0.14.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240415180920-8c6c420018be // indirect
-	google.golang.org/grpc v1.63.2 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240520151616-dc85e6b867a5 // indirect
+	google.golang.org/grpc v1.64.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
