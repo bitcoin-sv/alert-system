@@ -3,10 +3,9 @@ package base
 import (
 	"net/http"
 
-	"github.com/bitcoin-sv/alert-system/app/p2p"
-
 	"github.com/bitcoin-sv/alert-system/app"
 	"github.com/bitcoin-sv/alert-system/app/config"
+	"github.com/bitcoin-sv/alert-system/app/p2p"
 	apirouter "github.com/mrz1836/go-api-router"
 )
 
