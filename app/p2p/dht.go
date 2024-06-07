@@ -6,11 +6,9 @@ import (
 	"time"
 
 	"github.com/bitcoin-sv/alert-system/app/config"
-	"github.com/libp2p/go-libp2p/core/peer"
-
-	"github.com/multiformats/go-multiaddr"
-
 	dht "github.com/libp2p/go-libp2p-kad-dht"
+	"github.com/libp2p/go-libp2p/core/peer"
+	"github.com/multiformats/go-multiaddr"
 )
 
 // initDHT will initialize the DHT
