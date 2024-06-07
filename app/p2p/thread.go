@@ -24,7 +24,7 @@ type Thread interface {
 // StreamThread is a thread for a stream
 type StreamThread struct {
 	config           *config.Config
-	ctx              context.Context // TODO should remove this, should be passed in via methods only
+	ctx              context.Context //nolint:containedctx // TODO should remove this, should be passed in via methods only
 	latestSequence   uint32
 	myLatestSequence uint32
 	peer             peer.ID

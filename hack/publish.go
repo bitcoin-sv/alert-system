@@ -11,16 +11,13 @@ import (
 	"strings"
 	"time"
 
-	models2 "github.com/libsv/go-bn/models"
-
-	"github.com/bitcoin-sv/alert-system/app/models/model"
-
 	"github.com/bitcoin-sv/alert-system/app/config"
 	"github.com/bitcoin-sv/alert-system/app/models"
-	pubsub "github.com/libp2p/go-libp2p-pubsub"
-
+	"github.com/bitcoin-sv/alert-system/app/models/model"
 	"github.com/bitcoin-sv/alert-system/app/p2p"
 	"github.com/bitcoin-sv/alert-system/utils"
+	pubsub "github.com/libp2p/go-libp2p-pubsub"
+	models2 "github.com/libsv/go-bn/models"
 )
 
 func main() {

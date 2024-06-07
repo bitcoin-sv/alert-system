@@ -11,28 +11,24 @@ import (
 	"os"
 	"time"
 
-	"github.com/libp2p/go-libp2p/p2p/net/conngater"
-
-	maddr "github.com/multiformats/go-multiaddr"
-
-	"github.com/libp2p/go-libp2p/core/discovery"
-
-	dht "github.com/libp2p/go-libp2p-kad-dht"
-
 	"github.com/bitcoin-sv/alert-system/app/config"
 	"github.com/bitcoin-sv/alert-system/app/models"
 	"github.com/bitcoin-sv/alert-system/app/models/model"
 	"github.com/bitcoin-sv/alert-system/app/webhook"
 	"github.com/libp2p/go-libp2p"
+	dht "github.com/libp2p/go-libp2p-kad-dht"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
 	"github.com/libp2p/go-libp2p/core/crypto"
+	"github.com/libp2p/go-libp2p/core/discovery"
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/libp2p/go-libp2p/core/protocol"
 	drouting "github.com/libp2p/go-libp2p/p2p/discovery/routing"
 	dutil "github.com/libp2p/go-libp2p/p2p/discovery/util"
+	"github.com/libp2p/go-libp2p/p2p/net/conngater"
 	"github.com/mrz1836/go-datastore"
+	maddr "github.com/multiformats/go-multiaddr"
 )
 
 // Define an interface to handle topic notifications
