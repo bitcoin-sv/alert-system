@@ -78,7 +78,7 @@ func (s *StreamThread) ProcessSyncMessage(ctx context.Context) error {
 		for {
 			b, err := wire.ReadVarBytes(s.stream, 0, math.MaxUint64, config.ApplicationName)
 			if err != nil {
-				if s.stream.Conn().IsClosed() || s.stream.Stat().Transient {
+				if s.stream.Conn().IsClosed() {
 					done <- nil
 					return
 				}
