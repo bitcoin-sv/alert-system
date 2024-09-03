@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/bitcoin-sv/alert-system/app/p2p"
+	p2palert "github.com/bitcoin-sv/alert-system/app/p2p"
 
 	"github.com/bitcoin-sv/alert-system/app/api/base"
 	"github.com/bitcoin-sv/alert-system/app/config"
@@ -25,11 +25,11 @@ type Server struct {
 	Config    *config.Config
 	Router    *apirouter.Router
 	WebServer *http.Server
-	P2pServer *p2p.Server
+	P2pServer *p2palert.Server
 }
 
 // NewServer will return a new server service
-func NewServer(conf *config.Config, serv *p2p.Server) *Server {
+func NewServer(conf *config.Config, serv *p2palert.Server) *Server {
 	return &Server{
 		Config:    conf,
 		P2pServer: serv,
