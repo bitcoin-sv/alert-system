@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"strings"
 
+	"encoding/json"
 	"github.com/bitcoin-sv/alert-system/app/config"
 	"github.com/bitcoin-sv/alert-system/app/models"
-	"github.com/tokenized/pkg/json"
 )
 
 // Payload is the payload for the webhook
