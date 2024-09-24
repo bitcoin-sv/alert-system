@@ -514,9 +514,10 @@ func readPrivateKey(privKeyHex string) (*crypto.PrivKey, error) {
 		return nil, err
 	}
 
-	// Unmarshal the private key bytes into a key
 	var privateKey crypto.PrivKey
-	if privateKey, err = crypto.UnmarshalPrivateKey(privateBytes); err != nil {
+	// Unmarshal the private key bytes into a key
+	privateKey, err = crypto.UnmarshalEd25519PrivateKey(privateBytes)
+	if err != nil {
 		return nil, err
 	}
 
