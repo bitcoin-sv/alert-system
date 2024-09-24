@@ -211,7 +211,7 @@ require (
 replace github.com/libsv/go-bt/v2 => github.com/ordishs/go-bt/v2 v2.2.5
 
 // Use this specific version of go-bn (galt-tr vs libsv)
-replace github.com/libsv/go-bn => github.com/galt-tr/go-bn v0.0.4
+replace github.com/libsv/go-bn => github.com/galt-tr/go-bn v0.0.5
 
 // Using a fork of go-sqlite3
 replace gorm.io/driver/sqlite => github.com/glebarez/sqlite v1.10.0

@@ -18,7 +18,7 @@ type NodeInterface interface {
 	GetRPCUser() string
 	InvalidateBlock(ctx context.Context, hash string) error
 	UnbanPeer(ctx context.Context, peer string) error
-	AddToConsensusBlacklist(ctx context.Context, funds []models.Fund) (*models.AddToConsensusBlacklistResponse, error)
+	AddToConsensusBlacklist(ctx context.Context, funds []models.Fund) (*models.BlacklistResponse, error)
 	AddToConfiscationTransactionWhitelist(ctx context.Context, tx []models.ConfiscationTransactionDetails) (*models.AddToConfiscationTransactionWhitelistResponse, error)
 }
 
@@ -80,7 +80,7 @@ func (n *Node) UnbanPeer(ctx context.Context, peer string) error {
 }
 
 // AddToConsensusBlacklist adds frozen utxos to blacklist
-func (n *Node) AddToConsensusBlacklist(ctx context.Context, funds []models.Fund) (*models.AddToConsensusBlacklistResponse, error) {
+func (n *Node) AddToConsensusBlacklist(ctx context.Context, funds []models.Fund) (*models.BlacklistResponse, error) {
 	c := bn.NewNodeClient(bn.WithCreds(n.RPCUser, n.RPCPassword), bn.WithHost(n.RPCHost))
 	return c.AddToConsensusBlacklist(ctx, funds)
 }

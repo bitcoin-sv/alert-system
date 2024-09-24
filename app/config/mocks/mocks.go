@@ -19,7 +19,7 @@ type Node struct {
 	BestBlockHashFunc                         func(ctx context.Context) (string, error)
 	InvalidateBlockFunc                       func(ctx context.Context, hash string) error
 	UnbanPeerFunc                             func(ctx context.Context, peer string) error
-	AddToConsensusBlacklistFunc               func(ctx context.Context, funds []models.Fund) (*models.AddToConsensusBlacklistResponse, error)
+	AddToConsensusBlacklistFunc               func(ctx context.Context, funds []models.Fund) (*models.BlacklistResponse, error)
 	AddToConfiscationTransactionWhitelistFunc func(ctx context.Context, tx []models.ConfiscationTransactionDetails) (*models.AddToConfiscationTransactionWhitelistResponse, error)
 	// Add additional fields if needed to track calls or results
 }
@@ -73,7 +73,7 @@ func (n *Node) UnbanPeer(ctx context.Context, peer string) error {
 }
 
 // AddToConsensusBlacklist will call the AddToConsensusBlacklistFunc if not nil, otherwise return nil
-func (n *Node) AddToConsensusBlacklist(ctx context.Context, funds []models.Fund) (*models.AddToConsensusBlacklistResponse, error) {
+func (n *Node) AddToConsensusBlacklist(ctx context.Context, funds []models.Fund) (*models.BlacklistResponse, error) {
 	if n.AddToConsensusBlacklistFunc != nil {
 		return n.AddToConsensusBlacklistFunc(ctx, funds)
 	}
