@@ -3,6 +3,7 @@ package p2p
 import (
 	"context"
 	"crypto/rand"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
@@ -64,16 +65,25 @@ type Server struct {
 // Instantiate a new server instance, optionally include a subscriber
 // if `subscriber` is nil, we won't process the subscription events
 func NewServer(o ServerOptions) (*Server, error) {
-
 	o.Config.Services.Log.Debug("creating P2P service")
+	var pk *crypto.PrivKey
+	var err error
 
-	// Attempt to read the private key from the file
-	pk, err := readPrivateKey(o.Config.P2P.PrivateKeyPath)
-	if err != nil {
-
-		// If the file doesn't exist, generate a new private key
-		if pk, err = generatePrivateKey(o.Config.P2P.PrivateKeyPath); err != nil {
+	// If privatekey is defined in config, skip reading from file
+	if o.Config.P2P.PrivateKey != "" {
+		pk, err = readPrivateKey(o.Config.P2P.PrivateKey)
+		if err != nil {
 			return nil, err
+		}
+	} else {
+		// Attempt to read the private key from the file
+		pk, err = readPrivateKey(o.Config.P2P.PrivateKeyPath)
+		if err != nil {
+
+			// If the file doesn't exist, generate a new private key
+			if pk, err = generatePrivateKey(o.Config.P2P.PrivateKeyPath); err != nil {
+				return nil, err
+			}
 		}
 	}
 
@@ -479,8 +489,8 @@ func generatePrivateKey(filePath string) (*crypto.PrivKey, error) {
 	return &privateKey, nil
 }
 
-// readPrivateKey reads a private key from `private_key` file
-func readPrivateKey(filePath string) (*crypto.PrivKey, error) {
+// readPrivateKeyFromFile reads a private key from `private_key_path` file
+func readPrivateKeyFromFile(filePath string) (*crypto.PrivKey, error) {
 	// Read private key from a file
 	privateBytes, err := os.ReadFile(filePath) //nolint:gosec // This is a local private key
 	if err != nil {
@@ -490,6 +500,24 @@ func readPrivateKey(filePath string) (*crypto.PrivKey, error) {
 	// Unmarshal the private key bytes into a key
 	var privateKey crypto.PrivKey
 	if privateKey, err = crypto.UnmarshalPrivateKey(privateBytes); err != nil {
+		return nil, err
+	}
+
+	return &privateKey, nil
+}
+
+// readPrivateKey reads a private key from `private_key` hex encoded string
+func readPrivateKey(privKeyHex string) (*crypto.PrivKey, error) {
+	// Read private key from a file
+	privateBytes, err := hex.DecodeString(privKeyHex) //nolint:gosec // This is a local private key
+	if err != nil {
+		return nil, err
+	}
+
+	var privateKey crypto.PrivKey
+	// Unmarshal the private key bytes into a key
+	privateKey, err = crypto.UnmarshalEd25519PrivateKey(privateBytes)
+	if err != nil {
 		return nil, err
 	}
 

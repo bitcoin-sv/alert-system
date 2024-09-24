@@ -104,6 +104,7 @@ type (
 		Port                  string        `json:"port" mapstructure:"port"`                                             // Port is the port for the P2P server
 		AllowPrivateIPs       bool          `json:"allow_private_ip_addresses" mapstructure:"allow_private_ip_addresses"` // AllowPrivateIPs will disable the default behavior of filtering out private IP addresses
 		PrivateKeyPath        string        `json:"private_key_path" mapstructure:"private_key_path"`                     // PrivateKeyPath is the path to the private key
+		PrivateKey            string        `json:"private_key" mapstructure:"private_key"`                               // PrivateKey is a hex encoded private key to use directly
 		TopicName             string        `json:"topic_name" mapstructure:"topic_name"`                                 // TopicName is the name of the topic to subscribe to
 		PeerDiscoveryInterval time.Duration `json:"peer_discovery_interval" mapstructure:"peer_discovery_interval"`       // PeerDiscoveryInterval is the interval in which we will refresh the peer table and check peers for missing messages
 	}
