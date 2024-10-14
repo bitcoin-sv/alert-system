@@ -262,7 +262,7 @@ func (s *Server) Start(ctx context.Context) error {
 		dutil.Advertise(ctx, routingDiscovery, topicName)
 	}
 
-	s.quitPeerDiscoveryChannel = s.RunPeerDiscovery(ctx, routingDiscovery)
+	s.quitPeerDiscoveryChannel = s.RunPeerDiscovery(ctx, routingDiscovery) // race place 1
 	s.quitAlertProcessingChannel = s.RunAlertProcessingCron(ctx)
 
 	ps, err := pubsub.NewGossipSub(ctx, s.host, pubsub.WithDiscovery(routingDiscovery))
@@ -544,7 +544,7 @@ func (s *Server) discoverPeers(ctx context.Context, routingDiscovery *drouting.R
 OUTER:
 	for {
 		select {
-		case <-s.quitPeerDiscoveryChannel:
+		case <-s.quitPeerDiscoveryChannel: // race place 2
 			s.config.Services.Log.Infof("stopping peer discovery process from channel")
 			return nil
 		case <-ctx.Done():
