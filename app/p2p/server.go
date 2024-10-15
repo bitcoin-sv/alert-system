@@ -439,7 +439,7 @@ func (s *Server) processAlerts(ctx context.Context) error {
 }
 
 // RunPeerDiscovery starts a cron job to resync peers and update routable peers
-func (s *Server) RunPeerDiscovery(ctx context.Context, routingDiscovery *drouting.RoutingDiscovery) { //} chan bool {
+func (s *Server) RunPeerDiscovery(ctx context.Context, routingDiscovery *drouting.RoutingDiscovery) {
 	ticker := time.NewTicker(s.config.P2P.PeerDiscoveryInterval)
 
 	// assign quit channel before any go routines are started
@@ -467,7 +467,6 @@ func (s *Server) RunPeerDiscovery(ctx context.Context, routingDiscovery *droutin
 			}
 		}
 	}()
-	// return quit
 }
 
 // generatePrivateKey generates a private key and stores it in `private_key` file
@@ -547,7 +546,7 @@ func (s *Server) discoverPeers(ctx context.Context, routingDiscovery *drouting.R
 OUTER:
 	for {
 		select {
-		case <-s.quitPeerDiscoveryChannel: // race place 2
+		case <-s.quitPeerDiscoveryChannel:
 			s.config.Services.Log.Infof("stopping peer discovery process from channel")
 			return nil
 		case <-ctx.Done():
