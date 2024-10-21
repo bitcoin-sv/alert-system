@@ -262,7 +262,8 @@ func (s *Server) Start(ctx context.Context) error {
 		dutil.Advertise(ctx, routingDiscovery, topicName)
 	}
 
-	s.quitPeerDiscoveryChannel = s.RunPeerDiscovery(ctx, routingDiscovery)
+	// initialize the channel before use in discoverPeers is called
+	s.RunPeerDiscovery(ctx, routingDiscovery)
 	s.quitAlertProcessingChannel = s.RunAlertProcessingCron(ctx)
 
 	ps, err := pubsub.NewGossipSub(ctx, s.host, pubsub.WithDiscovery(routingDiscovery))
@@ -438,9 +439,11 @@ func (s *Server) processAlerts(ctx context.Context) error {
 }
 
 // RunPeerDiscovery starts a cron job to resync peers and update routable peers
-func (s *Server) RunPeerDiscovery(ctx context.Context, routingDiscovery *drouting.RoutingDiscovery) chan bool {
+func (s *Server) RunPeerDiscovery(ctx context.Context, routingDiscovery *drouting.RoutingDiscovery) {
 	ticker := time.NewTicker(s.config.P2P.PeerDiscoveryInterval)
-	quit := make(chan bool, 1)
+
+	// assign quit channel before any go routines are started
+	s.quitPeerDiscoveryChannel = make(chan bool, 1)
 	go func() {
 		err := s.discoverPeers(ctx, routingDiscovery)
 		if err != nil {
@@ -457,14 +460,13 @@ func (s *Server) RunPeerDiscovery(ctx context.Context, routingDiscovery *droutin
 				if err != nil {
 					s.config.Services.Log.Errorf("error discovering peers: %v", err.Error())
 				}
-			case <-quit:
+			case <-s.quitPeerDiscoveryChannel:
 				s.config.Services.Log.Infof("stopping peer discovery process")
 				ticker.Stop()
 				return
 			}
 		}
 	}()
-	return quit
 }
 
 // generatePrivateKey generates a private key and stores it in `private_key` file

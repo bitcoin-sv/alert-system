@@ -3,6 +3,7 @@ package p2p
 import (
 	"context"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/bitcoin-sv/alert-system/app/config"
@@ -47,8 +48,8 @@ func (s *Server) initDHT(ctx context.Context) (*dht.IpfsDHT, error) {
 	}
 
 	// Connect to the chosen ipfs nodes
-	connected := false
-	for !connected {
+	connected := uint32(0)
+	for atomic.LoadUint32(&connected) == 0 {
 		select {
 		case <-s.quitPeerInitializationChannel:
 			return kademliaDHT, nil
@@ -60,14 +61,14 @@ func (s *Server) initDHT(ctx context.Context) (*dht.IpfsDHT, error) {
 					return nil, err
 				}
 				wg.Add(1)
-				go func(logger config.LoggerInterface) {
+				go func(logger config.LoggerInterface) { // connect to peer in a goroutine
 					defer wg.Done()
 					if err = s.host.Connect(ctx, *peerInfo); err != nil {
 						logger.Errorf("bootstrap warning: %s", err.Error())
 						return
 					}
 					logger.Infof("connected to peer %v", peerInfo.ID)
-					connected = true
+					atomic.StoreUint32(&connected, 1)
 				}(logger)
 			}
 			time.Sleep(1 * time.Second)
