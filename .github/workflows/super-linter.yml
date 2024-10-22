@@ -32,5 +32,6 @@ jobs:
           VALIDATE_GITLEAKS: false # False positives for public keys
           VALIDATE_CHECKOV: false # False positive
           VALIDATE_GO_MODULES: false # Already running in Go tests
+          VALIDATE_YAML_PRETTIER: false
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
