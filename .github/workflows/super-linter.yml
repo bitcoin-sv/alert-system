@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 0
 
       - name: Lint Code Base
-        uses: github/super-linter@v6
+        uses: github/super-linter@v7
         env:
           VALIDATE_EDITORCONFIG: false  # Not needed in this project
           VALIDATE_ALL_CODEBASE: false
@@ -32,5 +32,6 @@ jobs:
           VALIDATE_GITLEAKS: false # False positives for public keys
           VALIDATE_CHECKOV: false # False positive
           VALIDATE_GO_MODULES: false # Already running in Go tests
+          VALIDATE_YAML_PRETTIER: false
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
