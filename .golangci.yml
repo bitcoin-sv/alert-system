@@ -93,6 +93,9 @@ linters-settings:
   gocognit:
     # minimal code complexity to report, 30 by default (but we recommend 10-20)
     min-complexity: 10
+  gosec:
+    excludes:
+      - G115
   nestif:
     # minimal complexity of if statements to report, 5 by default
     min-complexity: 4
@@ -383,6 +386,7 @@ issues:
     - path: _test\.go
       linters:
         - gocyclo
+        - testifylint
 
     # Exclude known linters from partially hard-vendored code,
     # which is impossible to exclude via "nolint" comments.

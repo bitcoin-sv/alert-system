@@ -491,27 +491,10 @@ func generatePrivateKey(filePath string) (*crypto.PrivKey, error) {
 	return &privateKey, nil
 }
 
-// readPrivateKeyFromFile reads a private key from `private_key_path` file
-func readPrivateKeyFromFile(filePath string) (*crypto.PrivKey, error) {
-	// Read private key from a file
-	privateBytes, err := os.ReadFile(filePath) //nolint:gosec // This is a local private key
-	if err != nil {
-		return nil, err
-	}
-
-	// Unmarshal the private key bytes into a key
-	var privateKey crypto.PrivKey
-	if privateKey, err = crypto.UnmarshalPrivateKey(privateBytes); err != nil {
-		return nil, err
-	}
-
-	return &privateKey, nil
-}
-
 // readPrivateKey reads a private key from `private_key` hex encoded string
 func readPrivateKey(privKeyHex string) (*crypto.PrivKey, error) {
 	// Read private key from a file
-	privateBytes, err := hex.DecodeString(privKeyHex) //nolint:gosec // This is a local private key
+	privateBytes, err := hex.DecodeString(privKeyHex)
 	if err != nil {
 		return nil, err
 	}
