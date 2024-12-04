@@ -51,8 +51,6 @@ func main() {
 	a := &models.AlertMessage{}
 	switch alertType {
 	case models.AlertTypeInformational:
-		//reader := bufio.NewReader(os.Stdin)
-		//text, _ := reader.ReadString('\n')
 		a = InfoAlert(*sequenceNumber, "Testing block invalidation on testnet of 00000000000439a2c310b4e457f7e36f51c25931ccda8d512aeb2300587bcd5d", model.WithAllDependencies(_appConfig))
 	case models.AlertTypeInvalidateBlock:
 
@@ -106,11 +104,14 @@ func main() {
 		_appConfig.Services.Log.Fatalf("error starting p2p server: %s", err.Error())
 	}
 
+	// Wait for server to be connected
 	for !p2pServer.Connected() {
 		time.Sleep(1 * time.Second)
 	}
 	topics := p2pServer.Topics()
 
+	// Check if alert signatures are valid
+	// This is going to check the local database to see the active keys and ensure signatures come from them
 	var v bool
 	if v, err = a.AreSignaturesValid(ctx); err != nil {
 		panic(err)
@@ -119,7 +120,8 @@ func main() {
 		_appConfig.Services.Log.Errorf("signature is not valid")
 		return
 	}
-	_appConfig.Services.Log.Infof("bytes: %x", a.Serialize())
+	_appConfig.Services.Log.Infof("raw alert bytes: %x", a.Serialize())
+	// publish the alert
 	publish(ctx, topics[_appConfig.P2P.TopicName], a.Serialize())
 	_appConfig.Services.Log.Infof("successfully published alert to topic %s", _appConfig.P2P.TopicName)
 }
@@ -290,5 +292,6 @@ func publish(ctx context.Context, topic *pubsub.Topic, data []byte) {
 	if err := topic.Publish(ctx, data); err != nil {
 		panic(err)
 	}
+	// Sleep for a second just to ensure it was fully processed
 	time.Sleep(1 * time.Second)
 }
