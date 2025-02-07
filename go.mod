@@ -12,7 +12,7 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/libp2p/go-libp2p v0.38.2
 	github.com/libp2p/go-libp2p-kad-dht v0.29.0
-	github.com/libp2p/go-libp2p-pubsub v0.11.0
+	github.com/libp2p/go-libp2p-pubsub v0.13.0
 	github.com/libsv/go-bn v0.0.2
 	github.com/libsv/go-bt/v2 v2.2.5
 	github.com/libsv/go-p2p v0.3.3
