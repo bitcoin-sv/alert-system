@@ -41,6 +41,7 @@
       "port": "5432",
       "replica": true,
       "skip_initialize_with_version": true,
+      "ssl_mode": "disable",
       "time_zone": "UTC",
       "tx_timeout": "20s",
       "user": "postgres"
@@ -57,6 +58,7 @@
       "port": "5432",
       "replica": false,
       "skip_initialize_with_version": true,
+      "ssl_mode": "disable",
       "time_zone": "UTC",
       "tx_timeout": "20s",
       "user": "postgres"

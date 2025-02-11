@@ -57,6 +57,7 @@ func (c *Config) loadDatastore(ctx context.Context, models []interface{}) error 
 				TimeZone:  c.Datastore.SQLWrite.TimeZone,
 				TxTimeout: c.Datastore.SQLWrite.TxTimeout,
 				User:      c.Datastore.SQLWrite.User,
+				SslMode:   c.Datastore.SQLWrite.SslMode,
 			},
 			{ // READ REPLICA
 				CommonConfig: datastore.CommonConfig{
@@ -76,6 +77,7 @@ func (c *Config) loadDatastore(ctx context.Context, models []interface{}) error 
 				TimeZone:  c.Datastore.SQLRead.TimeZone,
 				TxTimeout: c.Datastore.SQLRead.TxTimeout,
 				User:      c.Datastore.SQLRead.User,
+				SslMode:   c.Datastore.SQLRead.SslMode,
 			},
 		}))
 
