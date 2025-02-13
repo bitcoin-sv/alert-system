@@ -1,7 +1,6 @@
 module github.com/bitcoin-sv/alert-system
 
 go 1.22.5
-
 toolchain go1.23.2
 
 require (
@@ -17,7 +16,7 @@ require (
 	github.com/libsv/go-bt/v2 v2.2.5
 	github.com/libsv/go-p2p v0.3.3
 	github.com/mrz1836/go-api-router v0.8.3
-	github.com/mrz1836/go-datastore v0.7.3
+	github.com/mrz1836/go-datastore v0.7.8
 	github.com/mrz1836/go-logger v0.3.5
 	github.com/multiformats/go-multiaddr v0.14.0
 	github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.1.3
@@ -25,7 +24,7 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.10.0
 	go.mongodb.org/mongo-driver v1.17.2
-	gorm.io/driver/sqlite v1.5.6
+	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.25.12
 )
 
@@ -75,7 +74,7 @@ require (
 	github.com/ipld/go-ipld-prime v0.21.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
-	github.com/jackc/pgx/v5 v5.7.1 // indirect
+	github.com/jackc/pgx/v5 v5.7.2 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect
 	github.com/jbenet/go-temp-err-catcher v0.1.0 // indirect
@@ -199,7 +198,7 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/mysql v1.5.7 // indirect
-	gorm.io/driver/postgres v1.5.9 // indirect
+	gorm.io/driver/postgres v1.5.11 // indirect
 	gorm.io/plugin/dbresolver v1.5.3 // indirect
 	lukechampine.com/blake3 v1.3.0 // indirect
 	modernc.org/libc v1.53.3 // indirect
