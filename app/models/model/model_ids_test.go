@@ -25,14 +25,14 @@ func TestIDs_Scan(t *testing.T) {
 		i := IDs{}
 		err := i.Scan(nil)
 		require.NoError(t, err)
-		assert.Empty(t, len(i))
+		assert.Empty(t, i)
 	})
 
 	t.Run("empty string", func(t *testing.T) {
 		i := IDs{}
 		err := i.Scan("\"\"")
 		require.Error(t, err)
-		assert.Empty(t, len(i))
+		assert.Empty(t, i)
 	})
 
 	t.Run("valid slice of ids", func(t *testing.T) {
@@ -49,7 +49,7 @@ func TestIDs_Scan(t *testing.T) {
 		err := i.Scan("[\"\"]")
 		require.NoError(t, err)
 		assert.Len(t, i, 1)
-		assert.Equal(t, "", i[0])
+		assert.Empty(t, i[0])
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
@@ -113,14 +113,14 @@ func TestUnmarshalIDs(t *testing.T) {
 	t.Run("nil value", func(t *testing.T) {
 		i, err := UnmarshalIDs(nil)
 		require.NoError(t, err)
-		assert.Empty(t, len(i))
+		assert.Empty(t, i)
 		assert.IsType(t, IDs{}, i)
 	})
 
 	t.Run("empty string", func(t *testing.T) {
 		i, err := UnmarshalIDs("\"\"")
 		require.Error(t, err)
-		assert.Empty(t, len(i))
+		assert.Empty(t, i)
 		assert.IsType(t, IDs{}, i)
 	})
 

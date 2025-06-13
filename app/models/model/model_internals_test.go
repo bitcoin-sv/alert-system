@@ -68,7 +68,7 @@ func TestModelGetOptions(t *testing.T) {
 	t.Run("base model", func(t *testing.T) {
 		m := new(Model)
 		opts := m.GetOptions(false)
-		assert.Empty(t, len(opts))
+		assert.Empty(t, opts)
 	})
 
 	t.Run("new record model", func(t *testing.T) {
@@ -100,7 +100,7 @@ func TestModel_Name(t *testing.T) {
 
 	t.Run("base model", func(t *testing.T) {
 		m := new(Model)
-		assert.Equal(t, "", m.Name())
+		assert.Empty(t, m.Name())
 	})
 
 	t.Run("set model name - alert message", func(t *testing.T) {
@@ -122,7 +122,7 @@ func TestModel_GetID(t *testing.T) {
 
 	t.Run("base model - no id", func(t *testing.T) {
 		m := new(Model)
-		assert.Equal(t, "", m.GetID())
+		assert.Empty(t, m.GetID())
 	})
 }
 

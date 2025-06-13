@@ -16,18 +16,19 @@ func (c *Config) loadDatastore(ctx context.Context, models []interface{}) error 
 	//TODO: pass in our own logger, but for now this doesn't work so i'm just going to silently log for now
 	options = append(options, datastore.WithLogger(logger.NewGormLogger(false, 0)))
 	// Select the datastore
-	if c.Datastore.Engine == datastore.SQLite {
+	switch c.Datastore.Engine {
+	case datastore.SQLite:
 		options = append(options, datastore.WithSQLite(&datastore.SQLiteConfig{
 			CommonConfig: datastore.CommonConfig{
 				Debug:              c.Datastore.Debug,
-				MaxIdleConnections: c.Datastore.SQLite.CommonConfig.MaxIdleConnections,
-				MaxOpenConnections: c.Datastore.SQLite.CommonConfig.MaxOpenConnections,
+				MaxIdleConnections: c.Datastore.SQLite.MaxIdleConnections,
+				MaxOpenConnections: c.Datastore.SQLite.MaxOpenConnections,
 				TablePrefix:        c.Datastore.TablePrefix,
 			},
 			DatabasePath: c.Datastore.SQLite.DatabasePath, // "" for in memory
 			Shared:       c.Datastore.SQLite.Shared,
 		}))
-	} else if c.Datastore.Engine == datastore.MySQL || c.Datastore.Engine == datastore.PostgreSQL {
+	case datastore.MySQL, datastore.PostgreSQL:
 
 		// Set the pw if not set
 		if len(c.Datastore.Password) > 0 && len(c.Datastore.SQLRead.Password) == 0 {
@@ -80,12 +81,13 @@ func (c *Config) loadDatastore(ctx context.Context, models []interface{}) error 
 				SslMode:   c.Datastore.SQLRead.SslMode,
 			},
 		}))
-
-	} else {
+	case datastore.Empty, datastore.MongoDB:
+		return ErrDatastoreUnsupported
+	default:
 		return ErrDatastoreUnsupported
 	}
 
-	// Add the auto migrate
+	// Add the auto migration option if enabled
 	if c.Datastore.AutoMigrate && models != nil {
 		options = append(options, datastore.WithAutoMigrate(models...))
 	}
