@@ -281,9 +281,6 @@
   },
   "run": {
     "allow-parallel-runners": false,
-    "build-tags": [
-      "mytag"
-    ],
     "concurrency": 4,
     "issues-exit-code": 1,
     "tests": true
