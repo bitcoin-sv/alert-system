@@ -69,7 +69,7 @@ func NewServer(o ServerOptions) (*Server, error) {
 	var pk *crypto.PrivKey
 	var err error
 
-	// If privatekey is defined in config, skip reading from file
+	// If privatekey is defined in config, skip reading from a file
 	if o.Config.P2P.PrivateKey != "" {
 		pk, err = readPrivateKey(o.Config.P2P.PrivateKey)
 		if err != nil {
@@ -99,18 +99,18 @@ func NewServer(o ServerOptions) (*Server, error) {
 	addressFactory := func(addrs []maddr.Multiaddr) []maddr.Multiaddr {
 		var publicAddrs []maddr.Multiaddr
 		for _, addr := range addrs {
-			// if IP is not private add it to the list
+			// if IP is not private, add it to the list
 			if !isPrivateIP(addr) || o.Config.P2P.AllowPrivateIPs {
 				publicAddrs = append(publicAddrs, addr)
 			}
 		}
-		// If user specified a broadcast IP append it here
+		// If a user specified a broadcast IP append it here
 		if extMultiAddr != nil {
 			// here we're appending the external facing multiaddr we created above to the addressFactory so it will be broadcast out when I connect to a bootstrap node.
 			publicAddrs = append(publicAddrs, extMultiAddr)
 		}
 
-		// If we still dont have any advertisable addresses then attempt to grab it from `https://ifconfig.me/ip`
+		// If we still don't have any advertisable addresses then attempt to grab it from `https://ifconfig.me/ip`
 		if len(publicAddrs) == 0 {
 			// If no public addresses are set, let's attempt to grab it publicly
 			// Ignore errors because we don't care if we can't find it
@@ -438,11 +438,11 @@ func (s *Server) processAlerts(ctx context.Context) error {
 	return nil
 }
 
-// RunPeerDiscovery starts a cron job to resync peers and update routable peers
+// RunPeerDiscovery starts a cron job to resync peers and updates routable peers
 func (s *Server) RunPeerDiscovery(ctx context.Context, routingDiscovery *drouting.RoutingDiscovery) {
 	ticker := time.NewTicker(s.config.P2P.PeerDiscoveryInterval)
 
-	// assign quit channel before any go routines are started
+	// assign a quit channel before any go routines are started
 	s.quitPeerDiscoveryChannel = make(chan bool, 1)
 	go func() {
 		err := s.discoverPeers(ctx, routingDiscovery)
@@ -551,14 +551,14 @@ OUTER:
 
 						// Don't connect to ourselves
 						if foundPeer.ID == s.host.ID() {
-							continue // No self connection
+							continue // No self-connection
 						}
 
 						// Failed to connect to peer
 						s.config.Services.Log.Debugf("attempting connection to %s", foundPeer.ID.String())
 
 						if err = s.host.Connect(ctx, foundPeer); err != nil {
-							// we fail to connect to a lot of peers. Just ignore it for now.
+							// we fail to connect to a lot of peers. Ignore it for now.
 							s.config.Services.Log.Debugf("failed connecting to %s, error: %s", foundPeer.ID.String(), err.Error())
 							continue
 						}
@@ -677,7 +677,7 @@ func (s *Server) Subscribe(ctx context.Context, subscriber *pubsub.Subscription,
 			continue
 		}
 
-		// Process the alert message into correct interface
+		// Process the alert message into the correct interface
 		am := ak.ProcessAlertMessage()
 		if err = am.Read(ak.GetRawMessage()); err != nil {
 			s.config.Services.Log.Errorf("failed to read message: %s", err.Error())

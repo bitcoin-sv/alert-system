@@ -26,8 +26,8 @@ type Model struct {
 	debug        bool                   // Set from the parent config if debugging is turned on/off
 	dependencies *config.Config         // Application dependencies (app config, services, datastore, cachestore, etc)
 	logger       config.LoggerInterface // Internal logging
-	name         Name                   // Name of model (table name)
-	newRecord    bool                   // Determine if the record is new (create vs update)
+	name         Name                   // Name of a model (table name)
+	newRecord    bool                   // Determine if the record is new (create vs. update)
 }
 
 // BaseInterface is the interface that all models share

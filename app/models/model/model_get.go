@@ -21,7 +21,7 @@ func Get(
 		timeout = DefaultDatabaseReadTimeout
 	}
 
-	// Attempt to Get the model (by model fields & given conditions)
+	// Attempt to Get the model (by model fields and given conditions)
 	return model.Datastore().GetModel(ctx, model, conditions, timeout, forceWriteDB)
 }
 
@@ -34,7 +34,7 @@ func GetModels(
 	queryParams *datastore.QueryParams,
 	timeout time.Duration,
 ) error {
-	// Attempt to Get the model (by model fields & given conditions)
+	// Attempt to Get the model (by model fields and given conditions)
 	return datastore.GetModels(ctx, models, conditions, queryParams, nil, timeout)
 }
 

@@ -9,9 +9,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mrz1836/go-datastore"
-
 	"github.com/bitcoin-sv/alert-system/app/models/model"
+	"github.com/mrz1836/go-datastore"
 )
 
 // AlertMessageSetKeys is the message for setting keys
@@ -46,7 +45,7 @@ func (a *AlertMessageSetKeys) Read(alert []byte) error {
 	return nil
 }
 
-// Do executes the alert
+// Do execute the alert
 func (a *AlertMessageSetKeys) Do(ctx context.Context) error {
 	err := ClearActivePublicKeys(ctx, a.Config().Services.Datastore)
 	if err != nil {

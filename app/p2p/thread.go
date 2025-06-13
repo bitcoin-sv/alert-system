@@ -51,7 +51,7 @@ func (s *StreamThread) Sync(ctx context.Context) error {
 	}
 
 	s.myLatestSequence = a.SequenceNumber
-	// construct get latest message
+	// construct get the latest message
 	msg := SyncMessage{
 		Type: IWantLatest,
 	}
@@ -181,7 +181,7 @@ func (s *StreamThread) ProcessGotLatest(ctx context.Context, msg *SyncMessage) e
 	}
 	s.config.Services.Log.Infof("peer %s has sequence %d and we have %d", s.peer.String(), msg.SequenceNumber, a.SequenceNumber)
 
-	// need to get next sequence
+	// need to get the next sequence
 	res := SyncMessage{
 		Type:           IWantSequenceNumber,
 		SequenceNumber: a.SequenceNumber + 1,
@@ -236,7 +236,7 @@ func (s *StreamThread) ProcessGotSequenceNumber(msg *SyncMessage) error {
 		return nil
 	}
 
-	// need to get next sequence
+	// need to get the next sequence
 	res := SyncMessage{
 		Type:           IWantSequenceNumber,
 		SequenceNumber: a.SequenceNumber + 1,

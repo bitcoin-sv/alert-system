@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 )
 
-// IWantLatest is the byte for "I want latest"
+// IWantLatest is the byte for "I want the latest"
 const IWantLatest = 0x01
 
 // IWantSequenceNumber is the byte for "I want sequence number"

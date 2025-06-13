@@ -11,7 +11,7 @@ import (
 )
 
 func testHandle(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-	apirouter.ReturnResponse(w, req, http.StatusOK, "")
+	apirouter.RespondWith(w, req, http.StatusOK, "")
 }
 
 // TestNewStack will test the method NewStack()

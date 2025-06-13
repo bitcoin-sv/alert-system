@@ -269,7 +269,7 @@ func TestAlertMessageBanPeerRead(t *testing.T) {
 	})
 }
 
-// encodeVarInt encodes a uint64 into a variable length byte slice
+// encodeVarInt encodes an uint64 into a variable length byte slice
 func encodeVarInt(value uint64) []byte {
 	var buf []byte
 	for {

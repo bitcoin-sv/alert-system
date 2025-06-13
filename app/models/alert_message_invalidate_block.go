@@ -47,7 +47,7 @@ func (a *AlertMessageInvalidateBlock) Read(alert []byte) error {
 	return nil
 }
 
-// Do executes the alert
+// Do execute the alert
 func (a *AlertMessageInvalidateBlock) Do(ctx context.Context) error {
 	return a.Config().Services.Node.InvalidateBlock(ctx, a.BlockHash.String())
 }

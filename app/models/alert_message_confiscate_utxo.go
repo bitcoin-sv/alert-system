@@ -32,7 +32,7 @@ func (a *AlertMessageConfiscateTransaction) Read(raw []byte) error {
 		return fmt.Errorf("confiscation alert is less than 9 bytes")
 	}
 	// TODO: assume for now only 1 confiscation tx in the alert for simplicity
-	details := []models.ConfiscationTransactionDetails{}
+	var details []models.ConfiscationTransactionDetails
 	enforceAtHeight := binary.LittleEndian.Uint64(raw[0:8])
 	buf := bytes.NewReader(raw[8:])
 
@@ -68,7 +68,7 @@ func (a *AlertMessageConfiscateTransaction) Read(raw []byte) error {
 	return nil
 }
 
-// Do executes the alert
+// Do execute the alert
 func (a *AlertMessageConfiscateTransaction) Do(ctx context.Context) error {
 	res, err := a.Config().Services.Node.AddToConfiscationTransactionWhitelist(ctx, a.Transactions)
 	if err != nil {

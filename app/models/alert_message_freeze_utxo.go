@@ -27,7 +27,7 @@ type Fund struct {
 
 // Serialize creates the raw hex string of the fund
 func (f *Fund) Serialize() []byte {
-	raw := []byte{}
+	var raw []byte
 	raw = append(raw, f.TransactionOutID[:]...)
 	raw = binary.LittleEndian.AppendUint64(raw, f.Vout)
 	raw = binary.LittleEndian.AppendUint64(raw, f.EnforceAtHeightStart)
@@ -49,7 +49,7 @@ func (a *AlertMessageFreezeUtxo) Read(raw []byte) error {
 		return fmt.Errorf("freeze alert is not a multiple of 57 bytes, got %d bytes; raw: %x", len(raw), raw)
 	}
 	fundCount := len(raw) / 57
-	funds := []models.Fund{}
+	var funds []models.Fund
 	for i := 0; i < fundCount; i++ {
 		fund := Fund{
 			TransactionOutID:     [32]byte(raw[0:32]),
@@ -82,7 +82,7 @@ func (a *AlertMessageFreezeUtxo) Read(raw []byte) error {
 	return nil
 }
 
-// Do performs the message
+// Do perform the message
 func (a *AlertMessageFreezeUtxo) Do(ctx context.Context) error {
 	_, err := a.Config().Services.Node.AddToConsensusBlacklist(ctx, a.Funds)
 	if err != nil {

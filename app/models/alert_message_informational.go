@@ -44,7 +44,7 @@ func (a *AlertMessageInformational) Read(alert []byte) error {
 	return nil
 }
 
-// Do executes the alert
+// Do execute the alert
 func (a *AlertMessageInformational) Do(_ context.Context) error {
 	a.Config().Services.Log.Infof("[informational alert]: %s", a.Message)
 	return nil

@@ -14,7 +14,7 @@ var envDir embed.FS // This is used for the config files
 
 // Constants for the environment
 const (
-	EnvironmentCustomFilePath = "ALERT_SYSTEM_CONFIG_FILEPATH" // Environment variable key for custom config file path
+	EnvironmentCustomFilePath = "ALERT_SYSTEM_CONFIG_FILEPATH" // Environment variable key for a custom config file path
 	EnvironmentKey            = "ALERT_SYSTEM_ENVIRONMENT"     // Environment variable key
 	EnvironmentLocal          = "local"                        // Environment for local development
 	EnvironmentPrefix         = "alert_system"                 // Prefix for all environment variables
@@ -56,7 +56,7 @@ type (
 	// Config is the global configuration settings
 	Config struct {
 		AlertWebhookURL         string          `json:"alert_webhook_url" mapstructure:"alert_webhook_url"`                 // AlertWebhookURL is the URL for the alert webhook
-		GenesisKeys             []string        `json:"genesis_keys" mapstructure:"genesis_keys"`                           // GenesisKeys is list of public keys to use for the genesis alert
+		GenesisKeys             []string        `json:"genesis_keys" mapstructure:"genesis_keys"`                           // GenesisKeys is a list of public keys to use for the genesis alert
 		Datastore               DatastoreConfig `json:"datastore" mapstructure:"datastore"`                                 // Datastore's configuration
 		DisableRPCVerification  bool            `json:"disable_rpc_verification" mapstructure:"disable_rpc_verification"`   // DisableRPCVerification will disable the rpc verification check on startup. Useful if bitcoind isn't running yet
 		LogOutputFile           string          `json:"log_output_file" mapstructure:"log_output_file"`                     // LogOutputFile will set an output file for the logger to write to as opposed to stdout
@@ -67,13 +67,13 @@ type (
 		RequestLogging          bool            `json:"request_logging" mapstructure:"request_logging"`                     // Toggle for verbose request logging (API requests)
 		Services                Services        `json:"-" mapstructure:"services"`                                          // Services is the global services
 		WebServer               WebServerConfig `json:"web_server" mapstructure:"web_server"`                               // WebServer is the configuration for the web HTTP Server
-		AlertProcessingInterval time.Duration   `json:"alert_processing_interval" mapstructure:"alert_processing_interval"` // AlertProcessingInterval is the interval in which the system will go through all of the saved alerts and attempt to retry any unprocessed alerts
+		AlertProcessingInterval time.Duration   `json:"alert_processing_interval" mapstructure:"alert_processing_interval"` // AlertProcessingInterval is the interval in which the system will go through all the saved alerts and attempt to retry any unprocessed alerts
 	}
 
 	// DatastoreConfig is the configuration for the datastore
 	DatastoreConfig struct {
 		AutoMigrate bool                    `json:"auto_migrate" mapstructure:"auto_migrate"` // Loads a blank database
-		Debug       bool                    `json:"debug" mapstructure:"debug"`               // True for sql statements
+		Debug       bool                    `json:"debug" mapstructure:"debug"`               // True for SQL statements
 		Engine      datastore.Engine        `json:"engine" mapstructure:"engine"`             // MySQL, Postgres, SQLite
 		Password    string                  `json:"password" mapstructure:"password"`         // Used for MySQL or Postgresql
 		SQLite      *datastore.SQLiteConfig `json:"sqlite" mapstructure:"sqlite"`             // Configuration for SQLite

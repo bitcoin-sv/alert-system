@@ -14,10 +14,10 @@ func Head(w http.ResponseWriter, _ *http.Request, _ httprouter.Params) {
 
 // NotFound handles all 404 requests
 func NotFound(w http.ResponseWriter, req *http.Request) {
-	apirouter.ReturnResponse(w, req, http.StatusNotFound, "route not found: "+req.RequestURI)
+	apirouter.RespondWith(w, req, http.StatusNotFound, "route not found: "+req.RequestURI)
 }
 
 // MethodNotAllowed handles all 405 requests
 func MethodNotAllowed(w http.ResponseWriter, req *http.Request) {
-	apirouter.ReturnResponse(w, req, http.StatusMethodNotAllowed, req.RequestURI+":"+req.Method)
+	apirouter.RespondWith(w, req, http.StatusMethodNotAllowed, req.RequestURI+":"+req.Method)
 }

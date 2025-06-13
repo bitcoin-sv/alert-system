@@ -10,10 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bitcoin-sv/alert-system/app/p2p"
-
 	"github.com/bitcoin-sv/alert-system/app/config"
 	"github.com/bitcoin-sv/alert-system/app/models"
+	"github.com/bitcoin-sv/alert-system/app/p2p"
 	"github.com/stretchr/testify/require"
 )
 

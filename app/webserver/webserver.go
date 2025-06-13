@@ -8,10 +8,9 @@ import (
 	"net/http"
 	"strings"
 
-	p2palert "github.com/bitcoin-sv/alert-system/app/p2p"
-
 	"github.com/bitcoin-sv/alert-system/app/api/base"
 	"github.com/bitcoin-sv/alert-system/app/config"
+	p2palert "github.com/bitcoin-sv/alert-system/app/p2p"
 	apirouter "github.com/mrz1836/go-api-router"
 	"github.com/newrelic/go-agent/v3/integrations/nrhttprouter"
 )
