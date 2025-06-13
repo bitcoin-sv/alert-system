@@ -78,7 +78,7 @@ lint: ## Run the golangci-lint application (install if not found)
 			GOPATH=$$(go env GOPATH); \
 			if [ -z "$$GOPATH" ]; then GOPATH=$$HOME/go; fi; \
 			echo "Installation path: $$GOPATH/bin"; \
-			curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$GOPATH/bin v1.61.0; \
+			curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$GOPATH/bin v2.1.6; \
 		fi; \
 	fi; \
 	if [ "$(TRAVIS)" != "" ]; then \
@@ -156,3 +156,13 @@ update-linter: ## Update the golangci-lint package (macOS only)
 vet: ## Run the Go vet application
 	@echo "running go vet..."
 	@go vet -v ./... $(TAGS)
+
+.PHONY: govulncheck-install
+govulncheck-install: ## Install govulncheck for vulnerability scanning
+	@echo "installing govulncheck..."
+	@go install golang.org/x/vuln/cmd/govulncheck@latest
+
+.PHONY: govulncheck
+govulncheck: govulncheck-install ## Scan modules for vulnerabilities using govulncheck
+	@echo "running govulncheck..."
+	@govulncheck ./...

@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -23,21 +22,21 @@ func TestMetadata_Scan(t *testing.T) {
 		m := Metadata{}
 		err := m.Scan(nil)
 		require.NoError(t, err)
-		assert.Empty(t, len(m))
+		assert.Empty(t, m)
 	})
 
 	t.Run("empty string", func(t *testing.T) {
 		m := Metadata{}
 		err := m.Scan([]byte("\"\""))
 		require.NoError(t, err)
-		assert.Empty(t, len(m))
+		assert.Empty(t, m)
 	})
 
 	t.Run("empty string - incorrectly coded", func(t *testing.T) {
 		m := Metadata{}
 		err := m.Scan([]byte(""))
 		require.NoError(t, err)
-		assert.Empty(t, len(m))
+		assert.Empty(t, m)
 	})
 
 	t.Run("object", func(t *testing.T) {
@@ -87,7 +86,7 @@ func TestMetadata_Value(t *testing.T) {
 		m["test"] = "test2"
 		value, err := m.Value()
 		require.NoError(t, err)
-		assert.Equal(t, "{\"test\":\"test2\"}", value)
+		assert.JSONEq(t, "{\"test\":\"test2\"}", value.(string))
 	})
 }
 
@@ -98,21 +97,21 @@ func TestMetadata_UnmarshalMetadata(t *testing.T) {
 	t.Run("nil value", func(t *testing.T) {
 		m, err := UnmarshalMetadata(nil)
 		require.NoError(t, err)
-		assert.Empty(t, len(m))
+		assert.Empty(t, m)
 		assert.IsType(t, Metadata{}, m)
 	})
 
 	t.Run("empty string", func(t *testing.T) {
 		m, err := UnmarshalMetadata("\"\"")
 		require.Error(t, err)
-		assert.Empty(t, len(m))
+		assert.Empty(t, m)
 		assert.IsType(t, Metadata{}, m)
 	})
 
 	t.Run("empty string - incorrectly coded", func(t *testing.T) {
 		m, err := UnmarshalMetadata("")
 		require.Error(t, err)
-		assert.Empty(t, len(m))
+		assert.Empty(t, m)
 		assert.IsType(t, Metadata{}, m)
 	})
 
@@ -145,7 +144,7 @@ func TestMetadata_MarshalMetadata(t *testing.T) {
 		require.NotNil(t, writer)
 		b := bytes.NewBufferString("")
 		writer.MarshalGQL(b)
-		assert.Equal(t, "{\"test\":\"test2\"}\n", b.String())
+		assert.JSONEq(t, "{\"test\":\"test2\"}", b.String())
 	})
 }
 
@@ -156,7 +155,7 @@ func TestMetadata_MarshalBSONValue(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
 		m := Metadata{}
 		outType, outBytes, err := m.MarshalBSONValue()
-		require.Equal(t, bsontype.Null, outType)
+		require.Equal(t, bson.TypeNull, outType)
 		assert.Nil(t, outBytes)
 		require.NoError(t, err)
 	})
@@ -167,7 +166,7 @@ func TestMetadata_MarshalBSONValue(t *testing.T) {
 		}
 		outType, outBytes, err := m.MarshalBSONValue()
 		require.NoError(t, err)
-		assert.Equal(t, bsontype.Array, outType)
+		assert.Equal(t, bson.TypeArray, outType)
 		assert.NotNil(t, outBytes)
 		outHex := hex.EncodeToString(outBytes[:])
 
@@ -178,7 +177,7 @@ func TestMetadata_MarshalBSONValue(t *testing.T) {
 		require.NoError(t, err)
 		jsonOut, jsonErr := json.Marshal(out)
 		require.NoError(t, jsonErr)
-		assert.Equal(t, "{\"0\":{\"k\":\"test-key\",\"v\":\"test-value\"}}", string(jsonOut))
+		assert.JSONEq(t, "{\"0\":{\"k\":\"test-key\",\"v\":\"test-value\"}}", string(jsonOut))
 
 		// check that it is not normal marshaling
 		_, inHex, _ := bson.MarshalValue(m)
@@ -192,7 +191,7 @@ func TestMetadata_UnmarshalBSONValue(t *testing.T) {
 
 	t.Run("nil string", func(t *testing.T) {
 		var m Metadata
-		err := m.UnmarshalBSONValue(bsontype.Null, nil)
+		err := m.UnmarshalBSONValue(bson.TypeNull, nil)
 		require.NoError(t, err)
 		assert.Nil(t, m)
 	})
@@ -201,7 +200,7 @@ func TestMetadata_UnmarshalBSONValue(t *testing.T) {
 		var m Metadata
 		// this hex is a bson array [{k: "test-key", v: "test-value"}]
 		b, _ := hex.DecodeString("2f000000033000270000000276000b000000746573742d76616c756500026b0009000000746573742d6b6579000000")
-		err := m.UnmarshalBSONValue(bsontype.Array, b)
+		err := m.UnmarshalBSONValue(bson.TypeArray, b)
 		require.NoError(t, err)
 		assert.Equal(t, Metadata{"test-key": "test-value"}, m)
 	})

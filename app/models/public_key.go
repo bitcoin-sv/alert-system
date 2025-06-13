@@ -48,7 +48,7 @@ func (m *PublicKey) Display() interface{} {
 	return m
 }
 
-// Migrate will run model specific migrations on startup
+// Migrate will run model-specific migrations on startup
 func (m *PublicKey) Migrate(client datastore.ClientInterface) error {
 	return client.IndexMetadata(client.GetTableName(model.TablePublicKeys), model.MetadataField)
 }

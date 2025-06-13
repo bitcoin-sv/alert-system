@@ -28,7 +28,7 @@ func (a *AlertMessageBanPeer) Read(alert []byte) error {
 		return err
 	}
 
-	// read the peer IP + port
+	// read the peer IP and port
 	var peer []byte
 	for i := uint64(0); i < peerLength; i++ {
 		var b byte
@@ -59,7 +59,7 @@ func (a *AlertMessageBanPeer) Read(alert []byte) error {
 	return nil
 }
 
-// Do executes the alert
+// Do execute the alert
 func (a *AlertMessageBanPeer) Do(ctx context.Context) error {
 	return a.Config().Services.Node.BanPeer(ctx, string(a.Peer))
 }

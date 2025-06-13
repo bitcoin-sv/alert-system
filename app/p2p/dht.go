@@ -61,15 +61,18 @@ func (s *Server) initDHT(ctx context.Context) (*dht.IpfsDHT, error) {
 					return nil, err
 				}
 				wg.Add(1)
-				go func(logger config.LoggerInterface) { // connect to peer in a goroutine
+
+				// Create a local copy of peerInfo for the goroutine
+				pi := *peerInfo
+				go func(logger config.LoggerInterface, peerInfo peer.AddrInfo) {
 					defer wg.Done()
-					if err = s.host.Connect(ctx, *peerInfo); err != nil {
-						logger.Errorf("bootstrap warning: %s", err.Error())
+					if localErr := s.host.Connect(ctx, peerInfo); localErr != nil {
+						logger.Errorf("bootstrap warning: %s", localErr.Error())
 						return
 					}
 					logger.Infof("connected to peer %v", peerInfo.ID)
 					atomic.StoreUint32(&connected, 1)
-				}(logger)
+				}(logger, pi)
 			}
 			time.Sleep(1 * time.Second)
 			wg.Wait()

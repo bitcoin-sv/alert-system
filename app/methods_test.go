@@ -21,7 +21,7 @@ func TestHead(t *testing.T) {
 		_ = res.Body.Close()
 	}()
 
-	// Check body
+	// Check the body
 	data, err := io.ReadAll(res.Body)
 	require.NoError(t, err)
 	require.Empty(t, data)
@@ -44,10 +44,10 @@ func TestNotFound(t *testing.T) {
 		_ = res.Body.Close()
 	}()
 
-	// Check body
+	// Check the body
 	data, err := io.ReadAll(res.Body)
 	require.NoError(t, err)
-	require.Equal(t, "\"route not found: "+path+"\"\n", string(data))
+	require.Equal(t, "\"route not found: "+path+"\"", string(data))
 
 	// Check the result
 	require.Equal(t, "404 Not Found", res.Status)
@@ -66,10 +66,10 @@ func TestMethodNotAllowed(t *testing.T) {
 		_ = res.Body.Close()
 	}()
 
-	// Check body
+	// Check the body
 	data, err := io.ReadAll(res.Body)
 	require.NoError(t, err)
-	require.Equal(t, "\"/:"+http.MethodConnect+"\"\n", string(data))
+	require.Equal(t, "\"/:"+http.MethodConnect+"\"", string(data))
 
 	// Check the result
 	require.Equal(t, "405 Method Not Allowed", res.Status)

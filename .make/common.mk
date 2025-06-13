@@ -31,6 +31,19 @@ ifndef DISTRIBUTIONS_DIR
 endif
 export DISTRIBUTIONS_DIR
 
+.PHONY: citation
+citation: ## Update version in CITATION.cff (citation version=X.Y.Z)
+	@echo "updating CITATION.cff version..."
+	@if [ -z "$(version)" ]; then \
+	    echo "Error: 'version' variable is not set. Please set the 'version' variable before running this target."; \
+	    exit 1; \
+	fi
+	@if [ "$(shell uname)" = "Darwin" ]; then \
+	        sed -i '' -e 's/^version: \".*\"/version: \"$(version)\"/' CITATION.cff; \
+	else \
+	        sed -i -e 's/^version: \".*\"/version: \"$(version)\"/' CITATION.cff; \
+	fi
+
 .PHONY: diff
 diff: ## Show the git diff
 	$(call print-target)
@@ -50,7 +63,7 @@ install-releaser: ## Install the GoReleaser application
 release:: ## Full production release (creates release in GitHub)
 	@echo "releasing..."
 	@test $(github_token)
-	@export GITHUB_TOKEN=$(github_token) && goreleaser --clean
+	@export GITHUB_TOKEN=$(github_token) && goreleaser --rm-dist
 
 .PHONY: release-test
 release-test: ## Full production test release (everything except deploy)

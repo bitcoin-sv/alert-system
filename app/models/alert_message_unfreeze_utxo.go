@@ -26,7 +26,7 @@ func (a *AlertMessageUnfreezeUtxo) Read(raw []byte) error {
 		return fmt.Errorf("unfreeze alert is not a multiple of 57 bytes, got %d bytes; raw: %x", len(raw), raw)
 	}
 	fundCount := len(raw) / 57
-	funds := []models.Fund{}
+	var funds []models.Fund
 	for i := 0; i < fundCount; i++ {
 		fund := Fund{
 			TransactionOutID:     [32]byte(raw[0:32]),
@@ -60,7 +60,7 @@ func (a *AlertMessageUnfreezeUtxo) Read(raw []byte) error {
 
 }
 
-// Do executes the message
+// Do execute the message
 func (a *AlertMessageUnfreezeUtxo) Do(ctx context.Context) error {
 	_, err := a.Config().Services.Node.AddToConsensusBlacklist(ctx, a.Funds)
 	if err != nil {

@@ -9,7 +9,7 @@ import (
 	"github.com/libsv/go-p2p/wire"
 )
 
-// AlertMessageUnbanPeer is the message for unban peer
+// AlertMessageUnbanPeer is the message for unbanned peer
 type AlertMessageUnbanPeer struct {
 	AlertMessage
 	Peer         []byte `json:"peer"`
@@ -28,7 +28,7 @@ func (a *AlertMessageUnbanPeer) Read(alert []byte) error {
 		return err
 	}
 
-	// read the peer IP + port
+	// read the peer IP and port
 	var peer []byte
 	for i := uint64(0); i < peerLength; i++ {
 		var b byte
@@ -59,7 +59,7 @@ func (a *AlertMessageUnbanPeer) Read(alert []byte) error {
 	return nil
 }
 
-// Do executes the alert
+// Do execute the alert
 func (a *AlertMessageUnbanPeer) Do(ctx context.Context) error {
 	return a.Config().Services.Node.UnbanPeer(ctx, string(a.Peer))
 }

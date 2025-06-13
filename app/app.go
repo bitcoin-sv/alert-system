@@ -24,7 +24,7 @@ type APIError struct {
 
 // APIErrorResponse will return an error response message
 func APIErrorResponse(w http.ResponseWriter, req *http.Request, statusCode int, err error) {
-	apirouter.ReturnResponse(
+	apirouter.RespondWith(
 		w, req, statusCode,
 		&APIError{
 			Message:    err.Error(),

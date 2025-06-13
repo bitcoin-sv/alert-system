@@ -73,7 +73,7 @@ func (m *AlertMessage) Display() interface{} {
 	return m
 }
 
-// Migrate will run model specific migrations on startup
+// Migrate will run model-specific migrations on startup
 func (m *AlertMessage) Migrate(client datastore.ClientInterface) error {
 	return client.IndexMetadata(client.GetTableName(model.TableAlertMessages), model.MetadataField)
 }
@@ -280,7 +280,7 @@ func (m *AlertMessage) ReadRaw() error {
 
 	// This is the minimum length this data should be. Signature byte length + 2 bytes
 	// This would imply an informational alert with a message 1 byte long... not practical
-	// but possible. Regardless let's just error out now if this length is lower. At least
+	// but possible. Regardless, let's just error out now if this length is lower. At least
 	// allows us to grab the expected signature.
 	if len(alertAndSignature) < sigLen+2 {
 		return fmt.Errorf("alert message is invalid - too short length")
@@ -293,7 +293,7 @@ func (m *AlertMessage) ReadRaw() error {
 	signatures := alertAndSignature[len(alertAndSignature)-sigLen:]
 	var sigs [][]byte
 
-	// Loop through all signatures and create array
+	// Loop through all signatures and create an array
 	for i := 0; i < sigLen/65; i++ {
 		sigs = append(sigs, signatures[:65])
 		signatures = signatures[65:]
