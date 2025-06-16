@@ -14,7 +14,7 @@ require (
 	github.com/libsv/go-bn v0.0.2
 	github.com/libsv/go-bt/v2 v2.2.5
 	github.com/libsv/go-p2p v0.3.3
-	github.com/mrz1836/go-api-router v0.11.2
+	github.com/mrz1836/go-api-router v0.11.3
 	github.com/mrz1836/go-datastore v0.9.5
 	github.com/mrz1836/go-logger v0.3.6
 	github.com/multiformats/go-multiaddr v0.16.0
@@ -104,7 +104,7 @@ require (
 	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
-	github.com/mrz1836/go-parameters v0.6.3 // indirect
+	github.com/mrz1836/go-parameters v0.7.0 // indirect
 	github.com/multiformats/go-base32 v0.1.0 // indirect
 	github.com/multiformats/go-base36 v0.2.0 // indirect
 	github.com/multiformats/go-multiaddr-dns v0.4.1 // indirect
@@ -160,7 +160,7 @@ require (
 	github.com/spf13/cast v1.9.2 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	github.com/ugorji/go/codec v1.2.14 // indirect
+	github.com/ugorji/go/codec v1.3.0 // indirect
 	github.com/vektah/gqlparser/v2 v2.5.27 // indirect
 	github.com/whyrusleeping/go-keyspace v0.0.0-20160322163242-5b898ac5add1 // indirect
 	github.com/wlynxg/anet v0.0.5 // indirect
