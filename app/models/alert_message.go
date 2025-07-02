@@ -13,7 +13,7 @@ import (
 	"github.com/bitcoinschema/go-bitcoin"
 	"github.com/bitcoinsv/bsvd/bsvec"
 	"github.com/bitcoinsv/bsvutil"
-	"github.com/libsv/go-bt/v2/chainhash"
+	"github.com/bsv-blockchain/go-bt/v2/chainhash"
 	"github.com/mrz1836/go-datastore"
 )
 
