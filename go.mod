@@ -7,12 +7,12 @@ require (
 	github.com/bitcoinschema/go-bitcoin v0.3.20
 	github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173
 	github.com/bitcoinsv/bsvutil v0.0.0-20181216182056-1d77cf353ea9
+	github.com/bsv-blockchain/go-bt/v2 v2.3.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/libp2p/go-libp2p v0.41.1
 	github.com/libp2p/go-libp2p-kad-dht v0.33.1
 	github.com/libp2p/go-libp2p-pubsub v0.14.1
 	github.com/libsv/go-bn v0.0.2
-	github.com/libsv/go-bt/v2 v2.2.5
 	github.com/libsv/go-p2p v0.3.3
 	github.com/mrz1836/go-api-router v0.11.3
 	github.com/mrz1836/go-datastore v0.9.5
@@ -95,6 +95,7 @@ require (
 	github.com/libsv/go-bc v0.1.29 // indirect
 	github.com/libsv/go-bk v0.1.6 // indirect
 	github.com/libsv/go-bt v1.0.8 // indirect
+	github.com/libsv/go-bt/v2 v2.2.5 // indirect
 	github.com/marten-seemann/tcp v0.0.0-20210406111302-dfbc87cc63fd // indirect
 	github.com/matryer/respond v1.0.1 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
@@ -200,9 +201,6 @@ require (
 	modernc.org/memory v1.11.0 // indirect
 	modernc.org/sqlite v1.38.0 // indirect
 )
-
-// Use this specific version of go-bt (ordishs vs libsv)
-replace github.com/libsv/go-bt/v2 => github.com/ordishs/go-bt/v2 v2.2.22
 
 // Use this specific version of go-bn (galt-tr vs libsv)
 replace github.com/libsv/go-bn => github.com/galt-tr/go-bn v0.0.5
