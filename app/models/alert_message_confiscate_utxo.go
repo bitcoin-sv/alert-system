@@ -9,7 +9,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/libsv/go-bn/models"
+	"github.com/bsv-blockchain/go-bn/models"
 	"github.com/libsv/go-p2p/wire"
 )
 

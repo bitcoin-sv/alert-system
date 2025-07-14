@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/libsv/go-bn/models"
+	"github.com/bsv-blockchain/go-bn/models"
 )
 
 // AlertMessageUnfreezeUtxo is the message for unfreezing a UTXO

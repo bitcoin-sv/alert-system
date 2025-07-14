@@ -4,7 +4,7 @@ package mocks
 import (
 	"context"
 
-	"github.com/libsv/go-bn/models"
+	"github.com/bsv-blockchain/go-bn/models"
 )
 
 // Node is a mock type for the SVNode interface
@@ -19,7 +19,7 @@ type Node struct {
 	BestBlockHashFunc                         func(ctx context.Context) (string, error)
 	InvalidateBlockFunc                       func(ctx context.Context, hash string) error
 	UnbanPeerFunc                             func(ctx context.Context, peer string) error
-	AddToConsensusBlacklistFunc               func(ctx context.Context, funds []models.Fund) (*models.BlacklistResponse, error)
+	AddToConsensusBlacklistFunc               func(ctx context.Context, funds []models.Fund) (*models.AddToConsensusBlacklistResponse, error)
 	AddToConfiscationTransactionWhitelistFunc func(ctx context.Context, tx []models.ConfiscationTransactionDetails) (*models.AddToConfiscationTransactionWhitelistResponse, error)
 	// Add additional fields if needed to track calls or results
 }
@@ -73,7 +73,7 @@ func (n *Node) UnbanPeer(ctx context.Context, peer string) error {
 }
 
 // AddToConsensusBlacklist will call the AddToConsensusBlacklistFunc if not nil, otherwise return nil
-func (n *Node) AddToConsensusBlacklist(ctx context.Context, funds []models.Fund) (*models.BlacklistResponse, error) {
+func (n *Node) AddToConsensusBlacklist(ctx context.Context, funds []models.Fund) (*models.AddToConsensusBlacklistResponse, error) {
 	if n.AddToConsensusBlacklistFunc != nil {
 		return n.AddToConsensusBlacklistFunc(ctx, funds)
 	}

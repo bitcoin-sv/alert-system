@@ -16,8 +16,8 @@ import (
 	"github.com/bitcoin-sv/alert-system/app/models/model"
 	"github.com/bitcoin-sv/alert-system/app/p2p"
 	"github.com/bitcoin-sv/alert-system/utils"
+	models2 "github.com/bsv-blockchain/go-bn/models"
 	pubsub "github.com/libp2p/go-libp2p-pubsub"
-	models2 "github.com/libsv/go-bn/models"
 )
 
 func main() {
