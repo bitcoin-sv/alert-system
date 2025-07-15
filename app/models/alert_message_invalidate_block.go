@@ -1,13 +1,12 @@
 package models
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/bsv-blockchain/go-sdk/util"
 
 	"github.com/bsv-blockchain/go-bt/v2/chainhash"
-	"github.com/libsv/go-p2p/wire"
 )
 
 // AlertMessageInvalidateBlock is an invalidate block alert
@@ -25,30 +24,36 @@ func (a *AlertMessageInvalidateBlock) Read(alert []byte) error {
 		return err
 	}
 
-	buf := bytes.NewReader(alert[32:])
+	reader := util.NewReader(alert[32:])
 
 	// read the reason length
 	var length uint64
-	if length, err = wire.ReadVarInt(buf, 0); err != nil {
+	if length, err = reader.ReadVarInt(); err != nil {
 		return err
+	}
+	if length == 0 {
+		return fmt.Errorf("no reason message provided")
 	}
 	var msg []byte
 	for i := uint64(0); i < length; i++ {
 		var b byte
-		if b, err = buf.ReadByte(); err != nil {
+		if b, err = reader.ReadByte(); err != nil {
 			return fmt.Errorf("failed to read reason: %s", err.Error())
 		}
 		msg = append(msg, b)
 	}
+	if !reader.IsComplete() {
+		return fmt.Errorf("too many bytes in alert message")
+	}
 	a.ReasonLength = length
 	a.Reason = msg
 	a.BlockHash = blockHash
-	a.Config().Services.Log.Infof("InvalidateBlock alert; hash [%s]; reason [%s]", a.BlockHash, a.Reason)
 	return nil
 }
 
 // Do execute the alert
 func (a *AlertMessageInvalidateBlock) Do(ctx context.Context) error {
+	a.Config().Services.Log.Infof("InvalidateBlock alert; hash [%s]; reason [%s]", a.BlockHash, a.Reason)
 	return a.Config().Services.Node.InvalidateBlock(ctx, a.BlockHash.String())
 }
 

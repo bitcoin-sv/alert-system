@@ -1,12 +1,10 @@
 package models
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-
-	"github.com/libsv/go-p2p/wire"
+	"github.com/bsv-blockchain/go-sdk/util"
 )
 
 // AlertMessageUnbanPeer is the message for unbanned peer
@@ -20,10 +18,10 @@ type AlertMessageUnbanPeer struct {
 
 // Read reads the payload from the byte slice
 func (a *AlertMessageUnbanPeer) Read(alert []byte) error {
-	buf := bytes.NewReader(alert)
+	reader := util.NewReader(alert)
 
 	// read the peer length
-	peerLength, err := wire.ReadVarInt(buf, 0)
+	peerLength, err := reader.ReadVarInt()
 	if err != nil {
 		return err
 	}
@@ -32,7 +30,7 @@ func (a *AlertMessageUnbanPeer) Read(alert []byte) error {
 	var peer []byte
 	for i := uint64(0); i < peerLength; i++ {
 		var b byte
-		if b, err = buf.ReadByte(); err != nil {
+		if b, err = reader.ReadByte(); err != nil {
 			return fmt.Errorf("failed to read peer: %s", err.Error())
 		}
 		peer = append(peer, b)
@@ -42,18 +40,21 @@ func (a *AlertMessageUnbanPeer) Read(alert []byte) error {
 
 	// read the reason
 	var reasonLength uint64
-	if reasonLength, err = wire.ReadVarInt(buf, 0); err != nil {
+	if reasonLength, err = reader.ReadVarInt(); err != nil {
 		return err
 	}
 	var reason []byte
 	for i := uint64(0); i < reasonLength; i++ {
 		var b byte
-		if b, err = buf.ReadByte(); err != nil {
+		if b, err = reader.ReadByte(); err != nil {
 			return fmt.Errorf("failed to read reason: %s", err.Error())
 		}
 		reason = append(reason, b)
 	}
 
+	if !reader.IsComplete() {
+		return fmt.Errorf("too many bytes in alert message")
+	}
 	a.Reason = reason
 	a.ReasonLength = reasonLength
 	return nil

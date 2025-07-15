@@ -9,11 +9,11 @@ require (
 	github.com/bitcoinsv/bsvutil v0.0.0-20181216182056-1d77cf353ea9
 	github.com/bsv-blockchain/go-bn v1.0.0
 	github.com/bsv-blockchain/go-bt/v2 v2.4.4
+	github.com/bsv-blockchain/go-sdk v1.2.4
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/libp2p/go-libp2p v0.41.1
 	github.com/libp2p/go-libp2p-kad-dht v0.33.1
 	github.com/libp2p/go-libp2p-pubsub v0.14.2
-	github.com/libsv/go-p2p v0.3.3
 	github.com/mrz1836/go-api-router v0.11.3
 	github.com/mrz1836/go-datastore v0.9.5
 	github.com/mrz1836/go-logger v0.3.6
@@ -33,7 +33,6 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bitcoinsv/bsvlog v0.0.0-20181216181007-cb81b076bf2e // indirect
 	github.com/bsv-blockchain/go-bc v1.0.2 // indirect
-	github.com/bsv-blockchain/go-sdk v1.2.4 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/containerd/cgroups v1.1.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.5.0 // indirect
