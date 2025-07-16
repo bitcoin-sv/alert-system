@@ -252,8 +252,6 @@ github.com/libsv/go-bk v0.1.6/go.mod h1:khJboDoH18FPUaZlzRFKzlVN84d4YfdmlDtdX4LA
 github.com/libsv/go-bt v1.0.4/go.mod h1:AfXoLFYEbY/TvCq/84xTce2xGjPUuC5imokHmcykF2k=
 github.com/libsv/go-bt v1.0.8 h1:nWLLcnUm0dxNO3exqrL5jvAcTGkl0dsnBuQqB6+M6vQ=
 github.com/libsv/go-bt v1.0.8/go.mod h1:yO023bNYLh5DwcOYl+ZqLAeTemoy6K+2UbQlIBMv+EQ=
-github.com/libsv/go-p2p v0.3.3 h1:5h+69MsGgFwQWyD8MEqyPeqbqKGRpKLzzOcI5cSLfgY=
-github.com/libsv/go-p2p v0.3.3/go.mod h1:TENFxbTT/bfSfuiirjU6l+PfAWxwZgF8GYUxs5tzc/M=
 github.com/lunixbochs/vtclean v1.0.0/go.mod h1:pHhQNgMf3btfWnGBVipUOjRYhoOsdGqdm/+2c2E2WMI=
 github.com/mailru/easyjson v0.0.0-20190312143242-1de009706dbe/go.mod h1:C1wdFJiN94OJF2b5HbByQZoLdCWB1Yqtg26g4irojpc=
 github.com/marten-seemann/tcp v0.0.0-20210406111302-dfbc87cc63fd h1:br0buuQ854V8u83wA0rVZ8ttrq5CpaPZdvrK0LP2lOk=

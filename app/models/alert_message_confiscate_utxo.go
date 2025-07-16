@@ -1,16 +1,15 @@
 package models
 
 import (
-	"bytes"
 	"context"
 	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/bsv-blockchain/go-sdk/util"
 
 	"github.com/bsv-blockchain/go-bn/models"
-	"github.com/libsv/go-p2p/wire"
 )
 
 // AlertMessageConfiscateTransaction is a confiscate utxo alert
@@ -27,20 +26,19 @@ type ConfiscateTransaction struct {
 
 // Read reads the alert
 func (a *AlertMessageConfiscateTransaction) Read(raw []byte) error {
-	a.Config().Services.Log.Infof("%x", raw)
 	if len(raw) < 9 {
 		return fmt.Errorf("confiscation alert is less than 9 bytes")
 	}
 	// TODO: assume for now only 1 confiscation tx in the alert for simplicity
 	var details []models.ConfiscationTransactionDetails
 	enforceAtHeight := binary.LittleEndian.Uint64(raw[0:8])
-	buf := bytes.NewReader(raw[8:])
+	reader := util.NewReader(raw[8:])
 
-	length, err := wire.ReadVarInt(buf, 0)
+	length, err := reader.ReadVarInt()
 	if err != nil {
 		return err
 	}
-	if length > uint64(buf.Len()) {
+	if length > uint64(len(reader.Data)) {
 		return errors.New("tx hex length is longer than the remaining buffer")
 	}
 
@@ -48,7 +46,7 @@ func (a *AlertMessageConfiscateTransaction) Read(raw []byte) error {
 	var rawHex []byte
 	for i := uint64(0); i < length; i++ {
 		var b byte
-		if b, err = buf.ReadByte(); err != nil {
+		if b, err = reader.ReadByte(); err != nil {
 			return fmt.Errorf("failed to read tx hex: %s", err.Error())
 		}
 		rawHex = append(rawHex, b)
@@ -63,13 +61,13 @@ func (a *AlertMessageConfiscateTransaction) Read(raw []byte) error {
 	details = append(details, detail)
 
 	a.Transactions = details
-	a.Config().Services.Log.Infof("ConfiscateTransaction alert; enforceAt [%d]; hex [%s]", enforceAtHeight, hex.EncodeToString(rawHex))
 
 	return nil
 }
 
 // Do execute the alert
 func (a *AlertMessageConfiscateTransaction) Do(ctx context.Context) error {
+	a.Config().Services.Log.Infof("ConfiscateTransaction alert; enforceAt [%d]; hex [%s]", a.Transactions[0].ConfiscationTransaction.EnforceAtHeight, hex.EncodeToString(a.GetRawMessage()))
 	res, err := a.Config().Services.Node.AddToConfiscationTransactionWhitelist(ctx, a.Transactions)
 	if err != nil {
 		return err

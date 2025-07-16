@@ -1,13 +1,11 @@
 package models
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-
-	"github.com/libsv/go-p2p/wire"
+	"github.com/bsv-blockchain/go-sdk/util"
 )
 
 // AlertMessageInformational is an informational alert
@@ -19,14 +17,14 @@ type AlertMessageInformational struct {
 
 // Read reads the alert message from the byte slice
 func (a *AlertMessageInformational) Read(alert []byte) error {
-	buf := bytes.NewReader(alert[:])
+	reader := util.NewReader(alert[:])
 
 	// read the message length
-	length, err := wire.ReadVarInt(buf, 0)
+	length, err := reader.ReadVarInt()
 	if err != nil {
 		return err
 	}
-	if length > uint64(buf.Len()) {
+	if length > uint64(len(reader.Data)) {
 		return errors.New("info message length is longer than buffer")
 	}
 
@@ -34,10 +32,13 @@ func (a *AlertMessageInformational) Read(alert []byte) error {
 	var msg []byte
 	for i := uint64(0); i < length; i++ {
 		var b byte
-		if b, err = buf.ReadByte(); err != nil {
+		if b, err = reader.ReadByte(); err != nil {
 			return fmt.Errorf("failed to read message: %s", err.Error())
 		}
 		msg = append(msg, b)
+	}
+	if !reader.IsComplete() {
+		return fmt.Errorf("too many bytes in alert message")
 	}
 	a.Message = msg
 	a.MessageLength = length

@@ -4,7 +4,8 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
-	"math"
+	"github.com/bsv-blockchain/go-sdk/util"
+	"io"
 	"time"
 
 	"github.com/bitcoin-sv/alert-system/app/config"
@@ -12,7 +13,6 @@ import (
 	"github.com/bitcoin-sv/alert-system/app/models/model"
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/peer"
-	"github.com/libsv/go-p2p/wire"
 )
 
 // Thread is an interface for a thread
@@ -61,7 +61,9 @@ func (s *StreamThread) Sync(ctx context.Context) error {
 		_ = s.stream.Close()
 	}()
 
-	if err = wire.WriteVarBytes(s.stream, 0, data); err != nil {
+	writer := util.NewWriter()
+	writer.WriteIntBytes(data)
+	if _, err = s.stream.Write(writer.Buf); err != nil {
 		return err
 	}
 
@@ -76,7 +78,19 @@ func (s *StreamThread) ProcessSyncMessage(ctx context.Context) error {
 	done := make(chan error)
 	go func() {
 		for {
-			b, err := wire.ReadVarBytes(s.stream, 0, math.MaxUint64, config.ApplicationName)
+			var vi util.VarInt
+			_, err := vi.ReadFrom(s.stream)
+			if err != nil {
+				if s.stream.Conn().IsClosed() {
+					done <- nil
+					return
+				}
+				s.config.Services.Log.Debugf("failed to read sync message: %s; closing stream", err.Error())
+				done <- s.stream.Close()
+				return
+			}
+			b := make([]byte, vi)
+			_, err = io.ReadFull(s.stream, b)
 			if err != nil {
 				if s.stream.Conn().IsClosed() {
 					done <- nil
@@ -186,7 +200,10 @@ func (s *StreamThread) ProcessGotLatest(ctx context.Context, msg *SyncMessage) e
 		Type:           IWantSequenceNumber,
 		SequenceNumber: a.SequenceNumber + 1,
 	}
-	return wire.WriteVarBytes(s.stream, 0, res.Serialize())
+	writer := util.NewWriter()
+	writer.WriteIntBytes(res.Serialize())
+	_, err = s.stream.Write(writer.Buf)
+	return err
 }
 
 // ProcessGotSequenceNumber will process the got sequence number message
@@ -241,7 +258,10 @@ func (s *StreamThread) ProcessGotSequenceNumber(msg *SyncMessage) error {
 		Type:           IWantSequenceNumber,
 		SequenceNumber: a.SequenceNumber + 1,
 	}
-	return wire.WriteVarBytes(s.stream, 0, res.Serialize())
+	writer := util.NewWriter()
+	writer.WriteIntBytes(res.Serialize())
+	_, err = s.stream.Write(writer.Buf)
+	return err
 }
 
 // ProcessWantSequenceNumber will process the want sequence number message
@@ -264,7 +284,10 @@ func (s *StreamThread) ProcessWantSequenceNumber(ctx context.Context, msg *SyncM
 		SequenceNumber: a.SequenceNumber,
 		Data:           data,
 	}
-	return wire.WriteVarBytes(s.stream, 0, res.Serialize())
+	writer := util.NewWriter()
+	writer.WriteIntBytes(res.Serialize())
+	_, err = s.stream.Write(writer.Buf)
+	return err
 }
 
 // ProcessWantLatest will process the want latest message
@@ -289,5 +312,8 @@ func (s *StreamThread) ProcessWantLatest(ctx context.Context) error {
 		SequenceNumber: a.SequenceNumber,
 		Data:           data,
 	}
-	return wire.WriteVarBytes(s.stream, 0, res.Serialize())
+	writer := util.NewWriter()
+	writer.WriteIntBytes(res.Serialize())
+	_, err = s.stream.Write(writer.Buf)
+	return err
 }
