@@ -18,7 +18,7 @@ require (
 	github.com/mrz1836/go-datastore v0.9.5
 	github.com/mrz1836/go-logger v0.3.6
 	github.com/multiformats/go-multiaddr v0.16.0
-	github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.1.3
+	github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.1.4
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.20.1
 	github.com/stretchr/testify v1.10.0
@@ -116,7 +116,7 @@ require (
 	github.com/multiformats/go-varint v0.0.7 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
-	github.com/newrelic/go-agent/v3 v3.39.0 // indirect
+	github.com/newrelic/go-agent/v3 v3.40.0 // indirect
 	github.com/newrelic/go-agent/v3/integrations/nrmongo v1.1.3 // indirect
 	github.com/onsi/ginkgo/v2 v2.23.4 // indirect
 	github.com/opencontainers/runtime-spec v1.2.1 // indirect
