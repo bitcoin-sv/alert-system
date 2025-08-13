@@ -18,7 +18,7 @@ require (
 	github.com/mrz1836/go-datastore v0.9.5
 	github.com/mrz1836/go-logger v0.3.6
 	github.com/multiformats/go-multiaddr v0.16.1
-	github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.1.4
+	github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.1.5
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.20.1
 	github.com/stretchr/testify v1.10.0
