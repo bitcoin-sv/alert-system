@@ -293,8 +293,8 @@ github.com/neelance/astrewrite v0.0.0-20160511093645-99348263ae86/go.mod h1:kHJE
 github.com/neelance/sourcemap v0.0.0-20151028013722-8c68805598ab/go.mod h1:Qr6/a/Q4r9LP1IltGz7tA7iOK1WonHEYhu1HRBA7ZiM=
 github.com/newrelic/go-agent/v3 v3.40.1 h1:8nb4R252Fpuc3oySvlHpDwqySqaPWL5nf7ZVEhqtUeA=
 github.com/newrelic/go-agent/v3 v3.40.1/go.mod h1:X0TLXDo+ttefTIue1V96Y5seb8H6wqf6uUq4UpPsYj8=
-github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.1.4 h1:QKSdohpFxoB+WOqVh8i6etTJW7OK3Y6CImHrA3P+L0g=
-github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.1.4/go.mod h1:qeo2zFHoxJkEbfwXE7jjQdbKlZlO1GI7fiMXp8kH9zw=
+github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.1.5 h1:6EIg2dgBc1hMGN9NhhwCyVoy6yG3lprMDTFR1b4t/AY=
+github.com/newrelic/go-agent/v3/integrations/nrhttprouter v1.1.5/go.mod h1:+DF0n8/aH4HyUwv9hOWf/v4Fg89M1pGI76IC5c75t8M=
 github.com/newrelic/go-agent/v3/integrations/nrmongo v1.1.4 h1:pMC2OWvE/JJY1ANuUvwsl3V0N1bAC/uEt6ElFxwd+pw=
 github.com/newrelic/go-agent/v3/integrations/nrmongo v1.1.4/go.mod h1:JfnstKPURZlQ2je9qI8AwOleOmWJF1HKsib/FWY4ITM=
 github.com/openzipkin/zipkin-go v0.1.1/go.mod h1:NtoC/o8u3JlF1lSlyPNswIbeQH9bJTmOf0Erfk+hxe8=
