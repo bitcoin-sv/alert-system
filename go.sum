@@ -255,8 +255,8 @@ github.com/montanaflynn/stats v0.7.1/go.mod h1:etXPPgVO6n31NxCd9KQUMvCM+ve0ruNzt
 github.com/mr-tron/base58 v1.1.2/go.mod h1:BinMc/sQntlIE1frQmRFPUoPA1Zkr8VRgBdjWI2mNwc=
 github.com/mr-tron/base58 v1.2.0 h1:T/HDJBh4ZCPbU39/+c3rRvE0uKBQlU27+QI8LJ4t64o=
 github.com/mr-tron/base58 v1.2.0/go.mod h1:BinMc/sQntlIE1frQmRFPUoPA1Zkr8VRgBdjWI2mNwc=
-github.com/mrz1836/go-api-router v0.12.0 h1:+PCg3tpdX09uzCRktBfTFqYHu0XmMbjoglHUo4VMOec=
-github.com/mrz1836/go-api-router v0.12.0/go.mod h1:dBj2/qbysKTd6xeXaeZ6Yaq97Idl4jLqaxIXMjkrst8=
+github.com/mrz1836/go-api-router v1.0.1 h1:wr+t12EwGpehx/RQCwcAURnKnmXDEVt5I72v/Lt4ffs=
+github.com/mrz1836/go-api-router v1.0.1/go.mod h1:dBj2/qbysKTd6xeXaeZ6Yaq97Idl4jLqaxIXMjkrst8=
 github.com/mrz1836/go-datastore v1.0.1 h1:VE+0XLugHDmK2ac0+ALdEGN4lw3NDj4jYcXdsDlMJzI=
 github.com/mrz1836/go-datastore v1.0.1/go.mod h1:kVv2hdzpoKmSPE8i4N0h93SgBA8qVd2BPtAkUHns4b0=
 github.com/mrz1836/go-logger v0.3.6 h1:rB/Ey/nCOP4XKECrc5C7OZFH8jIaiOsh5pTuSTaJjHI=
