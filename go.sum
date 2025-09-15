@@ -259,8 +259,8 @@ github.com/mrz1836/go-api-router v1.0.1 h1:wr+t12EwGpehx/RQCwcAURnKnmXDEVt5I72v/
 github.com/mrz1836/go-api-router v1.0.1/go.mod h1:dBj2/qbysKTd6xeXaeZ6Yaq97Idl4jLqaxIXMjkrst8=
 github.com/mrz1836/go-datastore v1.0.1 h1:VE+0XLugHDmK2ac0+ALdEGN4lw3NDj4jYcXdsDlMJzI=
 github.com/mrz1836/go-datastore v1.0.1/go.mod h1:kVv2hdzpoKmSPE8i4N0h93SgBA8qVd2BPtAkUHns4b0=
-github.com/mrz1836/go-logger v0.3.6 h1:rB/Ey/nCOP4XKECrc5C7OZFH8jIaiOsh5pTuSTaJjHI=
-github.com/mrz1836/go-logger v0.3.6/go.mod h1:671FjY7dkZelQXBSAZOhOqBTf+N6BOSo0pDM3km4Nx8=
+github.com/mrz1836/go-logger v1.0.0 h1:p1oENepUxxFWzuBtCf0MeXU7Zt/meO5svIF3RsLR2zk=
+github.com/mrz1836/go-logger v1.0.0/go.mod h1:4OX+yIkLiY4rcM26gZJZjly/f7fyhOEiRVHecZSyTTs=
 github.com/mrz1836/go-parameters v0.8.1 h1:TT/JinD2rASzHiGao8gdOMpKi+tbldZEFU+VC3OxSWg=
 github.com/mrz1836/go-parameters v0.8.1/go.mod h1:/sIa5M40Q/g+yIx1Qsypf4ON1cAeuDKyTjWxfk9oeVQ=
 github.com/multiformats/go-base32 v0.1.0 h1:pVx9xoSPqEIQG8o+UbAe7DNi51oej1NtK+aGkbLYxPE=
