@@ -14,7 +14,7 @@ require (
 	github.com/libp2p/go-libp2p v0.43.0
 	github.com/libp2p/go-libp2p-kad-dht v0.34.0
 	github.com/libp2p/go-libp2p-pubsub v0.14.3
-	github.com/mrz1836/go-api-router v1.0.1
+	github.com/mrz1836/go-api-router v1.0.2
 	github.com/mrz1836/go-datastore v1.0.1
 	github.com/mrz1836/go-logger v1.0.0
 	github.com/multiformats/go-multiaddr v0.16.1
@@ -97,7 +97,7 @@ require (
 	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
-	github.com/mrz1836/go-parameters v0.8.1 // indirect
+	github.com/mrz1836/go-parameters v1.0.0 // indirect
 	github.com/multiformats/go-base32 v0.1.0 // indirect
 	github.com/multiformats/go-base36 v0.2.0 // indirect
 	github.com/multiformats/go-multiaddr-dns v0.4.1 // indirect
