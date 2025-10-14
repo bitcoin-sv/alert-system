@@ -24,7 +24,7 @@ jobs:
       - name: gcc install
         run: sudo apt-get update; sudo apt install gcc-aarch64-linux-gnu
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
       - name: Cache code
@@ -62,7 +62,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
       - name: Cache code
