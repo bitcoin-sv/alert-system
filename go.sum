@@ -31,8 +31,8 @@ github.com/bitcoinsv/bsvutil v0.0.0-20181216182056-1d77cf353ea9/go.mod h1:p44KuN
 github.com/bradfitz/go-smtpd v0.0.0-20170404230938-deb6d6237625/go.mod h1:HYsPBTaaSFSlLx/70C2HPIMNZpVV8+vt/A+FMnYP11g=
 github.com/bsv-blockchain/go-bc v1.1.1 h1:TIEwCKLDmhyH6T8WH2ec/k4AWMvu3Qwxu61rZFo680Q=
 github.com/bsv-blockchain/go-bc v1.1.1/go.mod h1:OOOaVaEO4HnCfzbLXrjnwXgj9c1lOGEob5hIfhk1rh8=
-github.com/bsv-blockchain/go-bn v1.1.0 h1:1xz05opJhwMftT9EifQlNgMB14ZXpSSJ66M+V8iXWGI=
-github.com/bsv-blockchain/go-bn v1.1.0/go.mod h1:UwOLXSs5z65Jq1Ppz6DtB+xdqiJShlBkxjBz5Z//AyE=
+github.com/bsv-blockchain/go-bn v1.1.1 h1:aKOdpaIvf+UAOFn03GfH+ZfWbu7kWtZjgNBRJAazOnE=
+github.com/bsv-blockchain/go-bn v1.1.1/go.mod h1:sJ/T10Tl12CCCuH1Xg3eZDGQHrEf7rg6wiou9rBH8wU=
 github.com/bsv-blockchain/go-bt/v2 v2.5.0 h1:vXn0FeDVHIpJb3Y0UruWEQ8ZkbYGkjGDMRLrWzKmVh8=
 github.com/bsv-blockchain/go-bt/v2 v2.5.0/go.mod h1:TQyVESpNMN5ah8ntPZve4GOrDgGY/22W8c42k39BvN4=
 github.com/bsv-blockchain/go-sdk v1.2.11 h1:SK8kDuDZNP3ubvx0AL0bR/I8tXWljJICyUsiF4y9ZkQ=
