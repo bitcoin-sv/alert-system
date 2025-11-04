@@ -33,8 +33,8 @@ github.com/bsv-blockchain/go-bc v1.1.1 h1:TIEwCKLDmhyH6T8WH2ec/k4AWMvu3Qwxu61rZF
 github.com/bsv-blockchain/go-bc v1.1.1/go.mod h1:OOOaVaEO4HnCfzbLXrjnwXgj9c1lOGEob5hIfhk1rh8=
 github.com/bsv-blockchain/go-bn v1.1.0 h1:1xz05opJhwMftT9EifQlNgMB14ZXpSSJ66M+V8iXWGI=
 github.com/bsv-blockchain/go-bn v1.1.0/go.mod h1:UwOLXSs5z65Jq1Ppz6DtB+xdqiJShlBkxjBz5Z//AyE=
-github.com/bsv-blockchain/go-bt/v2 v2.5.0 h1:vXn0FeDVHIpJb3Y0UruWEQ8ZkbYGkjGDMRLrWzKmVh8=
-github.com/bsv-blockchain/go-bt/v2 v2.5.0/go.mod h1:TQyVESpNMN5ah8ntPZve4GOrDgGY/22W8c42k39BvN4=
+github.com/bsv-blockchain/go-bt/v2 v2.5.1 h1:FM5JfBwzmBSlgrlR2vJPMZqbZ21uzQE3mT0irCZiOds=
+github.com/bsv-blockchain/go-bt/v2 v2.5.1/go.mod h1:PRmOtffMuHE1LZyRrb5rWQQ6dEEct2x68cvnsS7ka/4=
 github.com/bsv-blockchain/go-sdk v1.2.11 h1:SK8kDuDZNP3ubvx0AL0bR/I8tXWljJICyUsiF4y9ZkQ=
 github.com/bsv-blockchain/go-sdk v1.2.11/go.mod h1:S+8iokWX2la9G4mzwHIeCvYkADRzcdfk1AprN0z5MDI=
 github.com/buger/jsonparser v0.0.0-20181115193947-bf1c66bbce23/go.mod h1:bbYlZJ7hK1yFx9hf58LP0zeX7UjIGs20ufpu3evjr+s=
