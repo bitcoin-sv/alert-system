@@ -1,5 +1,15 @@
 # alert-system
-> A go microservice for managing alerts and runs alongside Bitcoin SV nodes utilizing RPC
+
+> [!WARNING]
+> **📦 REPOSITORY ARCHIVED**
+>
+> This repository has been moved and is no longer maintained. All future development and support is now at:
+>
+> **→ [bsv-blockchain/go-alert-system](https://github.com/bsv-blockchain/go-alert-system)**
+>
+> Please update your imports and references to use the new location.
+
+<br>
 
 [![Release](https://img.shields.io/github/release-pre/bitcoin-sv/alert-system.svg?logo=github&style=flat&v=3)](https://github.com/bitcoin-sv/alert-system/releases)
 [![Build](https://github.com/bitcoin-sv/alert-system/actions/workflows/run-tests.yml/badge.svg?branch=master&v=3)](https://github.com/bitcoin-sv/alert-system/actions)
